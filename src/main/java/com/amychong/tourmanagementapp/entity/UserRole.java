@@ -5,13 +5,13 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name="roles")
-public class UserRole {
+public class UserRole implements Identifiable<Integer> {
 
     // define fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    private int id;
+    private Integer id;
 
     @Column(name="role")
     private String role;
@@ -28,11 +28,11 @@ public class UserRole {
 
     // define getters and setters
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -1,7 +1,5 @@
 package com.amychong.tourmanagementapp.dto;
 
-import com.amychong.tourmanagementapp.entity.UserRole;
-
 public class UserDTO {
 
     private int id;

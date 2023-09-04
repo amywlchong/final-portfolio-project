@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends GenericServiceImpl<User, UserDTO> implements UserService {
 
     private UserRepository userRepository;
     private UserRoleRepository userRoleRepository;
@@ -22,6 +22,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl(UserRepository theUserRepository, UserRoleRepository theUserRoleRepository, UserMapper theUserMapper) {
+        super(theUserRepository, theUserMapper, User.class, UserDTO.class);
         userRepository = theUserRepository;
         userRoleRepository = theUserRoleRepository;
         userMapper = theUserMapper;
@@ -29,30 +30,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDTO> findAll() {
-        return userMapper.toDTOList(userRepository.findAll());
+
+        return super.findAll();
     }
 
     private User findSensitiveUserById(int theId) {
-        validateId(theId);
+        super.validateId(theId);
         return userRepository.findById(theId).orElseThrow(() -> new NotFoundException("Did not find user id - " + theId));
     }
 
     @Override
     public UserDTO findById(int theId) {
-        return userMapper.toDTO(findSensitiveUserById(theId));
+
+        return super.findById(theId);
     }
 
     @Override
     public UserDTO save(User theUser) {
-        validateNotNull(theUser, "User must not be null.");
         validateAndSetUserRole(theUser, theUser.getUserRole().getRole());
 
-        return userMapper.toDTO(userRepository.save(theUser));
+        return super.save(theUser);
     }
 
     @Override
     public UserDTO updatePassword(int theId, String newPassword) {
-        validateNotEmpty(newPassword, "Password cannot be null or empty.");
+        super.validateNotEmpty(newPassword, "Password cannot be null or empty.");
 
         User existingUser = findSensitiveUserById(theId);
         existingUser.setPassword(newPassword);
@@ -62,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updatePhoto(int theId, String newPhoto) {
-        validateNotEmpty(newPhoto, "Photo file name cannot be null or empty.");
+        super.validateNotEmpty(newPhoto, "Photo file name cannot be null or empty.");
 
         User existingUser = findSensitiveUserById(theId);
         existingUser.setPhoto(newPhoto);
@@ -71,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateActiveStatus(int theId, Boolean isActive) {
-        validateNotNull(isActive, "Active status cannot be null.");
+        super.validateNotNull(isActive, "Active status cannot be null.");
 
         User existingUser = findSensitiveUserById(theId);
         existingUser.setActive(isActive);
@@ -79,7 +81,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDTO updateRole(int theId, String newRole) {
-        validateNotEmpty(newRole, "Role cannot be null or empty.");
+        super.validateNotEmpty(newRole, "Role cannot be null or empty.");
 
         User existingUser = findSensitiveUserById(theId);
         validateAndSetUserRole(existingUser, newRole);
@@ -88,29 +90,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteById(int theId) {
-        // find user by id or else throw an exception
-        findSensitiveUserById(theId);
-
-        // delete user by id
-        userRepository.deleteById(theId);
-    }
-
-    private void validateId(int theId) {
-        if (theId <= 0) {
-            throw new IllegalArgumentException("ID must be a positive number.");
-        }
-    }
-
-    private void validateNotNull(Object obj, String message) {
-        if (obj == null) {
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    private void validateNotEmpty(String str, String message) {
-        if (str == null || str.isEmpty()) {
-            throw new IllegalArgumentException(message);
-        }
+        super.deleteById(theId);
     }
 
     private void validateAndSetUserRole(User theUser, String role) {
