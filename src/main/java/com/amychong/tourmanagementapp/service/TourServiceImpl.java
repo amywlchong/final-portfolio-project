@@ -2,8 +2,8 @@ package com.amychong.tourmanagementapp.service;
 
 import com.amychong.tourmanagementapp.entity.Tour;
 import com.amychong.tourmanagementapp.entity.TourImage;
+import com.amychong.tourmanagementapp.entity.TourPointOfInterest;
 import com.amychong.tourmanagementapp.repository.TourRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,12 +31,21 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
         return super.findById(theId);
     }
 
+
     @Override
     public Tour save(Tour theTour) {
         List<TourImage> images = theTour.getTourImages();
+        List<TourPointOfInterest> tourPointsOfInterest = theTour.getTourPointsOfInterest();
+
         if (images != null) {
             for (TourImage image : images) {
                 image.setTour(theTour);
+            }
+        }
+
+        if (tourPointsOfInterest != null) {
+            for (TourPointOfInterest tourPOI: tourPointsOfInterest) {
+                tourPOI.setTour(theTour);
             }
         }
 

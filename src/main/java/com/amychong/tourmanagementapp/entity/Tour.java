@@ -56,6 +56,9 @@ public class Tour implements Identifiable<Integer> {
     @OneToMany(mappedBy = "tour", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TourImage> tourImages = new ArrayList<>();
 
+    @OneToMany(mappedBy = "tour", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TourPointOfInterest> tourPointsOfInterest = new ArrayList<>();
+
     // define constructors
     public Tour() {
 
@@ -200,7 +203,26 @@ public class Tour implements Identifiable<Integer> {
         image.setTour(null);
     }
 
+    public List<TourPointOfInterest> getTourPointsOfInterest() {
+        return tourPointsOfInterest;
+    }
+
+    public void setTourPointsOfInterest(List<TourPointOfInterest> tourPointsOfInterest) {
+        this.tourPointsOfInterest = tourPointsOfInterest;
+    }
+
+    public void addTourPointOfInterest(TourPointOfInterest tourPointOfInterest) {
+        tourPointsOfInterest.add(tourPointOfInterest);
+        tourPointOfInterest.setTour(this);
+    }
+
+    public void removeTourPointOfInterest(TourPointOfInterest tourPointOfInterest) {
+        tourPointsOfInterest.remove(tourPointOfInterest);
+        tourPointOfInterest.setTour(null);
+    }
+
     // define toString method
+
     @Override
     public String toString() {
         return "Tour{" +
@@ -218,11 +240,12 @@ public class Tour implements Identifiable<Integer> {
                 ", ratingsCount=" + ratingsCount +
                 ", ratingsAverage=" + ratingsAverage +
                 ", tourImages=" + tourImages +
+                ", tourPointsOfInterest=" + tourPointsOfInterest +
                 '}';
     }
 
     // define enum
-    private enum Difficulty {
+    public enum Difficulty {
         easy, medium, difficult
     }
 }
