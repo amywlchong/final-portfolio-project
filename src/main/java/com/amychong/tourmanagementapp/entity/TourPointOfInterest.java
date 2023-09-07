@@ -1,10 +1,14 @@
 package com.amychong.tourmanagementapp.entity;
 
 import jakarta.persistence.*;
+import org.apache.commons.lang3.SerializationUtils;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Table(name="tour_points_of_interest")
-public class TourPointOfInterest implements Identifiable<Integer> {
+public class TourPointOfInterest implements Identifiable<Integer>, Serializable, DeepCopyable {
 
     // define fields
     @Id
@@ -67,6 +71,11 @@ public class TourPointOfInterest implements Identifiable<Integer> {
         this.day = day;
     }
 
+    // deepCopy method
+    public TourPointOfInterest deepCopy() {
+        return SerializationUtils.clone(this);
+    }
+
     // define toString method
 
     @Override
@@ -77,4 +86,19 @@ public class TourPointOfInterest implements Identifiable<Integer> {
                 ", day=" + day +
                 '}';
     }
+
+    // define equals and hashCode
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TourPointOfInterest that = (TourPointOfInterest) o;
+        return Objects.equals(tour, that.tour) && Objects.equals(pointOfInterest, that.pointOfInterest);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tour, pointOfInterest);
+    }
 }
+

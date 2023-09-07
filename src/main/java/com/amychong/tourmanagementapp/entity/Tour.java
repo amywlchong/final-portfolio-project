@@ -1,14 +1,17 @@
 package com.amychong.tourmanagementapp.entity;
 
 import jakarta.persistence.*;
+import org.apache.commons.lang3.SerializationUtils;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name="tours")
-public class Tour implements Identifiable<Integer> {
+public class Tour implements Identifiable<Integer>, Serializable, DeepCopyable {
 
     // define fields
     @Id
@@ -59,6 +62,9 @@ public class Tour implements Identifiable<Integer> {
     @OneToMany(mappedBy = "tour", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TourPointOfInterest> tourPointsOfInterest = new ArrayList<>();
 
+    @OneToMany(mappedBy = "tour", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TourStartDate> tourStartDates = new ArrayList<>();
+
     // define constructors
     public Tour() {
 
@@ -78,7 +84,7 @@ public class Tour implements Identifiable<Integer> {
         this.ratingsCount = ratingsCount;
         this.ratingsAverage = ratingsAverage;
     }
-
+    
     // define getters and setters
 
     public Integer getId() {
@@ -185,13 +191,27 @@ public class Tour implements Identifiable<Integer> {
         this.ratingsAverage = ratingsAverage;
     }
 
+    public void setMainFields(Tour theTour) {
+        this.name = theTour.getName();
+        this.duration = theTour.getDuration();
+        this.maxGroupSize = theTour.getMaxGroupSize();
+        this.difficulty = theTour.getDifficulty();
+        this.price = theTour.getPrice();
+        this.summary = theTour.getSummary();
+        this.description = theTour.getDescription();
+        this.region = theTour.getRegion();
+        this.startAddress = theTour.getStartAddress();
+        this.ratingsCount = theTour.getRatingsCount();
+        this.ratingsAverage = theTour.getRatingsAverage();
+    }
+
     public List<TourImage> getTourImages() {
         return tourImages;
     }
 
-    public void setTourImages(List<TourImage> tourImages) {
-        this.tourImages = tourImages;
-    }
+     public void setTourImages(List<TourImage> tourImages) {
+         this.tourImages = tourImages;
+     }
 
     public void addTourImage(TourImage image) {
         tourImages.add(image);
@@ -221,6 +241,29 @@ public class Tour implements Identifiable<Integer> {
         tourPointOfInterest.setTour(null);
     }
 
+    public List<TourStartDate> getTourStartDates() {
+        return tourStartDates;
+    }
+
+    public void setTourStartDates(List<TourStartDate> tourStartDates) {
+        this.tourStartDates = tourStartDates;
+    }
+
+    public void addTourStartDate(TourStartDate tourStartDate) {
+        tourStartDates.add(tourStartDate);
+        tourStartDate.setTour(this);
+    }
+
+    public void removeTourStartDate(TourStartDate tourStartDate) {
+        tourStartDates.remove(tourStartDate);
+        tourStartDate.setTour(null);
+    }
+
+    // deepCopy method
+    public Tour deepCopy() {
+        return SerializationUtils.clone(this);
+    }
+
     // define toString method
 
     @Override
@@ -241,11 +284,26 @@ public class Tour implements Identifiable<Integer> {
                 ", ratingsAverage=" + ratingsAverage +
                 ", tourImages=" + tourImages +
                 ", tourPointsOfInterest=" + tourPointsOfInterest +
+                ", tourStartDates=" + tourStartDates +
                 '}';
     }
 
     // define enum
     public enum Difficulty {
         easy, medium, difficult
+    }
+
+    // define equals and hashCode
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tour tour = (Tour) o;
+        return Objects.equals(id, tour.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

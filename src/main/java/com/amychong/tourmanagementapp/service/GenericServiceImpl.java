@@ -4,6 +4,7 @@ import com.amychong.tourmanagementapp.entity.Identifiable;
 import com.amychong.tourmanagementapp.exception.NotFoundException;
 import com.amychong.tourmanagementapp.mapper.GenericMapper;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -52,6 +53,7 @@ public abstract class GenericServiceImpl<T extends Identifiable<Integer>, DTO> i
         return defaultMapToDTO(entity);
     }
 
+    @Transactional
     protected DTO save(T entity) {
         T savedEntity = repository.save(entity);
         if (isSameType()) {
@@ -64,6 +66,7 @@ public abstract class GenericServiceImpl<T extends Identifiable<Integer>, DTO> i
     }
 
     @Override
+    @Transactional
     public DTO create(T entity) {
         validateNotNull(entity, entityClass.getSimpleName() + " must not be null.");
 
@@ -74,6 +77,7 @@ public abstract class GenericServiceImpl<T extends Identifiable<Integer>, DTO> i
     }
 
     @Override
+    @Transactional
     public void deleteById(int theId) {
         // find by id or else throw an exception
         findById(theId);

@@ -1,6 +1,5 @@
 package com.amychong.tourmanagementapp.controller;
 
-import com.amychong.tourmanagementapp.entity.Identifiable;
 import com.amychong.tourmanagementapp.service.GenericService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-public abstract class GenericRestController<T extends Identifiable, DTO> {
+public abstract class GenericRestController<T, DTO> {
 
     protected GenericService<T, DTO> service;
 
@@ -29,12 +28,7 @@ public abstract class GenericRestController<T extends Identifiable, DTO> {
 
     @PostMapping
     public ResponseEntity<DTO> add(@RequestBody T entity) {
-        // just in case they pass an id in JSON
-        // set id to 0
-        // to force a save of new item instead of update
-
-        entity.setId(0);
-        DTO dbDto = service.save(entity);
+        DTO dbDto = service.create(entity);
         return new ResponseEntity<>(dbDto, HttpStatus.CREATED);
     }
 

@@ -1,13 +1,16 @@
 package com.amychong.tourmanagementapp.entity;
 
 import jakarta.persistence.*;
+import org.apache.commons.lang3.SerializationUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name="points_of_interest")
-public class PointOfInterest implements Identifiable<Integer> {
+public class PointOfInterest implements Identifiable<Integer>, Serializable, DeepCopyable {
 
     // define fields
     @Id
@@ -21,7 +24,7 @@ public class PointOfInterest implements Identifiable<Integer> {
     @Column(name="description")
     private String description;
 
-    @OneToMany(mappedBy = "pointOfInterest", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "pointOfInterest", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<TourPointOfInterest> tourPointsOfInterest = new ArrayList<>();
 
     // define constructors
@@ -63,6 +66,10 @@ public class PointOfInterest implements Identifiable<Integer> {
         this.description = description;
     }
 
+    // deepCopy method
+    public PointOfInterest deepCopy() {
+        return SerializationUtils.clone(this);
+    }
 
     // define toString method
 
@@ -73,5 +80,19 @@ public class PointOfInterest implements Identifiable<Integer> {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    // define equals and hashCode
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PointOfInterest that = (PointOfInterest) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

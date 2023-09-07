@@ -56,6 +56,13 @@
 			<version>1.5.5.Final</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- Apache Commons Lang-->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.13.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
