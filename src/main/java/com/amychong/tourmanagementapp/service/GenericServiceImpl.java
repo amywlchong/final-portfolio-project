@@ -1,12 +1,13 @@
 package com.amychong.tourmanagementapp.service;
 
+import com.amychong.tourmanagementapp.entity.Identifiable;
 import com.amychong.tourmanagementapp.exception.NotFoundException;
 import com.amychong.tourmanagementapp.mapper.GenericMapper;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public abstract class GenericServiceImpl<T, DTO> implements GenericService<T, DTO> {
+public abstract class GenericServiceImpl<T extends Identifiable<Integer>, DTO> implements GenericService<T, DTO> {
 
     private JpaRepository<T, Integer> repository;
     protected GenericMapper<T, DTO> mapper;
@@ -51,10 +52,7 @@ public abstract class GenericServiceImpl<T, DTO> implements GenericService<T, DT
         return defaultMapToDTO(entity);
     }
 
-    @Override
-    public DTO save(T entity) {
-        validateNotNull(entity, entityClass.getSimpleName() + " must not be null.");
-
+    protected DTO save(T entity) {
         T savedEntity = repository.save(entity);
         if (isSameType()) {
             return (DTO) savedEntity;
@@ -63,6 +61,16 @@ public abstract class GenericServiceImpl<T, DTO> implements GenericService<T, DT
             return mapper.toDTO(savedEntity);
         }
         return defaultMapToDTO(savedEntity);
+    }
+
+    @Override
+    public DTO create(T entity) {
+        validateNotNull(entity, entityClass.getSimpleName() + " must not be null.");
+
+        // Ensure entity has ID = 0 to always create a new entry
+        entity.setId(0);
+
+        return save(entity);
     }
 
     @Override

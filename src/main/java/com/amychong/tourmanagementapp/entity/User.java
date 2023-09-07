@@ -1,12 +1,14 @@
 package com.amychong.tourmanagementapp.entity;
 
 import jakarta.persistence.*;
+import org.apache.commons.lang3.SerializationUtils;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
 @Table(name="users")
-public class User implements Identifiable<Integer> {
+public class User implements Identifiable<Integer>, Serializable, DeepCopyable {
 
     // define fields
     @Id
@@ -112,6 +114,11 @@ public class User implements Identifiable<Integer> {
     public UserRole getUserRole() { return userRole; }
 
     public void setUserRole(UserRole userRole) { this.userRole = userRole; }
+
+    // deepCopy method
+    public User deepCopy() {
+        return SerializationUtils.clone(this);
+    }
 
     // define toString method
 

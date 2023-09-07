@@ -8,7 +8,7 @@ public interface GenericService<T, DTO> {
 
     DTO findById(int theId);
 
-    DTO save(T entity);
+    DTO create(T entity);
 
     void deleteById(int theId);
 }

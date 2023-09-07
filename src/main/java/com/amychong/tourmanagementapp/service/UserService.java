@@ -5,6 +5,7 @@ import com.amychong.tourmanagementapp.entity.User;
 
 public interface UserService extends GenericService<User, UserDTO>{
 
+    UserDTO update(int theId, User theUser);
     UserDTO updatePassword(int theId, String newPassword);
     UserDTO updatePhoto(int theId, String newPhoto);
     UserDTO updateActiveStatus(int theId, Boolean isActive);

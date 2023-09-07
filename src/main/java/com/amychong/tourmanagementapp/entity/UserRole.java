@@ -2,10 +2,12 @@ package com.amychong.tourmanagementapp.entity;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 
 @Entity
 @Table(name="roles")
-public class UserRole implements Identifiable<Integer> {
+public class UserRole implements Identifiable<Integer>, Serializable {
 
     // define fields
     @Id
