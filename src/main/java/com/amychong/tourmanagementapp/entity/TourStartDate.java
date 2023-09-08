@@ -1,9 +1,13 @@
 package com.amychong.tourmanagementapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -23,6 +27,10 @@ public class TourStartDate implements Identifiable<TourStartDateKey>, Serializab
     @MapsId("startDateId") // map to the startDateId attribute of embedded id
     @JoinColumn(name="start_date_id")
     private StartDate startDate;
+
+    @OneToMany(mappedBy = "tourStartDate", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<TourGuideSchedule> tourGuideSchedules = new ArrayList<>();
 
     // define constructors
     public TourStartDate() {
@@ -45,6 +53,11 @@ public class TourStartDate implements Identifiable<TourStartDateKey>, Serializab
         this.id = id;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    public Tour getTour() {
+        return tour;
+    }
+
     public void setTour(Tour tour) {
         this.tour = tour;
     }
@@ -55,6 +68,24 @@ public class TourStartDate implements Identifiable<TourStartDateKey>, Serializab
 
     public void setStartDate(StartDate startDate) {
         this.startDate = startDate;
+    }
+
+    public List<TourGuideSchedule> getTourGuideSchedules() {
+        return tourGuideSchedules;
+    }
+
+    public void setTourGuideSchedules(List<TourGuideSchedule> tourGuideSchedules) {
+        this.tourGuideSchedules = tourGuideSchedules;
+    }
+
+    public void addTourGuideSchedule(TourGuideSchedule tourGuideSchedule) {
+        tourGuideSchedules.add(tourGuideSchedule);
+        tourGuideSchedule.setTourStartDate(this);
+    }
+
+    public void removeTourGuideSchedule(TourGuideSchedule tourGuideSchedule) {
+        tourGuideSchedules.remove(tourGuideSchedule);
+        tourGuideSchedule.setTourStartDate(null);
     }
 
     // deepCopy method
@@ -68,6 +99,9 @@ public class TourStartDate implements Identifiable<TourStartDateKey>, Serializab
     public String toString() {
         return "TourStartDate{" +
                 "id=" + id +
+                ", tour=" + tour +
+                ", startDate=" + startDate +
+                ", tourGuideSchedules=" + tourGuideSchedules +
                 '}';
     }
 

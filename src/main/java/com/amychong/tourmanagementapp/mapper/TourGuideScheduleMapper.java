@@ -16,12 +16,12 @@ public interface TourGuideScheduleMapper extends GenericMapper<TourGuideSchedule
     @Mapping(source = "user.name", target = "userName")
     @Mapping(source = "user.active", target = "userActive")
     @Mapping(source = "user.userRole", target = "userRole")
-    @Mapping(source = "tour.id", target = "tourId")
-    @Mapping(source = "tour.name", target = "tourName")
-    @Mapping(source = "tour.duration", target = "tourDuration")
-    @Mapping(source = "tour.region", target = "tourRegion")
-    @Mapping(source = "startDate.id", target = "startDateId")
-    @Mapping(source = "startDate.startDateTime", target = "startDateTime")
+    @Mapping(source = "tourStartDate.tour.id", target = "tourId")
+    @Mapping(source = "tourStartDate.tour.name", target = "tourName")
+    @Mapping(source = "tourStartDate.tour.duration", target = "tourDuration")
+    @Mapping(source = "tourStartDate.tour.region", target = "tourRegion")
+    @Mapping(source = "tourStartDate.startDate.id", target = "startDateId")
+    @Mapping(source = "tourStartDate.startDate.startDateTime", target = "startDateTime")
     TourGuideScheduleDTO toDTO(TourGuideSchedule tourGuideSchedule);
 
 }

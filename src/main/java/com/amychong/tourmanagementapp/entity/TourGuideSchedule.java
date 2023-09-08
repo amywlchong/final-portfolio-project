@@ -20,22 +20,20 @@ public class TourGuideSchedule implements Identifiable<Integer>, Serializable, D
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="tour_id")
-    private Tour tour;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="tour_start_date_id")
-    private StartDate startDate;
+    @JoinColumns({
+            @JoinColumn(name="tour_start_date_id"),
+            @JoinColumn(name="tour_id")
+    })
+    private TourStartDate tourStartDate;
 
     // define constructors
     public TourGuideSchedule() {
 
     }
 
-    public TourGuideSchedule(User user, Tour tour, StartDate startDate) {
+    public TourGuideSchedule(User user, TourStartDate tourStartDate) {
         this.user = user;
-        this.tour = tour;
-        this.startDate = startDate;
+        this.tourStartDate = tourStartDate;
     }
 
     // define getters and setters
@@ -58,20 +56,12 @@ public class TourGuideSchedule implements Identifiable<Integer>, Serializable, D
         this.user = user;
     }
 
-    public Tour getTour() {
-        return tour;
+    public TourStartDate getTourStartDate() {
+        return tourStartDate;
     }
 
-    public void setTour(Tour tour) {
-        this.tour = tour;
-    }
-
-    public StartDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(StartDate startDate) {
-        this.startDate = startDate;
+    public void setTourStartDate(TourStartDate tourStartDate) {
+        this.tourStartDate = tourStartDate;
     }
 
     // deepCopy method
@@ -80,14 +70,12 @@ public class TourGuideSchedule implements Identifiable<Integer>, Serializable, D
     }
 
     // define toString method
-
     @Override
     public String toString() {
         return "TourGuideSchedule{" +
                 "id=" + id +
                 ", user=" + user +
-                ", tour=" + tour +
-                ", startDate=" + startDate +
+                ", tourStartDate=" + tourStartDate +
                 '}';
     }
 }

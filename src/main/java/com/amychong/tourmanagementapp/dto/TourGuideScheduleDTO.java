@@ -26,21 +26,6 @@ public class TourGuideScheduleDTO {
     public TourGuideScheduleDTO() {
     }
 
-    // without id
-    public TourGuideScheduleDTO(Integer userId, String userName, Boolean userActive, String userRole, Integer tourId, String tourName, int tourDuration, String tourRegion, Integer startDateId, LocalDateTime startDateTime) {
-        this.userId = userId;
-        this.userName = userName;
-        this.userActive = userActive;
-        this.userRole = userRole;
-        this.tourId = tourId;
-        this.tourName = tourName;
-        this.tourDuration = tourDuration;
-        this.tourRegion = tourRegion;
-        this.startDateId = startDateId;
-        this.startDateTime = startDateTime;
-    }
-
-    // with id
     public TourGuideScheduleDTO(Integer id, Integer userId, String userName, Boolean userActive, String userRole, Integer tourId, String tourName, int tourDuration, String tourRegion, Integer startDateId, LocalDateTime startDateTime) {
         this.id = id;
         this.userId = userId;

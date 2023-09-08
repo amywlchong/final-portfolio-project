@@ -9,12 +9,12 @@ import java.util.Optional;
 
 public interface TourRepository extends JpaRepository<Tour, Integer> {
 
-    @Query("SELECT t FROM Tour t JOIN FETCH t.tourImages WHERE t.id = :tourId")
+    @Query("SELECT t FROM Tour t LEFT JOIN FETCH t.tourImages WHERE t.id = :tourId")
     Optional<Tour> findByIdWithTourImages(@Param("tourId") Integer tourId);
 
-    @Query("SELECT t FROM Tour t JOIN FETCH t.tourPointsOfInterest WHERE t.id = :tourId")
+    @Query("SELECT t FROM Tour t LEFT JOIN FETCH t.tourPointsOfInterest WHERE t.id = :tourId")
     Optional<Tour> findByIdWithTourPointsOfInterest(@Param("tourId") Integer tourId);
 
-    @Query("SELECT t FROM Tour t JOIN FETCH t.tourStartDates WHERE t.id = :tourId")
+    @Query("SELECT t FROM Tour t LEFT JOIN FETCH t.tourStartDates WHERE t.id = :tourId")
     Optional<Tour> findByIdWithTourStartDates(@Param("tourId") Integer tourId);
 }

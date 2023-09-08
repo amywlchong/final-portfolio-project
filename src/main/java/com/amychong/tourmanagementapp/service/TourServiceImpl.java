@@ -1,11 +1,9 @@
 package com.amychong.tourmanagementapp.service;
 
 import com.amychong.tourmanagementapp.entity.*;
-import com.amychong.tourmanagementapp.repository.PointOfInterestRepository;
-import com.amychong.tourmanagementapp.repository.StartDateRepository;
-import com.amychong.tourmanagementapp.repository.TourImageRepository;
-import com.amychong.tourmanagementapp.repository.TourRepository;
+import com.amychong.tourmanagementapp.repository.*;
 import com.amychong.tourmanagementapp.util.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,15 +19,17 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
     private TourImageRepository tourImageRepository;
     private PointOfInterestRepository pointOfInterestRepository;
     private StartDateRepository startDateRepository;
+    private TourStartDateRepository tourStartDateRepository;
 
     @Autowired
-    public TourServiceImpl(TourRepository theTourRepository, TourImageRepository theTourImageRepository, PointOfInterestRepository thePointOfInterestRepository, StartDateRepository theStartDateRepository) {
+    public TourServiceImpl(TourRepository theTourRepository, TourImageRepository theTourImageRepository, PointOfInterestRepository thePointOfInterestRepository, StartDateRepository theStartDateRepository, TourStartDateRepository theTourStartDateRepository) {
 
         super(theTourRepository, Tour.class, Tour.class);
         tourRepository = theTourRepository;
         tourImageRepository = theTourImageRepository;
         pointOfInterestRepository = thePointOfInterestRepository;
         startDateRepository = theStartDateRepository;
+        tourStartDateRepository = theTourStartDateRepository;
     }
 
     @Override
@@ -126,7 +126,7 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
         helper.findExistingAssociatedEntitiesFunction = names -> tourImageRepository.findAllByNameIn(names);
         helper.setIdOfAssociatedEntityFunction = this::setTourImageId;
 
-        Tour processedTour = helper.processTourForUpdate();
+        Tour processedTour = helper.processTourForUpdate().getRight();
 
         return helper.getEntitiesFromTourFunction.apply(super.save(processedTour));
     }
@@ -151,7 +151,7 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
         helper.findExistingAssociatedEntitiesFunction = names -> pointOfInterestRepository.findAllByNameIn(names);
         helper.setIdOfAssociatedEntityFunction = this::setPointOfInterestId;
 
-        Tour processedTour = helper.processTourForUpdate();
+        Tour processedTour = helper.processTourForUpdate().getRight();
 
         return helper.getEntitiesFromTourFunction.apply(super.save(processedTour));
     }
@@ -176,9 +176,36 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
         helper.findExistingAssociatedEntitiesFunction = datetimes -> startDateRepository.findAllByStartDateTimeIn(datetimes);
         helper.setIdOfAssociatedEntityFunction = this::setStartDateId;
 
-        Tour processedTour = helper.processTourForUpdate();
+        Pair<Tour, Tour> tourPair = helper.processTourForUpdate();
+        // tourPair: left is original existing tour, right is processed tour
+        Tour processedTour = syncTourGuideSchedules(tourPair.getLeft(), tourPair.getRight());
 
         return helper.getEntitiesFromTourFunction.apply(super.save(processedTour));
+    }
+
+    protected Tour syncTourGuideSchedules(Tour existingTour, Tour processedTour) {
+        List<TourStartDate> existingTourStartDates = existingTour.getTourStartDates();
+        List<TourStartDate> updatedTourStartDates = processedTour.getTourStartDates();
+
+        handleRemovedStartDates(existingTourStartDates, updatedTourStartDates);
+        updateTourGuideSchedules(existingTourStartDates, updatedTourStartDates);
+
+        return processedTour;
+    }
+
+    private void handleRemovedStartDates(List<TourStartDate> existingDates, List<TourStartDate> updatedDates) {
+        existingDates.stream()
+                .filter(date -> !updatedDates.contains(date))
+                .forEach(tourStartDateRepository::delete);
+    }
+
+    private void updateTourGuideSchedules(List<TourStartDate> existingDates, List<TourStartDate> updatedDates) {
+        for (TourStartDate updatedTourStartDate : updatedDates) {
+            existingDates.stream()
+                    .filter(existingDate -> existingDate.equals(updatedTourStartDate))
+                    .findFirst()
+                    .ifPresent(existingDate -> updatedTourStartDate.setTourGuideSchedules(existingDate.getTourGuideSchedules()));
+        }
     }
 
     private void setTourImageId(TourImage inputImage, List<TourImage> existingTourImages) {

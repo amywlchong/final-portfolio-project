@@ -2,6 +2,7 @@ package com.amychong.tourmanagementapp.service;
 
 import com.amychong.tourmanagementapp.entity.*;
 import com.amychong.tourmanagementapp.exception.NotFoundException;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,11 +43,13 @@ public class TourUpdateHelper<T extends Identifiable, U extends Identifiable, V>
     protected BiConsumer<T, List<U>> setIdOfAssociatedEntityFunction;
 
     // pre-update processing
-    protected Tour processTourForUpdate() {
-        Optional<Tour> existingTour = fetchTourFunction.apply(inputTourId);
-        Tour copyOfExistingTour = existingTour
-                .map(tour -> tour.deepCopy())
-                .orElseThrow(() -> new NotFoundException("Tour not found."));
+    protected Pair<Tour, Tour> processTourForUpdate() {
+        Optional<Tour> optionalExistingTour = fetchTourFunction.apply(inputTourId);
+        if (!optionalExistingTour.isPresent()) {
+            throw new NotFoundException("Tour not found.");
+        }
+        Tour existingTour = optionalExistingTour.get();
+        Tour copyOfExistingTour = existingTour.deepCopy();
         List<T> copiedInputEntities = deepCopyFunction.apply(inputTourRelatedEntities);
 
         List<T> entitiesOfExistingTour = getEntitiesFromTourFunction.apply(copyOfExistingTour);
@@ -60,7 +63,7 @@ public class TourUpdateHelper<T extends Identifiable, U extends Identifiable, V>
             setIdOfAssociatedEntityFunction.accept(inputEntity, existingAssociatedEntities);
             TourUpdateHelper.setEntityId(inputEntity, copiedEntitiesOfExistingTour);
         }
-        return copyOfExistingTour;
+        return Pair.of(existingTour, copyOfExistingTour);
     }
 
     protected List<U> findExistingAssociatedEntitiesFromUniqueField() {
