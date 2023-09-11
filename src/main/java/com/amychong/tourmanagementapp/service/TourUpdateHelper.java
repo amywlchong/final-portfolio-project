@@ -46,7 +46,7 @@ public class TourUpdateHelper<T extends Identifiable, U extends Identifiable, V>
     protected Pair<Tour, Tour> processTourForUpdate() {
         Optional<Tour> optionalExistingTour = fetchTourFunction.apply(inputTourId);
         if (!optionalExistingTour.isPresent()) {
-            throw new NotFoundException("Tour not found.");
+            throw new NotFoundException("Did not find tour id - " + inputTourId);
         }
         Tour existingTour = optionalExistingTour.get();
         Tour copyOfExistingTour = existingTour.deepCopy();

@@ -18,6 +18,9 @@ public class TourStartDate implements Identifiable<TourStartDateKey>, Serializab
     @EmbeddedId
     private TourStartDateKey id;
 
+    @Transient
+    private Integer availableSpaces;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @MapsId("tourId")  // map to the tourId attribute of embedded id
     @JoinColumn(name="tour_id")
@@ -31,6 +34,10 @@ public class TourStartDate implements Identifiable<TourStartDateKey>, Serializab
     @OneToMany(mappedBy = "tourStartDate", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<TourGuideSchedule> tourGuideSchedules = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tourStartDate", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Booking> bookings = new ArrayList<>();
 
     // define constructors
     public TourStartDate() {
@@ -51,6 +58,14 @@ public class TourStartDate implements Identifiable<TourStartDateKey>, Serializab
 
     public void setId(TourStartDateKey id) {
         this.id = id;
+    }
+
+    public Integer getAvailableSpaces() {
+        return availableSpaces;
+    }
+
+    public void setAvailableSpaces(Integer availableSpaces) {
+        this.availableSpaces = availableSpaces;
     }
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -88,6 +103,24 @@ public class TourStartDate implements Identifiable<TourStartDateKey>, Serializab
         tourGuideSchedule.setTourStartDate(null);
     }
 
+    public List<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
+    }
+
+    public void addBooking(Booking booking) {
+        bookings.add(booking);
+        booking.setTourStartDate(this);
+    }
+
+    public void removeBooking(Booking booking) {
+        bookings.remove(booking);
+        booking.setTourStartDate(null);
+    }
+
     // deepCopy method
     public TourStartDate deepCopy() {
         return SerializationUtils.clone(this);
@@ -99,9 +132,11 @@ public class TourStartDate implements Identifiable<TourStartDateKey>, Serializab
     public String toString() {
         return "TourStartDate{" +
                 "id=" + id +
+                ", availableSpaces=" + availableSpaces +
                 ", tour=" + tour +
                 ", startDate=" + startDate +
                 ", tourGuideSchedules=" + tourGuideSchedules +
+                ", bookings=" + bookings +
                 '}';
     }
 

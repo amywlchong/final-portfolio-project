@@ -40,7 +40,7 @@ public abstract class GenericServiceImpl<T extends Identifiable<Integer>, DTO> i
     }
 
     @Override
-    public DTO findById(int theId) {
+    public DTO findById(Integer theId) {
         validateId(theId);
 
         T entity = repository.findById(theId).orElseThrow(() -> new NotFoundException("Did not find " + entityClass.getSimpleName() + " id - " + theId));
@@ -78,7 +78,7 @@ public abstract class GenericServiceImpl<T extends Identifiable<Integer>, DTO> i
 
     @Override
     @Transactional
-    public void deleteById(int theId) {
+    public void deleteById(Integer theId) {
         // find by id or else throw an exception
         findById(theId);
 
@@ -99,7 +99,10 @@ public abstract class GenericServiceImpl<T extends Identifiable<Integer>, DTO> i
         throw new UnsupportedOperationException("Mapping list to DTO list not supported without a defined mapper.");
     }
 
-    protected void validateId(int theId) {
+    protected void validateId(Integer theId) {
+        if (theId == null) {
+            throw new IllegalArgumentException("ID must not be null.");
+        }
         if (theId <= 0) {
             throw new IllegalArgumentException("ID must be a positive number.");
         }

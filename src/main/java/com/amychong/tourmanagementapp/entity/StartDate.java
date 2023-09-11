@@ -2,7 +2,6 @@ package com.amychong.tourmanagementapp.entity;
 
 import jakarta.persistence.*;
 import org.apache.commons.lang3.SerializationUtils;
-import org.hibernate.sql.ast.tree.expression.Star;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -20,7 +19,7 @@ public class StartDate implements Identifiable<Integer>, Serializable, DeepCopya
     @Column(name="id")
     private Integer id;
 
-    @Column(name="start_date")
+    @Column(name="start_date_time")
     private LocalDateTime startDateTime;
 
     @OneToMany(mappedBy = "startDate", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

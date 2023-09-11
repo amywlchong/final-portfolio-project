@@ -21,7 +21,7 @@ public abstract class GenericRestController<T, DTO> {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DTO> getById(@PathVariable int id) {
+    public ResponseEntity<DTO> getById(@PathVariable Integer id) {
         DTO dto = service.findById(id);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
@@ -33,7 +33,7 @@ public abstract class GenericRestController<T, DTO> {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable int id) {
+    public ResponseEntity<String> delete(@PathVariable Integer id) {
         service.deleteById(id);
         return new ResponseEntity<>("Deleted entity id - " + id, HttpStatus.OK);
     }

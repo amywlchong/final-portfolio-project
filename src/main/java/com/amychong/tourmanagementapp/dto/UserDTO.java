@@ -2,7 +2,7 @@ package com.amychong.tourmanagementapp.dto;
 
 public class UserDTO {
 
-    private int id;
+    private Integer id;
     private String name;
     private String email;
     private String photo;
@@ -15,7 +15,7 @@ public class UserDTO {
     }
 
     // Parameterized constructor
-    public UserDTO(int id, String name, String email, String photo, Boolean active, String userRole) {
+    public UserDTO(Integer id, String name, String email, String photo, Boolean active, String userRole) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -26,11 +26,11 @@ public class UserDTO {
 
     // Getters and setters
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -3,7 +3,6 @@ package com.amychong.tourmanagementapp.service;
 import com.amychong.tourmanagementapp.dto.UserDTO;
 import com.amychong.tourmanagementapp.entity.UserRole;
 import com.amychong.tourmanagementapp.exception.NotFoundException;
-import com.amychong.tourmanagementapp.repository.UserRepository;
 import com.amychong.tourmanagementapp.entity.User;
 import com.amychong.tourmanagementapp.mapper.UserMapper;
 import com.amychong.tourmanagementapp.repository.UserRoleRepository;
@@ -16,19 +15,19 @@ import java.time.LocalDate;
 @Service
 public class UserServiceImpl extends GenericServiceImpl<User, UserDTO> implements UserService {
 
-    private UserRepository userRepository;
+    private com.amychong.tourmanagementapp.repository.UserRepository userRepository;
     private UserRoleRepository userRoleRepository;
     private UserMapper userMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository theUserRepository, UserRoleRepository theUserRoleRepository, UserMapper theUserMapper) {
+    public UserServiceImpl(com.amychong.tourmanagementapp.repository.UserRepository theUserRepository, UserRoleRepository theUserRoleRepository, UserMapper theUserMapper) {
         super(theUserRepository, theUserMapper, User.class, UserDTO.class);
         userRepository = theUserRepository;
         userRoleRepository = theUserRoleRepository;
         userMapper = theUserMapper;
     }
 
-    private User findSensitiveUserById(int theId) {
+    private User findSensitiveUserById(Integer theId) {
         super.validateId(theId);
         return userRepository.findById(theId).orElseThrow(() -> new NotFoundException("Did not find user id - " + theId));
     }
@@ -44,13 +43,13 @@ public class UserServiceImpl extends GenericServiceImpl<User, UserDTO> implement
     }
 
     @Override
-    public UserDTO update(int theId, User theUser) {
+    public UserDTO update(Integer theId, User theUser) {
         throw new UnsupportedOperationException("The generic update operation is not supported. Please use the specific update methods provided.");
     }
 
     @Override
     @Transactional
-    public UserDTO updatePassword(int theId, String newPassword) {
+    public UserDTO updatePassword(Integer theId, String newPassword) {
         super.validateNotEmpty(newPassword, "Password cannot be null or empty.");
 
         User existingUser = findSensitiveUserById(theId);
@@ -62,7 +61,7 @@ public class UserServiceImpl extends GenericServiceImpl<User, UserDTO> implement
 
     @Override
     @Transactional
-    public UserDTO updatePhoto(int theId, String newPhoto) {
+    public UserDTO updatePhoto(Integer theId, String newPhoto) {
         super.validateNotEmpty(newPhoto, "Photo file name cannot be null or empty.");
 
         User existingUser = findSensitiveUserById(theId);
@@ -73,7 +72,7 @@ public class UserServiceImpl extends GenericServiceImpl<User, UserDTO> implement
 
     @Override
     @Transactional
-    public UserDTO updateActiveStatus(int theId, Boolean isActive) {
+    public UserDTO updateActiveStatus(Integer theId, Boolean isActive) {
         super.validateNotNull(isActive, "Active status cannot be null.");
 
         User existingUser = findSensitiveUserById(theId);
@@ -84,7 +83,7 @@ public class UserServiceImpl extends GenericServiceImpl<User, UserDTO> implement
 
     @Override
     @Transactional
-    public UserDTO updateRole(int theId, String newRole) {
+    public UserDTO updateRole(Integer theId, String newRole) {
         super.validateNotEmpty(newRole, "Role cannot be null or empty.");
 
         User existingUser = findSensitiveUserById(theId);
@@ -96,7 +95,7 @@ public class UserServiceImpl extends GenericServiceImpl<User, UserDTO> implement
     private void validateAndSetUserRole(User theUser, String role) {
         UserRole existingUserRole = userRoleRepository.findByRole(role);
         if (existingUserRole == null) {
-            throw new IllegalArgumentException("User role does not exist.");
+            throw new IllegalArgumentException("User role is invalid.");
         }
 
         theUser.setUserRole(existingUserRole);

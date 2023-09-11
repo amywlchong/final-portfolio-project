@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +33,8 @@ public class Tour implements Identifiable<Integer>, Serializable, DeepCopyable {
     @Column(name="difficulty")
     private Difficulty difficulty;
 
-    @Column(name="price")
-    private float price;
+    @Column(name="price", precision = 10, scale = 2)
+    private BigDecimal price;
 
     @Column(name="summary")
     private String summary;
@@ -70,7 +71,7 @@ public class Tour implements Identifiable<Integer>, Serializable, DeepCopyable {
 
     }
 
-    public Tour(String name, int duration, int maxGroupSize, Difficulty difficulty, float price, String summary, String description, String region, String startAddress, LocalDate createdDate, int ratingsCount, Float ratingsAverage) {
+    public Tour(String name, int duration, int maxGroupSize, Difficulty difficulty, BigDecimal price, String summary, String description, String region, String startAddress, LocalDate createdDate, int ratingsCount, Float ratingsAverage) {
         this.name = name;
         this.duration = duration;
         this.maxGroupSize = maxGroupSize;
@@ -127,11 +128,11 @@ public class Tour implements Identifiable<Integer>, Serializable, DeepCopyable {
         this.difficulty = difficulty;
     }
 
-    public float getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -201,8 +202,6 @@ public class Tour implements Identifiable<Integer>, Serializable, DeepCopyable {
         this.description = theTour.getDescription();
         this.region = theTour.getRegion();
         this.startAddress = theTour.getStartAddress();
-        this.ratingsCount = theTour.getRatingsCount();
-        this.ratingsAverage = theTour.getRatingsAverage();
     }
 
     public List<TourImage> getTourImages() {

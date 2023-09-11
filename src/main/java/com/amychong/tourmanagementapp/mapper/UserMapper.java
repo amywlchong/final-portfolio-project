@@ -12,5 +12,7 @@ public interface UserMapper extends GenericMapper<User, UserDTO> {
         return userRole.getRole();
     }
 
+    default UserRole map(String userRoleString) { return new UserRole(userRoleString); }
+
 }
 

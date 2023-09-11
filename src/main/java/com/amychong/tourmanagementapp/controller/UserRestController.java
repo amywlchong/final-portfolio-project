@@ -26,25 +26,25 @@ public class UserRestController extends GenericRestController<User, UserDTO> {
     }
 
     @PutMapping("/me/password")
-    public ResponseEntity<String> updatePassword(@PathVariable int userId, @RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<String> updatePassword(@PathVariable Integer userId, @RequestBody Map<String, String> requestBody) {
         userService.updatePassword(userId, requestBody.get("password"));
         return new ResponseEntity<>("Password updated successfully.", HttpStatus.OK);
     }
 
     @PutMapping("/{userId}/photo")
-    public ResponseEntity<UserDTO> updatePhoto(@PathVariable int userId, @RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<UserDTO> updatePhoto(@PathVariable Integer userId, @RequestBody Map<String, String> requestBody) {
         UserDTO updatedUser = userService.updatePhoto(userId, requestBody.get("photo"));
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
     @PutMapping("/{userId}/active")
-    public ResponseEntity<UserDTO> updateActiveStatus(@PathVariable int userId, @RequestBody Map<String, Boolean> requestBody) {
+    public ResponseEntity<UserDTO> updateActiveStatus(@PathVariable Integer userId, @RequestBody Map<String, Boolean> requestBody) {
         UserDTO updatedUser = userService.updateActiveStatus(userId, requestBody.get("active"));
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
     @PutMapping("/{userId}/role")
-    public ResponseEntity<UserDTO> updateRole(@PathVariable int userId, @RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<UserDTO> updateRole(@PathVariable Integer userId, @RequestBody Map<String, String> requestBody) {
         UserDTO updatedUser = userService.updateRole(userId, requestBody.get("userRole"));
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }

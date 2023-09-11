@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,9 +21,10 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
     private PointOfInterestRepository pointOfInterestRepository;
     private StartDateRepository startDateRepository;
     private TourStartDateRepository tourStartDateRepository;
+    private BookingRepository bookingRepository;
 
     @Autowired
-    public TourServiceImpl(TourRepository theTourRepository, TourImageRepository theTourImageRepository, PointOfInterestRepository thePointOfInterestRepository, StartDateRepository theStartDateRepository, TourStartDateRepository theTourStartDateRepository) {
+    public TourServiceImpl(TourRepository theTourRepository, TourImageRepository theTourImageRepository, PointOfInterestRepository thePointOfInterestRepository, StartDateRepository theStartDateRepository, TourStartDateRepository theTourStartDateRepository, BookingRepository theBookingRepository) {
 
         super(theTourRepository, Tour.class, Tour.class);
         tourRepository = theTourRepository;
@@ -30,6 +32,22 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
         pointOfInterestRepository = thePointOfInterestRepository;
         startDateRepository = theStartDateRepository;
         tourStartDateRepository = theTourStartDateRepository;
+        bookingRepository = theBookingRepository;
+    }
+
+    @Override
+    public List<Tour> findAvailableToursWithinRange(LocalDate startDate, LocalDate endDate) {
+        super.validateNotNull(startDate, "startDate must not be null.");
+        super.validateNotNull(endDate, "endDate must not be null.");
+
+        return tourRepository.findAvailableToursWithinRange(startDate, endDate);
+    }
+
+    @Override
+    public Tour findById(Integer inputTourId) {
+        Tour foundTour = super.findById(inputTourId);
+        setAvailableSpaces(foundTour);
+        return foundTour;
     }
 
     @Override
@@ -89,16 +107,18 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
     }
 
     @Override
-    public Tour update(int inputTourId, Tour inputTour) {
+    public Tour update(Integer inputTourId, Tour inputTour) {
         throw new UnsupportedOperationException("The generic update operation is not supported. Please use the specific update methods provided.");
     }
 
     @Override
     @Transactional
-    public Tour updateMainInfo(int inputTourId, Tour inputTour) {
+    public Tour updateMainInfo(Integer inputTourId, Tour inputTour) {
         super.validateNotNull(inputTour, "Tour must not be null.");
 
         Tour existingTour = findById(inputTourId);
+        validateMaxGroupSize(existingTour, inputTour.getMaxGroupSize());
+
         Tour copyOfExistingTour = existingTour.deepCopy();
         copyOfExistingTour.setMainFields(inputTour);
 
@@ -107,7 +127,7 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
 
     @Override
     @Transactional
-    public List<TourImage> updateTourImages(int inputTourId, List<TourImage> inputTourImages) {
+    public List<TourImage> updateTourImages(Integer inputTourId, List<TourImage> inputTourImages) {
         super.validateId(inputTourId);
         super.validateNotNull(inputTourImages, "Tour images must not be null.");
 
@@ -133,7 +153,7 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
 
     @Override
     @Transactional
-    public List<TourPointOfInterest> updateTourPointsOfInterest(int inputTourId, List<TourPointOfInterest> inputTourPointsOfInterest) {
+    public List<TourPointOfInterest> updateTourPointsOfInterest(Integer inputTourId, List<TourPointOfInterest> inputTourPointsOfInterest) {
         super.validateId(inputTourId);
         super.validateNotNull(inputTourPointsOfInterest, "Tour points of interest must not be null.");
 
@@ -158,7 +178,7 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
 
     @Override
     @Transactional
-    public List<TourStartDate> updateTourStartDates(int inputTourId, List<TourStartDate> inputTourStartDates) {
+    public List<TourStartDate> updateTourStartDates(Integer inputTourId, List<TourStartDate> inputTourStartDates) {
         super.validateId(inputTourId);
         super.validateNotNull(inputTourStartDates, "Tour start dates must not be null.");
 
@@ -183,7 +203,35 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
         return helper.getEntitiesFromTourFunction.apply(super.save(processedTour));
     }
 
-    protected Tour syncTourGuideSchedules(Tour existingTour, Tour processedTour) {
+    private void setAvailableSpaces(Tour tour) {
+        if (tour == null) {
+            return;
+        }
+        List<TourStartDate> tourStartDates = tour.getTourStartDates();
+        tourStartDates.forEach(tourStartDate -> {
+            Integer availableSpaces = TourStartDateHelper.computeAvailableSpaces(
+                    tourStartDate,
+                    bookingRepository
+            );
+            tourStartDate.setAvailableSpaces(availableSpaces);
+        });
+    }
+
+    private void validateMaxGroupSize(Tour existingTour, int inputMaxGroupSize) {
+        List<TourStartDate> tourStartDates = existingTour.getTourStartDates();
+
+        for (TourStartDate tourStartDate : tourStartDates) {
+            int totalBookedSpaces = bookingRepository.sumParticipantsByTourStartDate(tourStartDate);
+
+            if (totalBookedSpaces > inputMaxGroupSize) {
+                throw new IllegalArgumentException(
+                        "The input maxGroupSize is too small. " +
+                                "More than "+ inputMaxGroupSize + " participants have already booked the tour for certain dates.");
+            }
+        }
+    }
+
+    private Tour syncTourGuideSchedules(Tour existingTour, Tour processedTour) {
         List<TourStartDate> existingTourStartDates = existingTour.getTourStartDates();
         List<TourStartDate> updatedTourStartDates = processedTour.getTourStartDates();
 

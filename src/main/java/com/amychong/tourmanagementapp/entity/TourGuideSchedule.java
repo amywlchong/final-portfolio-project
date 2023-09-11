@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name="tour_guide_schedules")
-public class TourGuideSchedule implements Identifiable<Integer>, Serializable, DeepCopyable {
+public class TourGuideSchedule implements Identifiable<Integer>, Serializable, DeepCopyable, HasUser, HasTourStartDate {
 
     // define fields
     @Id

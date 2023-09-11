@@ -6,10 +6,10 @@ public interface GenericService<T, DTO> {
 
     List<DTO> findAll();
 
-    DTO findById(int theId);
+    DTO findById(Integer theId);
 
     DTO create(T entity);
 
-    void deleteById(int theId);
+    void deleteById(Integer theId);
 }
 
