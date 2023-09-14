@@ -14,6 +14,8 @@ public class BookingDTO {
 
     private boolean paid;
 
+    private String transactionId;
+
     private int numberOfParticipants;
 
     private LocalDate createdDate;
@@ -38,11 +40,12 @@ public class BookingDTO {
     public BookingDTO() {
     }
 
-    public BookingDTO(Integer id, BigDecimal unitPrice, BigDecimal totalPrice, boolean paid, int numberOfParticipants, LocalDate createdDate, Integer userId, String userName, Boolean userActive, String userRole, Integer tourId, String tourName, int tourDuration, String tourRegion, Integer startDateId, LocalDateTime startDateTime) {
+    public BookingDTO(Integer id, BigDecimal unitPrice, BigDecimal totalPrice, boolean paid, String transactionId, int numberOfParticipants, LocalDate createdDate, Integer userId, String userName, Boolean userActive, String userRole, Integer tourId, String tourName, int tourDuration, String tourRegion, Integer startDateId, LocalDateTime startDateTime) {
         this.id = id;
         this.unitPrice = unitPrice;
         this.totalPrice = totalPrice;
         this.paid = paid;
+        this.transactionId = transactionId;
         this.numberOfParticipants = numberOfParticipants;
         this.createdDate = createdDate;
         this.userId = userId;
@@ -88,6 +91,14 @@ public class BookingDTO {
 
     public void setPaid(boolean paid) {
         this.paid = paid;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     public int getNumberOfParticipants() {
@@ -195,6 +206,7 @@ public class BookingDTO {
                 ", unitPrice=" + unitPrice +
                 ", totalPrice=" + totalPrice +
                 ", paid=" + paid +
+                ", transactionId='" + transactionId + '\'' +
                 ", numberOfParticipants=" + numberOfParticipants +
                 ", createdDate=" + createdDate +
                 ", userId=" + userId +

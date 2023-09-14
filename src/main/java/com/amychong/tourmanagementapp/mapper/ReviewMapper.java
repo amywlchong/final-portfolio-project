@@ -1,7 +1,7 @@
 package com.amychong.tourmanagementapp.mapper;
 
 import com.amychong.tourmanagementapp.dto.ReviewDTO;
-import com.amychong.tourmanagementapp.entity.Review;
+import com.amychong.tourmanagementapp.entity.review.Review;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

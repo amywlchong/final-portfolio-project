@@ -1,7 +1,7 @@
 package com.amychong.tourmanagementapp.mapper;
 
 import com.amychong.tourmanagementapp.dto.BookingDTO;
-import com.amychong.tourmanagementapp.entity.Booking;
+import com.amychong.tourmanagementapp.entity.booking.Booking;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -20,16 +20,4 @@ public interface BookingMapper extends GenericMapper<Booking, BookingDTO> {
     @Mapping(source = "tourStartDate.startDate.id", target = "startDateId")
     @Mapping(source = "tourStartDate.startDate.startDateTime", target = "startDateTime")
     BookingDTO toDTO(Booking booking);
-
-    @Mapping(target = "user.id", source = "userId")
-    @Mapping(target = "user.name", source = "userName")
-    @Mapping(target = "user.active", source = "userActive")
-    @Mapping(target = "user.userRole", source = "userRole")
-    @Mapping(target = "tourStartDate.tour.id", source = "tourId")
-    @Mapping(target = "tourStartDate.tour.name", source = "tourName")
-    @Mapping(target = "tourStartDate.tour.duration", source = "tourDuration")
-    @Mapping(target = "tourStartDate.tour.region", source = "tourRegion")
-    @Mapping(target = "tourStartDate.startDate.id", source = "startDateId")
-    @Mapping(target = "tourStartDate.startDate.startDateTime", source = "startDateTime")
-    Booking fromDTO(BookingDTO bookingDTO);
 }

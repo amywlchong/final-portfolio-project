@@ -5,7 +5,6 @@ public class UserDTO {
     private Integer id;
     private String name;
     private String email;
-    private String photo;
     private Boolean active;
     private String userRole;
 
@@ -15,11 +14,10 @@ public class UserDTO {
     }
 
     // Parameterized constructor
-    public UserDTO(Integer id, String name, String email, String photo, Boolean active, String userRole) {
+    public UserDTO(Integer id, String name, String email, Boolean active, String userRole) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.photo = photo;
         this.active = active;
         this.userRole = userRole;
     }
@@ -50,14 +48,6 @@ public class UserDTO {
         this.email = email;
     }
 
-    public String getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(String photo) {
-        this.photo = photo;
-    }
-
     public Boolean getActive() {
         return active;
     }
@@ -76,7 +66,6 @@ public class UserDTO {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", photo='" + photo + '\'' +
                 ", active=" + active +
                 ", userRole=" + userRole +
                 '}';

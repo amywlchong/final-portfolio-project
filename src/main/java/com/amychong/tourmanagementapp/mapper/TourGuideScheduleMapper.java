@@ -1,7 +1,7 @@
 package com.amychong.tourmanagementapp.mapper;
 
 import com.amychong.tourmanagementapp.dto.TourGuideScheduleDTO;
-import com.amychong.tourmanagementapp.entity.TourGuideSchedule;
+import com.amychong.tourmanagementapp.entity.schedule.TourGuideSchedule;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;

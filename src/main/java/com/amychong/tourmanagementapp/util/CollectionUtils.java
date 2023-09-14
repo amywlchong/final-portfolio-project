@@ -1,6 +1,6 @@
 package com.amychong.tourmanagementapp.util;
 
-import com.amychong.tourmanagementapp.entity.DeepCopyable;
+import com.amychong.tourmanagementapp.entity.interfaces.DeepCopyable;
 
 import java.util.Collections;
 import java.util.List;

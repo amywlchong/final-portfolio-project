@@ -1,8 +1,8 @@
 package com.amychong.tourmanagementapp.mapper;
 
 import com.amychong.tourmanagementapp.dto.UserDTO;
-import com.amychong.tourmanagementapp.entity.User;
-import com.amychong.tourmanagementapp.entity.UserRole;
+import com.amychong.tourmanagementapp.entity.user.User;
+import com.amychong.tourmanagementapp.entity.user.UserRole;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel="spring")
