@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/api/users/{userId}/reviews")
 public class UserReviewController {
 
-    private ReviewService reviewService;
+    private final ReviewService reviewService;
 
     @Autowired
     public UserReviewController(ReviewService theReviewService) {

@@ -34,22 +34,22 @@ public class User implements Identifiable<Integer>, Serializable, DeepCopyable {
     @Column(name="active")
     private Boolean active = true;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="role_id")
-    private UserRole userRole;
+    @Enumerated(EnumType.STRING)
+    @Column(name="role")
+    private Role role;
 
     // define constructors
     public User() {
 
     }
 
-    public User(String name, String email, String password, LocalDate passwordChangedDate, Boolean active, UserRole userRole) {
+    public User(String name, String email, String password, LocalDate passwordChangedDate, Boolean active, Role role) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.passwordChangedDate = passwordChangedDate;
         this.active = active;
-        this.userRole = userRole;
+        this.role = role;
     }
 
     // define getters and setters
@@ -102,9 +102,13 @@ public class User implements Identifiable<Integer>, Serializable, DeepCopyable {
         this.active = active;
     }
 
-    public UserRole getUserRole() { return userRole; }
+    public Role getRole() {
+        return role;
+    }
 
-    public void setUserRole(UserRole userRole) { this.userRole = userRole; }
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
     // deepCopy method
     public User deepCopy() {
@@ -120,7 +124,7 @@ public class User implements Identifiable<Integer>, Serializable, DeepCopyable {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", active=" + active +
-                ", userRole=" + userRole +
+                ", role=" + role +
                 '}';
     }
 

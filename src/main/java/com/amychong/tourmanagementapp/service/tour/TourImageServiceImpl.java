@@ -15,8 +15,8 @@ import java.util.Optional;
 @Service
 public class TourImageServiceImpl implements TourImageService{
 
-    private TourImageRepository tourImageRepository;
-    private TourService tourService;
+    private final TourImageRepository tourImageRepository;
+    private final TourService tourService;
 
     @Autowired
     public TourImageServiceImpl(TourImageRepository theTourImageRepository, TourRepository theTourRepository, TourService theTourService) {

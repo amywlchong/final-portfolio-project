@@ -17,9 +17,9 @@ import java.util.List;
 @Service
 public class TourStartDateServiceImpl implements TourStartDateService {
 
-    private TourStartDateRepository tourStartDateRepository;
-    private StartDateRepository startDateRepository;
-    private TourService tourService;
+    private final TourStartDateRepository tourStartDateRepository;
+    private final StartDateRepository startDateRepository;
+    private final TourService tourService;
 
     @Autowired
     public TourStartDateServiceImpl(TourStartDateRepository theTourStartDateRepository, StartDateRepository theStartDateRepository, TourService theTourService) {

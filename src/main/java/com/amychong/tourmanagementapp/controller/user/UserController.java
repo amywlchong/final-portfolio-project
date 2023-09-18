@@ -2,6 +2,7 @@ package com.amychong.tourmanagementapp.controller.user;
 
 import com.amychong.tourmanagementapp.controller.generic.GenericController;
 import com.amychong.tourmanagementapp.dto.UserDTO;
+import com.amychong.tourmanagementapp.entity.user.Role;
 import com.amychong.tourmanagementapp.entity.user.User;
 import com.amychong.tourmanagementapp.mapper.UserMapper;
 import com.amychong.tourmanagementapp.service.user.UserService;
@@ -16,8 +17,8 @@ import java.util.Map;
 @RequestMapping("/api/users")
 public class UserController extends GenericController<User, UserDTO> {
 
-    private UserService userService;
-    private UserMapper userMapper;
+    private final UserService userService;
+    private final UserMapper userMapper;
 
     @Autowired
     public UserController(UserService theUserService, UserMapper theUserMapper) {
@@ -39,8 +40,8 @@ public class UserController extends GenericController<User, UserDTO> {
     }
 
     @PutMapping("/{userId}/role")
-    public ResponseEntity<UserDTO> updateRole(@PathVariable Integer userId, @RequestBody Map<String, String> requestBody) {
-        UserDTO updatedUser = userService.updateRole(userId, requestBody.get("userRole"));
+    public ResponseEntity<UserDTO> updateRole(@PathVariable Integer userId, @RequestBody Map<String, Role> requestBody) {
+        UserDTO updatedUser = userService.updateRole(userId, requestBody.get("role"));
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 

@@ -1,5 +1,7 @@
 package com.amychong.tourmanagementapp.dto;
 
+import com.amychong.tourmanagementapp.entity.user.Role;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -20,7 +22,7 @@ public class ReviewDTO {
     private Integer userId;
     private String userName;
     private Boolean userActive;
-    private String userRole;
+    private Role userRole;
 
     // Tour fields
     private Integer tourId;
@@ -36,7 +38,7 @@ public class ReviewDTO {
     public ReviewDTO() {
     }
 
-    public ReviewDTO(Integer id, String review, Integer rating, LocalDate createdDate, Integer bookingId, Integer userId, String userName, Boolean userActive, String userRole, Integer tourId, String tourName, int tourDuration, String tourRegion, Integer startDateId, LocalDateTime startDateTime) {
+    public ReviewDTO(Integer id, String review, Integer rating, LocalDate createdDate, Integer bookingId, Integer userId, String userName, Boolean userActive, Role userRole, Integer tourId, String tourName, int tourDuration, String tourRegion, Integer startDateId, LocalDateTime startDateTime) {
         this.id = id;
         this.review = review;
         this.rating = rating;
@@ -119,11 +121,11 @@ public class ReviewDTO {
         this.userActive = userActive;
     }
 
-    public String getUserRole() {
+    public Role getUserRole() {
         return userRole;
     }
 
-    public void setUserRole(String userRole) {
+    public void setUserRole(Role userRole) {
         this.userRole = userRole;
     }
 

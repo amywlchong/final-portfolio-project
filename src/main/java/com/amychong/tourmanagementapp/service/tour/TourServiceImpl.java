@@ -21,11 +21,11 @@ import java.util.*;
 @Service
 public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements TourService {
 
-    private TourRepository tourRepository;
-    private TourImageRepository tourImageRepository;
-    private PointOfInterestRepository pointOfInterestRepository;
-    private StartDateRepository startDateRepository;
-    private BookingRepository bookingRepository;
+    private final TourRepository tourRepository;
+    private final TourImageRepository tourImageRepository;
+    private final PointOfInterestRepository pointOfInterestRepository;
+    private final StartDateRepository startDateRepository;
+    private final BookingRepository bookingRepository;
 
     @Autowired
     public TourServiceImpl(TourRepository theTourRepository, TourImageRepository theTourImageRepository, PointOfInterestRepository thePointOfInterestRepository, StartDateRepository theStartDateRepository, BookingRepository theBookingRepository) {

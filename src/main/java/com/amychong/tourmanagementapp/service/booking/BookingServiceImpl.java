@@ -27,15 +27,15 @@ import java.util.Objects;
 @Service
 public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingDTO> implements BookingService {
 
-    private BookingRepository bookingRepository;
-    private BookingMapper bookingMapper;
-    private UserService userService;
-    private TourStartDateService tourStartDateService;
-    private TourService tourService;
+    private final BookingRepository bookingRepository;
+    private final BookingMapper bookingMapper;
+    private final UserService userService;
+    private final TourStartDateService tourStartDateService;
+    private final TourService tourService;
 
     @Autowired
     public BookingServiceImpl(BookingRepository theBookingRepository, BookingMapper theBookingMapper, UserService theUserService, TourStartDateService theTourStartDateService, TourService theTourService) {
-        super(theBookingRepository, theBookingMapper, Booking.class, BookingDTO.class);
+        super(theBookingRepository, Booking.class, BookingDTO.class, theBookingMapper);
         bookingRepository = theBookingRepository;
         bookingMapper = theBookingMapper;
         userService = theUserService;

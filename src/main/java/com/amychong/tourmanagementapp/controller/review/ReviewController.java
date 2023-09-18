@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/reviews")
 public class ReviewController extends GenericController<Review, ReviewDTO> {
 
-    private ReviewService reviewService;
+    private final ReviewService reviewService;
 
     @Autowired
     public ReviewController(ReviewService theReviewService) {

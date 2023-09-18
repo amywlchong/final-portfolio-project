@@ -11,20 +11,19 @@ import java.util.List;
 
 public abstract class GenericServiceImpl<T extends Identifiable<Integer>, DTO> implements GenericService<T, DTO> {
 
-    private JpaRepository<T, Integer> repository;
-    protected GenericMapper<T, DTO> mapper;
-
-    private Class<T> entityClass;
-    private Class<DTO> dtoClass;
+    private final JpaRepository<T, Integer> repository;
+    private final Class<T> entityClass;
+    private final Class<DTO> dtoClass;
+    private final GenericMapper<T, DTO> mapper;
 
     public GenericServiceImpl(JpaRepository<T, Integer> repository, Class<T> entityClass, Class<DTO> dtoClass) {
+        this(repository, entityClass, dtoClass, null);
+    }
+
+    public GenericServiceImpl(JpaRepository<T, Integer> repository, Class<T> entityClass, Class<DTO> dtoClass, GenericMapper<T, DTO> mapper) {
         this.repository = repository;
         this.entityClass = entityClass;
         this.dtoClass = dtoClass;
-    }
-
-    public GenericServiceImpl(JpaRepository<T, Integer> repository, GenericMapper<T, DTO> mapper, Class<T> entityClass, Class<DTO> dtoClass) {
-        this(repository, entityClass, dtoClass);
         this.mapper = mapper;
     }
 

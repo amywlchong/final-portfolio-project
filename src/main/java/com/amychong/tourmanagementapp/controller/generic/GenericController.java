@@ -9,7 +9,7 @@ import java.util.List;
 
 public abstract class GenericController<T, DTO> {
 
-    protected GenericService<T, DTO> service;
+    private final GenericService<T, DTO> service;
 
     public GenericController(GenericService<T, DTO> service) {
         this.service = service;

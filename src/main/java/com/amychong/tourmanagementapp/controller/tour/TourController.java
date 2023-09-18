@@ -21,10 +21,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/tours")
 public class TourController extends GenericController<Tour, Tour> {
-    private TourService tourService;
-    private TourImageService tourImageService;
-    private TourPointOfInterestService tourPointOfInterestService;
-    private TourStartDateService tourStartDateService;
+    private final TourService tourService;
+    private final TourImageService tourImageService;
+    private final TourPointOfInterestService tourPointOfInterestService;
+    private final TourStartDateService tourStartDateService;
 
     @Autowired
     public TourController(TourService theTourService, TourImageService theTourImageService, TourPointOfInterestService theTourPointOfInterestService, TourStartDateService theTourStartDateService) {

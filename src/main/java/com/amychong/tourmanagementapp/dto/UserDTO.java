@@ -1,12 +1,14 @@
 package com.amychong.tourmanagementapp.dto;
 
+import com.amychong.tourmanagementapp.entity.user.Role;
+
 public class UserDTO {
 
     private Integer id;
     private String name;
     private String email;
     private Boolean active;
-    private String userRole;
+    private Role role;
 
     // Default constructor
     public UserDTO() {
@@ -14,12 +16,12 @@ public class UserDTO {
     }
 
     // Parameterized constructor
-    public UserDTO(Integer id, String name, String email, Boolean active, String userRole) {
+    public UserDTO(Integer id, String name, String email, Boolean active, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.active = active;
-        this.userRole = userRole;
+        this.role = role;
     }
 
     // Getters and setters
@@ -54,9 +56,13 @@ public class UserDTO {
 
     public void setActive(Boolean active) { this.active = active; }
 
-    public String getUserRole() { return userRole; }
+    public Role getRole() {
+        return role;
+    }
 
-    public void setUserRole(String userRole) { this.userRole = userRole; }
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
     // toString method
 
@@ -67,7 +73,7 @@ public class UserDTO {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", active=" + active +
-                ", userRole=" + userRole +
+                ", role=" + role +
                 '}';
     }
 }

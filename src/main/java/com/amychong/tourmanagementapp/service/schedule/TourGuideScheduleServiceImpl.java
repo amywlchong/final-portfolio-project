@@ -21,14 +21,14 @@ import java.util.List;
 @Service
 public class TourGuideScheduleServiceImpl extends GenericServiceImpl<TourGuideSchedule, TourGuideScheduleDTO> implements TourGuideScheduleService {
 
-    private TourGuideScheduleRepository tourGuideScheduleRepository;
-    private TourGuideScheduleMapper tourGuideScheduleMapper;
-    private UserService userService;
-    private TourStartDateService tourStartDateService;
+    private final TourGuideScheduleRepository tourGuideScheduleRepository;
+    private final TourGuideScheduleMapper tourGuideScheduleMapper;
+    private final UserService userService;
+    private final TourStartDateService tourStartDateService;
 
     @Autowired
     public TourGuideScheduleServiceImpl(TourGuideScheduleRepository theTourGuideScheduleRepository, TourGuideScheduleMapper theTourGuideScheduleMapper, UserService theUserService, TourStartDateService theTourStartDateService) {
-        super(theTourGuideScheduleRepository, theTourGuideScheduleMapper, TourGuideSchedule.class, TourGuideScheduleDTO.class);
+        super(theTourGuideScheduleRepository, TourGuideSchedule.class, TourGuideScheduleDTO.class, theTourGuideScheduleMapper);
         tourGuideScheduleRepository = theTourGuideScheduleRepository;
         tourGuideScheduleMapper = theTourGuideScheduleMapper;
         userService = theUserService;

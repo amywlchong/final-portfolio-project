@@ -1,5 +1,7 @@
 package com.amychong.tourmanagementapp.dto;
 
+import com.amychong.tourmanagementapp.entity.user.Role;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,7 +26,7 @@ public class BookingDTO {
     private Integer userId;
     private String userName;
     private Boolean userActive;
-    private String userRole;
+    private Role userRole;
 
     // Tour fields
     private Integer tourId;
@@ -40,7 +42,7 @@ public class BookingDTO {
     public BookingDTO() {
     }
 
-    public BookingDTO(Integer id, BigDecimal unitPrice, BigDecimal totalPrice, boolean paid, String transactionId, int numberOfParticipants, LocalDate createdDate, Integer userId, String userName, Boolean userActive, String userRole, Integer tourId, String tourName, int tourDuration, String tourRegion, Integer startDateId, LocalDateTime startDateTime) {
+    public BookingDTO(Integer id, BigDecimal unitPrice, BigDecimal totalPrice, boolean paid, String transactionId, int numberOfParticipants, LocalDate createdDate, Integer userId, String userName, Boolean userActive, Role userRole, Integer tourId, String tourName, int tourDuration, String tourRegion, Integer startDateId, LocalDateTime startDateTime) {
         this.id = id;
         this.unitPrice = unitPrice;
         this.totalPrice = totalPrice;
@@ -141,11 +143,11 @@ public class BookingDTO {
         this.userActive = userActive;
     }
 
-    public String getUserRole() {
+    public Role getUserRole() {
         return userRole;
     }
 
-    public void setUserRole(String userRole) {
+    public void setUserRole(Role userRole) {
         this.userRole = userRole;
     }
 

@@ -17,7 +17,7 @@ import java.util.Map;
 @RequestMapping("/api/payments")
 public class PaymentController {
 
-    private PaymentService paymentService;
+    private final PaymentService paymentService;
 
     @Autowired
     public PaymentController(PayPalServiceImpl thePayPalService, PaymentService thePaymentService) {

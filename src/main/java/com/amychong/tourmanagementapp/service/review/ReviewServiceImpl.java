@@ -21,14 +21,14 @@ import java.util.Optional;
 @Service
 public class ReviewServiceImpl extends GenericServiceImpl<Review, ReviewDTO> implements ReviewService {
 
-    private ReviewRepository reviewRepository;
-    private ReviewMapper reviewMapper;
-    private BookingRepository bookingRepository;
-    private TourService tourService;
+    private final ReviewRepository reviewRepository;
+    private final ReviewMapper reviewMapper;
+    private final BookingRepository bookingRepository;
+    private final TourService tourService;
 
     @Autowired
     public ReviewServiceImpl(ReviewRepository theReviewRepository, ReviewMapper theReviewMapper, BookingRepository theBookingRepository, TourService theTourService) {
-        super(theReviewRepository, theReviewMapper, Review.class, ReviewDTO.class);
+        super(theReviewRepository, Review.class, ReviewDTO.class, theReviewMapper);
         reviewRepository = theReviewRepository;
         reviewMapper = theReviewMapper;
         bookingRepository = theBookingRepository;

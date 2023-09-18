@@ -11,7 +11,7 @@ public interface TourGuideScheduleRepository extends JpaRepository<TourGuideSche
 
     @Query("SELECT new com.amychong.tourmanagementapp.dto.TourGuideScheduleDTO(" +
             "tgs.id, " +
-            "u.id, u.name, u.active, ur.role, " +
+            "u.id, u.name, u.active, u.role, " +
             "t.id, t.name, t.duration, t.region, " +
             "sd.id, sd.startDateTime) " +
             "FROM TourStartDate tsd " +
@@ -19,7 +19,6 @@ public interface TourGuideScheduleRepository extends JpaRepository<TourGuideSche
             "LEFT JOIN tsd.startDate sd " +
             "LEFT JOIN tsd.tourGuideSchedules tgs " +
             "LEFT JOIN tgs.user u " +
-            "LEFT JOIN u.userRole ur " +
             "ORDER BY tgs.id")
     List<TourGuideScheduleDTO> findAllDTO();
 

@@ -13,9 +13,9 @@ import java.io.IOException;
 @Service
 public class PaymentServiceImpl implements PaymentService{
 
-    private PayPalService payPalService;
+    private final PayPalService payPalService;
 
-    private BookingService bookingService;
+    private final BookingService bookingService;
 
     @Autowired
     public PaymentServiceImpl(PayPalService thePayPalService, BookingService theBookingService) {

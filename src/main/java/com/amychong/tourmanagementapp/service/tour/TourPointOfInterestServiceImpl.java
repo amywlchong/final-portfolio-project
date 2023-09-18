@@ -15,9 +15,9 @@ import java.util.List;
 @Service
 public class TourPointOfInterestServiceImpl implements TourPointOfInterestService{
 
-    private PointOfInterestRepository pointOfInterestRepository;
-    private TourPointOfInterestRepository tourPointOfInterestRepository;
-    private TourService tourService;
+    private final PointOfInterestRepository pointOfInterestRepository;
+    private final TourPointOfInterestRepository tourPointOfInterestRepository;
+    private final TourService tourService;
 
     @Autowired
     public TourPointOfInterestServiceImpl(PointOfInterestRepository thePointOfInterestRepository, TourPointOfInterestRepository theTourPointOfInterestRepository, TourService theTourService) {

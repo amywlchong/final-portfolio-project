@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,13 +20,14 @@ import java.util.*;
 @Service
 public class PayPalServiceImpl implements PayPalService {
 
-    @Value("${paypal.api.url}")
-    private String paypalApiUrl;
+    private final String paypalApiUrl;
 
-    @Value("${paypal.authorization.token}")
-    private String paypalAuthToken;
+    private final String paypalAuthToken;
 
-    public PayPalServiceImpl() {
+    @Autowired
+    public PayPalServiceImpl(@Value("${paypal.api.url}") String paypalApiUrl, @Value("${paypal.authorization.token}") String paypalAuthToken) {
+        this.paypalApiUrl = paypalApiUrl;
+        this.paypalAuthToken = paypalAuthToken;
     }
 
     @Override

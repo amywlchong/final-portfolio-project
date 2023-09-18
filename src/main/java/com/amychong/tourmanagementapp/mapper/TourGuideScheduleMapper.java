@@ -15,7 +15,7 @@ public interface TourGuideScheduleMapper extends GenericMapper<TourGuideSchedule
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "user.name", target = "userName")
     @Mapping(source = "user.active", target = "userActive")
-    @Mapping(source = "user.userRole", target = "userRole")
+    @Mapping(source = "user.role", target = "userRole")
     @Mapping(source = "tourStartDate.tour.id", target = "tourId")
     @Mapping(source = "tourStartDate.tour.name", target = "tourName")
     @Mapping(source = "tourStartDate.tour.duration", target = "tourDuration")

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/tour-guide-schedules")
 public class TourGuideScheduleController extends GenericController<TourGuideSchedule, TourGuideScheduleDTO> {
 
-    private TourGuideScheduleService tourGuideScheduleService;
+    private final TourGuideScheduleService tourGuideScheduleService;
 
     @Autowired
     public TourGuideScheduleController(TourGuideScheduleService theTourGuideScheduleService) {

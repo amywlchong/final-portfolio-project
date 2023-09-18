@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/api/users/{userId}/bookings")
 public class UserBookingController {
 
-    private BookingService bookingService;
+    private final BookingService bookingService;
 
     @Autowired
     public UserBookingController(BookingService theBookingService) {

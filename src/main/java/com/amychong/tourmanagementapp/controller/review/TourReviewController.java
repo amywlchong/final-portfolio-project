@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/api/tours/{tourId}/reviews")
 public class TourReviewController {
 
-    private ReviewService reviewService;
+    private final ReviewService reviewService;
 
     @Autowired
     public TourReviewController(ReviewService theReviewService) {

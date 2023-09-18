@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/bookings")
 public class BookingController extends GenericController<Booking, BookingDTO> {
 
-    private BookingService bookingService;
+    private final BookingService bookingService;
 
     @Autowired
     public BookingController(BookingService theBookingService) {

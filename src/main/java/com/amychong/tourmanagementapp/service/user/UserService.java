@@ -1,6 +1,7 @@
 package com.amychong.tourmanagementapp.service.user;
 
 import com.amychong.tourmanagementapp.dto.UserDTO;
+import com.amychong.tourmanagementapp.entity.user.Role;
 import com.amychong.tourmanagementapp.entity.user.User;
 import com.amychong.tourmanagementapp.service.generic.GenericService;
 
@@ -12,7 +13,7 @@ public interface UserService extends GenericService<User, UserDTO> {
 
     UserDTO updateActiveStatus(Integer theId, Boolean isActive);
 
-    UserDTO updateRole(Integer theId, String newRole);
+    UserDTO updateRole(Integer theId, Role newRole);
 
     void validateUserRole(Integer userId, String exceptionMessage, String... expectedRoles);
 }

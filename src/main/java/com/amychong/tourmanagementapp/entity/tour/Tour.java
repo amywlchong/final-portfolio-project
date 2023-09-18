@@ -287,11 +287,6 @@ public class Tour implements Identifiable<Integer>, Serializable, DeepCopyable {
                 '}';
     }
 
-    // define enum
-    public enum Difficulty {
-        easy, medium, difficult
-    }
-
     // define equals and hashCode
     @Override
     public boolean equals(Object o) {

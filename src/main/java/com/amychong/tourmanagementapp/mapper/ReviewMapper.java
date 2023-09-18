@@ -13,7 +13,7 @@ public interface ReviewMapper extends GenericMapper<Review, ReviewDTO> {
     @Mapping(source = "booking.user.id", target = "userId")
     @Mapping(source = "booking.user.name", target = "userName")
     @Mapping(source = "booking.user.active", target = "userActive")
-    @Mapping(source = "booking.user.userRole", target = "userRole")
+    @Mapping(source = "booking.user.role", target = "userRole")
     @Mapping(source = "booking.tourStartDate.tour.id", target = "tourId")
     @Mapping(source = "booking.tourStartDate.tour.name", target = "tourName")
     @Mapping(source = "booking.tourStartDate.tour.duration", target = "tourDuration")
