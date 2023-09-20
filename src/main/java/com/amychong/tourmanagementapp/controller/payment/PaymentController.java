@@ -6,6 +6,7 @@ import com.amychong.tourmanagementapp.service.payment.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ public class PaymentController {
         paymentService = thePaymentService;
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping("/initiate")
     public ResponseEntity<String> initiatePayment(@RequestBody Map<String, Integer> requestBody) {
         Integer bookingId = requestBody.get("bookingId");
@@ -36,6 +38,7 @@ public class PaymentController {
         }
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping("/execute")
     public ResponseEntity<String> executePayment(@RequestBody PaymentExecutionRequestDTO requestBody) {
         Integer bookingId = requestBody.getBookingId();

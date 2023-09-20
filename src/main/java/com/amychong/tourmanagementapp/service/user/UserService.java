@@ -9,11 +9,9 @@ public interface UserService extends GenericService<User, UserDTO> {
 
     UserDTO update(Integer theId, User theUser);
 
-    UserDTO updatePassword(Integer theId, String newPassword);
-
     UserDTO updateActiveStatus(Integer theId, Boolean isActive);
 
     UserDTO updateRole(Integer theId, Role newRole);
 
-    void validateUserRole(Integer userId, String exceptionMessage, String... expectedRoles);
+    boolean verifyInputUserHasRole(Integer userId, String... validRoles);
 }

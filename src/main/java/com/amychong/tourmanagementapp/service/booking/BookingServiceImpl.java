@@ -4,9 +4,12 @@ import com.amychong.tourmanagementapp.dto.BookingDTO;
 import com.amychong.tourmanagementapp.entity.booking.Booking;
 import com.amychong.tourmanagementapp.entity.tour.Tour;
 import com.amychong.tourmanagementapp.entity.tour.TourStartDate;
+import com.amychong.tourmanagementapp.entity.user.Role;
 import com.amychong.tourmanagementapp.exception.NotFoundException;
+import com.amychong.tourmanagementapp.exception.PermissionDeniedException;
 import com.amychong.tourmanagementapp.mapper.BookingMapper;
 import com.amychong.tourmanagementapp.repository.booking.BookingRepository;
+import com.amychong.tourmanagementapp.service.auth.AuthenticationService;
 import com.amychong.tourmanagementapp.service.generic.GenericServiceImpl;
 import com.amychong.tourmanagementapp.service.helper.UserHelper;
 import com.amychong.tourmanagementapp.service.helper.ValidationHelper;
@@ -32,15 +35,17 @@ public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingDTO> 
     private final UserService userService;
     private final TourStartDateService tourStartDateService;
     private final TourService tourService;
+    private final AuthenticationService authService;
 
     @Autowired
-    public BookingServiceImpl(BookingRepository theBookingRepository, BookingMapper theBookingMapper, UserService theUserService, TourStartDateService theTourStartDateService, TourService theTourService) {
+    public BookingServiceImpl(BookingRepository theBookingRepository, BookingMapper theBookingMapper, UserService theUserService, TourStartDateService theTourStartDateService, TourService theTourService, AuthenticationService theAuthService) {
         super(theBookingRepository, Booking.class, BookingDTO.class, theBookingMapper);
         bookingRepository = theBookingRepository;
         bookingMapper = theBookingMapper;
         userService = theUserService;
         tourStartDateService = theTourStartDateService;
         tourService = theTourService;
+        authService = theAuthService;
     }
 
     @Override
@@ -70,7 +75,7 @@ public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingDTO> 
     @Transactional
     public BookingDTO create(Booking inputBooking) {
         ValidationHelper.validateNotNull(inputBooking, "Booking must not be null.");
-        validateUserRole(inputBooking);
+        validateUser(inputBooking);
         TourStartDate dbTourStartDate = validateTourStartDateAndFindFromDB(inputBooking);
         validateAvailableSpacesConstraint(dbTourStartDate, inputBooking.getNumberOfParticipants());
 
@@ -85,7 +90,7 @@ public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingDTO> 
     @Transactional
     public BookingDTO update(Integer inputBookingId, Booking inputBooking) {
         ValidationHelper.validateNotNull(inputBooking, "Booking must not be null.");
-        validateUserRole(inputBooking);
+        validateUser(inputBooking);
         TourStartDate dbTourStartDate = validateTourStartDateAndFindFromDB(inputBooking);
         validateAvailableSpacesConstraint(dbTourStartDate, inputBooking.getNumberOfParticipants());
 
@@ -111,9 +116,15 @@ public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingDTO> 
         }
     }
 
-    private void validateUserRole(Booking inputBooking) {
+    private void validateUser(Booking inputBooking) {
         Integer inputUserId = UserHelper.extractUserId(inputBooking);
-        userService.validateUserRole(inputUserId, "User must be a customer", "ROLE_CUSTOMER");
+
+        if (authService.verifyAuthenticatedUserHasRole(Role.ROLE_CUSTOMER) && !authService.verifyAuthenticatedUserHasId(inputUserId)) {
+            throw new PermissionDeniedException("Customer can only create or update bookings for themselves.");
+        }
+        if (!userService.verifyInputUserHasRole(inputUserId, "ROLE_CUSTOMER")) {
+            throw new RuntimeException("User associated with booking must be a customer");
+        }
     }
 
     private TourStartDate validateTourStartDateAndFindFromDB(Booking inputBooking) {

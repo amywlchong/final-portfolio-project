@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,11 +42,35 @@ public class TourGuideScheduleServiceImpl extends GenericServiceImpl<TourGuideSc
     }
 
     @Override
+    public List<TourGuideScheduleDTO> findByUserId(Integer theUserId) {
+        ValidationHelper.validateId(theUserId);
+
+        return tourGuideScheduleRepository.findByUserId(theUserId);
+    }
+
+    @Override
+    public List<TourGuideScheduleDTO> findByTourId(Integer theTourId) {
+        ValidationHelper.validateId(theTourId);
+
+        return tourGuideScheduleRepository.findByTourId(theTourId);
+    }
+
+    @Override
+    public List<TourGuideScheduleDTO> findSchedulesWithinRange(LocalDate startDate, LocalDate endDate) {
+        ValidationHelper.validateNotNull(startDate, "startDate must not be null.");
+        ValidationHelper.validateNotNull(endDate, "endDate must not be null.");
+
+        return tourGuideScheduleRepository.findSchedulesWithinRange(startDate, endDate);
+    }
+
+    @Override
     @Transactional
     public TourGuideScheduleDTO create(TourGuideSchedule inputTourGuideSchedule) {
         ValidationHelper.validateNotNull(inputTourGuideSchedule, "Tour guide schedule must not be null.");
         Integer userId = UserHelper.extractUserId(inputTourGuideSchedule);
-        userService.validateUserRole(userId, "User must be a guide or lead guide", "ROLE_GUIDE", "ROLE_LEAD_GUIDE");
+        if (!userService.verifyInputUserHasRole(userId, "ROLE_GUIDE", "ROLE_LEAD_GUIDE")) {
+            throw new RuntimeException("User associated with schedule must be a guide or lead guide");
+        }
 
         Integer inputTourId = TourStartDateHelper.extractTourId(inputTourGuideSchedule);
         LocalDateTime inputStartDateTime = TourStartDateHelper.extractStartDateTime(inputTourGuideSchedule);

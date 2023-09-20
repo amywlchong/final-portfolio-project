@@ -2,7 +2,7 @@ package com.amychong.tourmanagementapp.service.booking;
 
 import com.amychong.tourmanagementapp.dto.BookingDTO;
 import com.amychong.tourmanagementapp.entity.booking.Booking;
-import com.amychong.tourmanagementapp.entity.tour.TourStartDate;
+import com.amychong.tourmanagementapp.entity.user.UserDetails;
 import com.amychong.tourmanagementapp.service.generic.GenericService;
 
 import java.util.List;

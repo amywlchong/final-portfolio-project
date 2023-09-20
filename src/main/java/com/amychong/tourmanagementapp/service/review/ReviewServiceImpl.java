@@ -1,15 +1,21 @@
 package com.amychong.tourmanagementapp.service.review;
 
 import com.amychong.tourmanagementapp.dto.ReviewDTO;
+import com.amychong.tourmanagementapp.entity.booking.Booking;
 import com.amychong.tourmanagementapp.entity.review.Review;
 import com.amychong.tourmanagementapp.entity.tour.Tour;
+import com.amychong.tourmanagementapp.entity.user.Role;
 import com.amychong.tourmanagementapp.exception.NotFoundException;
+import com.amychong.tourmanagementapp.exception.PermissionDeniedException;
 import com.amychong.tourmanagementapp.mapper.ReviewMapper;
 import com.amychong.tourmanagementapp.repository.booking.BookingRepository;
 import com.amychong.tourmanagementapp.repository.review.ReviewRepository;
+import com.amychong.tourmanagementapp.service.auth.AuthenticationService;
+import com.amychong.tourmanagementapp.service.helper.UserHelper;
 import com.amychong.tourmanagementapp.service.tour.TourService;
 import com.amychong.tourmanagementapp.service.helper.ValidationHelper;
 import com.amychong.tourmanagementapp.service.generic.GenericServiceImpl;
+import com.amychong.tourmanagementapp.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,14 +31,16 @@ public class ReviewServiceImpl extends GenericServiceImpl<Review, ReviewDTO> imp
     private final ReviewMapper reviewMapper;
     private final BookingRepository bookingRepository;
     private final TourService tourService;
+    private final AuthenticationService authService;
 
     @Autowired
-    public ReviewServiceImpl(ReviewRepository theReviewRepository, ReviewMapper theReviewMapper, BookingRepository theBookingRepository, TourService theTourService) {
+    public ReviewServiceImpl(ReviewRepository theReviewRepository, ReviewMapper theReviewMapper, BookingRepository theBookingRepository, TourService theTourService, AuthenticationService theAuthService) {
         super(theReviewRepository, Review.class, ReviewDTO.class, theReviewMapper);
         reviewRepository = theReviewRepository;
         reviewMapper = theReviewMapper;
         bookingRepository = theBookingRepository;
         tourService = theTourService;
+        authService = theAuthService;
     }
 
     @Override
@@ -56,9 +64,8 @@ public class ReviewServiceImpl extends GenericServiceImpl<Review, ReviewDTO> imp
     public ReviewDTO create(Review inputReview) {
         ValidationHelper.validateNotNull(inputReview, "Review must not be null.");
         ValidationHelper.validateNotNull(inputReview.getBooking(), "Booking must not be null.");
-        if (!bookingRepository.existsById(inputReview.getBooking().getId())) {
-            throw new NotFoundException("Booking not found. Review cannot be created without an associated booking.");
-        }
+        Booking dbBooking = validateBookingAndFindFromDB(inputReview.getBooking().getId());
+        validateUser(dbBooking.getUser().getId());
 
         Review copyOfInputReview = inputReview.deepCopy();
         copyOfInputReview.setId(0);
@@ -75,16 +82,24 @@ public class ReviewServiceImpl extends GenericServiceImpl<Review, ReviewDTO> imp
     @Transactional
     public void deleteById(Integer inputReviewId) {
         ValidationHelper.validateId(inputReviewId);
-
-        Optional<Review> dbReview = reviewRepository.findById(inputReviewId);
-        if (!dbReview.isPresent()) {
-            throw new NotFoundException("Did not find review id - " + inputReviewId);
-        }
-        Review reviewToBeDeleted = dbReview.get();
+        Review reviewToBeDeleted = reviewRepository.findById(inputReviewId)
+                .orElseThrow(() -> new NotFoundException("Did not find review id - " + inputReviewId));
+        validateUser(reviewToBeDeleted.getBooking().getUser().getId());
 
         Tour associatedTour = reviewToBeDeleted.getBooking().getTourStartDate().getTour();
         tourService.updateTourRatingsAfterDeletingReview(associatedTour.deepCopy(), reviewToBeDeleted.getRating());
 
         reviewRepository.deleteById(inputReviewId);
+    }
+
+    private Booking validateBookingAndFindFromDB(Integer bookingId) {
+        return bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Booking not found. Review cannot be created without an associated booking."));
+    }
+
+    private void validateUser(Integer userId) {
+        if (authService.verifyAuthenticatedUserHasRole(Role.ROLE_CUSTOMER) && !authService.verifyAuthenticatedUserHasId(userId)) {
+            throw new PermissionDeniedException("Customer can only create or delete reviews for their own bookings.");
+        }
     }
 }
