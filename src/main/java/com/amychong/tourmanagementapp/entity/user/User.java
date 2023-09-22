@@ -3,6 +3,10 @@ package com.amychong.tourmanagementapp.entity.user;
 import com.amychong.tourmanagementapp.entity.interfaces.DeepCopyable;
 import com.amychong.tourmanagementapp.entity.interfaces.Identifiable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -23,21 +27,30 @@ public class User implements UserDetails, Identifiable<Integer>, Serializable, D
     @Column(name="id")
     private Integer id;
 
+    @NotBlank(message = "Name is mandatory")
+    @Size(min = 2, max = 255, message = "Name must be between 2 and 255 characters long")
     @Column(name="name")
     private String name;
 
+    @NotBlank(message = "Email is mandatory")
+    @Size(max = 255, message = "Email should have at most 255 characters")
+    @Email(message = "Email should be valid")
     @Column(name="email")
     private String email;
 
+    @NotBlank(message = "Password is mandatory")
     @Column(name="password_hash")
     private String password;
 
+    @NotNull(message = "Password changed date is mandatory")
     @Column(name="password_changed_date")
     private Long passwordChangedDateInMillis;
 
+    @NotNull(message = "Active status is mandatory")
     @Column(name="active")
     private Boolean active = true;
 
+    @NotNull(message = "Role is mandatory")
     @Enumerated(EnumType.STRING)
     @Column(name="role")
     private Role role;
@@ -193,12 +206,10 @@ public class User implements UserDetails, Identifiable<Integer>, Serializable, D
         private String username;
         private String password;
         private Long passwordChangedDateInMillis;
-        private List<GrantedAuthority> authorities = new ArrayList();
+        private List<GrantedAuthority> authorities = new ArrayList<>();
         private boolean disabled = false;
 
-        private Function<String, String> passwordEncoder = (password) -> {
-            return password;
-        };
+        private Function<String, String> passwordEncoder = password -> password;
 
         private UserBuilder() {
         }
@@ -234,18 +245,18 @@ public class User implements UserDetails, Identifiable<Integer>, Serializable, D
 
         public UserBuilder authorities(GrantedAuthority... authorities) {
             Assert.notNull(authorities, "authorities cannot be null");
-            return this.authorities((Collection) Arrays.asList(authorities));
+            return this.authorities(Arrays.asList(authorities));
         }
 
         public UserBuilder authorities(Collection<? extends GrantedAuthority> authorities) {
             Assert.notNull(authorities, "authorities cannot be null");
-            this.authorities = new ArrayList(authorities);
+            this.authorities = new ArrayList<>(authorities);
             return this;
         }
 
         public UserBuilder authorities(String... authorities) {
             Assert.notNull(authorities, "authorities cannot be null");
-            return this.authorities((Collection) AuthorityUtils.createAuthorityList(authorities));
+            return this.authorities(AuthorityUtils.createAuthorityList(authorities));
         }
 
         public UserBuilder disabled(boolean disabled) {
@@ -254,7 +265,7 @@ public class User implements UserDetails, Identifiable<Integer>, Serializable, D
         }
 
         public User build() {
-            String encodedPassword = (String)this.passwordEncoder.apply(this.password);
+            String encodedPassword = this.passwordEncoder.apply(this.password);
             Role role = Role.valueOf(this.authorities.get(0).getAuthority());
             return new User(this.name, this.username, encodedPassword, this.passwordChangedDateInMillis, !this.disabled, role);
         }

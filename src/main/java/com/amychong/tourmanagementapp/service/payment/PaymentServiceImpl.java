@@ -2,13 +2,11 @@ package com.amychong.tourmanagementapp.service.payment;
 
 import com.amychong.tourmanagementapp.entity.booking.Booking;
 import com.amychong.tourmanagementapp.service.booking.BookingService;
-import com.amychong.tourmanagementapp.service.helper.ValidationHelper;
+import com.amychong.tourmanagementapp.service.EntityLookup;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
 
 @Service
 public class PaymentServiceImpl implements PaymentService{
@@ -17,29 +15,31 @@ public class PaymentServiceImpl implements PaymentService{
 
     private final BookingService bookingService;
 
+    private final EntityLookup entityLookup;
+
     @Autowired
-    public PaymentServiceImpl(PayPalService thePayPalService, BookingService theBookingService) {
+    public PaymentServiceImpl(PayPalService thePayPalService, BookingService theBookingService, EntityLookup theEntityLookup) {
         payPalService = thePayPalService;
         bookingService = theBookingService;
+        entityLookup = theEntityLookup;
     }
 
     @Override
-    public String initiatePayment(Integer inputBookingId) throws IOException {
-        Booking dbBooking = bookingService.validateBookingIdAndFindBooking(inputBookingId);
+    public String initiatePayment(Integer inputBookingId) {
+        Booking dbBooking = entityLookup.findBookingById(inputBookingId);
         return payPalService.createOrder(inputBookingId, dbBooking);
     }
 
     @Override
     @Transactional
-    public String processPaymentAndBooking(Integer inputBookingId, String inputOrderId) throws IOException {
-        bookingService.validateBookingIdAndFindBooking(inputBookingId);
-        ValidationHelper.validateNotBlank(inputOrderId, "Order id must not be null or blank.");
+    public String processPaymentAndBooking(Integer inputBookingId, String inputOrderId) {
+        entityLookup.findBookingById(inputBookingId);   // validate booking exists
 
         JSONObject response = payPalService.capturePaymentForOrder(inputBookingId, inputOrderId);
         String transactionId = response.getString("transactionId");
         String status = response.getString("status");
         Integer responseBookingId = Integer.parseInt(response.getString("referenceId"));
-        Booking dbBooking = bookingService.validateBookingIdAndFindBooking(responseBookingId);
+        Booking dbBooking = entityLookup.findBookingById(responseBookingId);
 
         bookingService.updateOrDeleteBookingAfterPaymentProcessing(dbBooking, transactionId, status);
 

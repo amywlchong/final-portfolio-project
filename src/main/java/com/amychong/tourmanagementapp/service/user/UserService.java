@@ -1,17 +1,17 @@
 package com.amychong.tourmanagementapp.service.user;
 
-import com.amychong.tourmanagementapp.dto.UserDTO;
+import com.amychong.tourmanagementapp.dto.user.UserResponseDTO;
 import com.amychong.tourmanagementapp.entity.user.Role;
 import com.amychong.tourmanagementapp.entity.user.User;
 import com.amychong.tourmanagementapp.service.generic.GenericService;
 
-public interface UserService extends GenericService<User, UserDTO> {
+public interface UserService extends GenericService<User, UserResponseDTO> {
 
-    UserDTO update(Integer theId, User theUser);
+    UserResponseDTO update(Integer theId, User theUser);
 
-    UserDTO updateActiveStatus(Integer theId, Boolean isActive);
+    UserResponseDTO updateActiveStatus(Integer theId, Boolean isActive);
 
-    UserDTO updateRole(Integer theId, Role newRole);
+    UserResponseDTO updateRole(Integer theId, Role newRole);
 
     boolean verifyInputUserHasRole(Integer userId, String... validRoles);
 }

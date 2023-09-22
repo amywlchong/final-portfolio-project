@@ -5,7 +5,6 @@ import com.amychong.tourmanagementapp.entity.tour.Tour;
 import com.amychong.tourmanagementapp.entity.tour.TourPointOfInterest;
 import com.amychong.tourmanagementapp.repository.tour.PointOfInterestRepository;
 import com.amychong.tourmanagementapp.repository.tour.TourPointOfInterestRepository;
-import com.amychong.tourmanagementapp.service.helper.ValidationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +28,6 @@ public class TourPointOfInterestServiceImpl implements TourPointOfInterestServic
     @Override
     @Transactional
     public List<TourPointOfInterest> updateTourPointsOfInterest(Integer inputTourId, List<TourPointOfInterest> inputTourPointsOfInterest) {
-        ValidationHelper.validateId(inputTourId);
-        ValidationHelper.validateNotNull(inputTourPointsOfInterest, "Tour points of interest must not be null.");
 
         TourUpdateProcessor<TourPointOfInterest, PointOfInterest, String> helper = new TourUpdateProcessor<>();
         helper.inputTourId = inputTourId;

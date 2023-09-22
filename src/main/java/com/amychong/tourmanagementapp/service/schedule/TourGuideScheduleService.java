@@ -1,17 +1,20 @@
 package com.amychong.tourmanagementapp.service.schedule;
 
-import com.amychong.tourmanagementapp.dto.TourGuideScheduleDTO;
+import com.amychong.tourmanagementapp.dto.schedule.ScheduleRequestDTO;
+import com.amychong.tourmanagementapp.dto.schedule.ScheduleResponseDTO;
 import com.amychong.tourmanagementapp.entity.schedule.TourGuideSchedule;
 import com.amychong.tourmanagementapp.service.generic.GenericService;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public interface TourGuideScheduleService extends GenericService<TourGuideSchedule, TourGuideScheduleDTO> {
+public interface TourGuideScheduleService extends GenericService<TourGuideSchedule, ScheduleResponseDTO> {
 
-    List<TourGuideScheduleDTO> findByUserId(Integer theUserId);
+    List<ScheduleResponseDTO> findByUserId(Integer theUserId);
 
-    List<TourGuideScheduleDTO> findByTourId(Integer theTourId);
+    List<ScheduleResponseDTO> findByTourId(Integer theTourId);
 
-    List<TourGuideScheduleDTO> findSchedulesWithinRange(LocalDate startDate, LocalDate endDate);
+    List<ScheduleResponseDTO> findSchedulesWithinRange(LocalDate startDate, LocalDate endDate);
+
+    ScheduleResponseDTO create(ScheduleRequestDTO inputTourGuideSchedule);
 }

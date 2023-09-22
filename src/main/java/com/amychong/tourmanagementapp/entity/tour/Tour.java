@@ -3,6 +3,7 @@ package com.amychong.tourmanagementapp.entity.tour;
 import com.amychong.tourmanagementapp.entity.interfaces.DeepCopyable;
 import com.amychong.tourmanagementapp.entity.interfaces.Identifiable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
@@ -22,31 +23,45 @@ public class Tour implements Identifiable<Integer>, Serializable, DeepCopyable {
     @Column(name="id")
     private Integer id;
 
+    @NotBlank(message = "Name is required")
+    @Size(max = 45, message = "Name should have at most 45 characters")
     @Column(name="name")
     private String name;
 
+    @Positive(message = "Duration must be positive")
     @Column(name="duration")
     private int duration;
 
+    @Positive(message = "Max group size must be positive")
     @Column(name="max_group_size")
     private int maxGroupSize;
 
+    @NotNull(message = "Difficulty is required")
     @Enumerated(EnumType.STRING)
     @Column(name="difficulty")
     private Difficulty difficulty;
 
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Price must be positive")
     @Column(name="price", precision = 10, scale = 2)
     private BigDecimal price;
 
+    @NotBlank(message = "Summary is required")
+    @Size(max = 255, message = "Summary should have at most 255 characters")
     @Column(name="summary")
     private String summary;
 
+    @Size(max = 4000, message = "Description should have at most 4000 characters")
     @Column(name="description")
     private String description;
 
+    @NotBlank(message = "Region is required")
+    @Size(max = 45, message = "Region should have at most 45 characters")
     @Column(name="region")
     private String region;
 
+    @NotBlank(message = "Start address is required")
+    @Size(max = 255, message = "Start address should have at most 255 characters")
     @Column(name="start_address")
     private String startAddress;
 
@@ -56,6 +71,8 @@ public class Tour implements Identifiable<Integer>, Serializable, DeepCopyable {
     @Column(name="ratings_count")
     private int ratingsCount = 0;
 
+    @DecimalMin(value = "1.0", message = "Average of ratings should be at least 1")
+    @DecimalMax(value = "5.0", message = "Average of ratings should be at most 5")
     @Column(name="ratings_average")
     private Float ratingsAverage;
 

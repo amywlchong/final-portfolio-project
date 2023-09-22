@@ -1,26 +1,22 @@
-package com.amychong.tourmanagementapp.dto;
+package com.amychong.tourmanagementapp.dto.review;
 
 import com.amychong.tourmanagementapp.entity.user.Role;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class BookingDTO {
+public class ReviewResponseDTO {
 
     private Integer id;
 
-    private BigDecimal unitPrice;
+    private String review;
 
-    private BigDecimal totalPrice;
+    private Integer rating;
 
-    private boolean paid;
+    private LocalDate createdDate = LocalDate.now();
 
-    private String transactionId;
-
-    private int numberOfParticipants;
-
-    private LocalDate createdDate;
+    // Booking field
+    private Integer bookingId;
 
     // User fields
     private Integer userId;
@@ -39,17 +35,15 @@ public class BookingDTO {
     private LocalDateTime startDateTime;
 
     // constructors
-    public BookingDTO() {
+    public ReviewResponseDTO() {
     }
 
-    public BookingDTO(Integer id, BigDecimal unitPrice, BigDecimal totalPrice, boolean paid, String transactionId, int numberOfParticipants, LocalDate createdDate, Integer userId, String userName, Boolean userActive, Role userRole, Integer tourId, String tourName, int tourDuration, String tourRegion, Integer startDateId, LocalDateTime startDateTime) {
+    public ReviewResponseDTO(Integer id, String review, Integer rating, LocalDate createdDate, Integer bookingId, Integer userId, String userName, Boolean userActive, Role userRole, Integer tourId, String tourName, int tourDuration, String tourRegion, Integer startDateId, LocalDateTime startDateTime) {
         this.id = id;
-        this.unitPrice = unitPrice;
-        this.totalPrice = totalPrice;
-        this.paid = paid;
-        this.transactionId = transactionId;
-        this.numberOfParticipants = numberOfParticipants;
+        this.review = review;
+        this.rating = rating;
         this.createdDate = createdDate;
+        this.bookingId = bookingId;
         this.userId = userId;
         this.userName = userName;
         this.userActive = userActive;
@@ -71,44 +65,20 @@ public class BookingDTO {
         this.id = id;
     }
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
+    public String getReview() {
+        return review;
     }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
+    public void setReview(String review) {
+        this.review = review;
     }
 
-    public BigDecimal getTotalPrice() {
-        return totalPrice;
+    public Integer getRating() {
+        return rating;
     }
 
-    public void setTotalPrice(BigDecimal totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    public boolean isPaid() {
-        return paid;
-    }
-
-    public void setPaid(boolean paid) {
-        this.paid = paid;
-    }
-
-    public String getTransactionId() {
-        return transactionId;
-    }
-
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-    }
-
-    public int getNumberOfParticipants() {
-        return numberOfParticipants;
-    }
-
-    public void setNumberOfParticipants(int numberOfParticipants) {
-        this.numberOfParticipants = numberOfParticipants;
+    public void setRating(Integer rating) {
+        this.rating = rating;
     }
 
     public LocalDate getCreatedDate() {
@@ -117,6 +87,14 @@ public class BookingDTO {
 
     public void setCreatedDate(LocalDate createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public Integer getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(Integer bookingId) {
+        this.bookingId = bookingId;
     }
 
     public Integer getUserId() {
@@ -199,18 +177,15 @@ public class BookingDTO {
         this.startDateTime = startDateTime;
     }
 
-
     // toString method
     @Override
     public String toString() {
-        return "BookingDTO{" +
+        return "ReviewDTO{" +
                 "id=" + id +
-                ", unitPrice=" + unitPrice +
-                ", totalPrice=" + totalPrice +
-                ", paid=" + paid +
-                ", transactionId='" + transactionId + '\'' +
-                ", numberOfParticipants=" + numberOfParticipants +
+                ", review='" + review + '\'' +
+                ", rating=" + rating +
                 ", createdDate=" + createdDate +
+                ", bookingId=" + bookingId +
                 ", userId=" + userId +
                 ", userName='" + userName + '\'' +
                 ", userActive=" + userActive +

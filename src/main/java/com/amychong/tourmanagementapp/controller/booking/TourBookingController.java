@@ -1,7 +1,8 @@
 package com.amychong.tourmanagementapp.controller.booking;
 
-import com.amychong.tourmanagementapp.dto.BookingDTO;
+import com.amychong.tourmanagementapp.dto.booking.BookingResponseDTO;
 import com.amychong.tourmanagementapp.service.booking.BookingService;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +27,8 @@ public class TourBookingController {
 
     @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
     @GetMapping
-    public ResponseEntity<List<BookingDTO>> getByTourId(@PathVariable Integer tourId) {
-        List<BookingDTO> bookingDTOs = bookingService.findByTourId(tourId);
+    public ResponseEntity<List<BookingResponseDTO>> getByTourId(@Min(1) @PathVariable Integer tourId) {
+        List<BookingResponseDTO> bookingDTOs = bookingService.findByTourId(tourId);
         return new ResponseEntity<>(bookingDTOs, HttpStatus.OK);
     }
 }

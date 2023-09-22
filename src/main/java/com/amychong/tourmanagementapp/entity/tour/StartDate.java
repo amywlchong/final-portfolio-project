@@ -3,6 +3,8 @@ package com.amychong.tourmanagementapp.entity.tour;
 import com.amychong.tourmanagementapp.entity.interfaces.DeepCopyable;
 import com.amychong.tourmanagementapp.entity.interfaces.Identifiable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
@@ -21,6 +23,8 @@ public class StartDate implements Identifiable<Integer>, Serializable, DeepCopya
     @Column(name="id")
     private Integer id;
 
+    @NotNull(message = "Start date time is required")
+    @Future(message = "Start date time must be in the future")
     @Column(name="start_date_time")
     private final LocalDateTime startDateTime;
 

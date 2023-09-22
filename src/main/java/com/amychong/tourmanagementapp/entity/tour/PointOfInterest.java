@@ -3,6 +3,8 @@ package com.amychong.tourmanagementapp.entity.tour;
 import com.amychong.tourmanagementapp.entity.interfaces.DeepCopyable;
 import com.amychong.tourmanagementapp.entity.interfaces.Identifiable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
@@ -20,9 +22,13 @@ public class PointOfInterest implements Identifiable<Integer>, Serializable, Dee
     @Column(name="id")
     private Integer id;
 
+    @NotBlank(message = "Name is required")
+    @Size(max = 45, message = "Name should have at most 45 characters")
     @Column(name="name")
     private final String name;
 
+    @NotBlank(message = "Description is required")
+    @Size(max = 255, message = "Description should have at most 255 characters")
     @Column(name="description")
     private String description;
 

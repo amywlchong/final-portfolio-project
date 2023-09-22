@@ -2,10 +2,10 @@ package com.amychong.tourmanagementapp.mapper;
 
 import java.util.List;
 
-public interface GenericMapper<T, DTO> {
+public interface GenericMapper<T, ResponseDTO> {
 
-    DTO toDTO(T entity);
+    ResponseDTO toDTO(T entity);
 
-    List<DTO> toDTOList(List<T> entities);
+    List<ResponseDTO> toDTOList(List<T> entities);
 
 }

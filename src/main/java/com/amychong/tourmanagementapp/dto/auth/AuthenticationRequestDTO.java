@@ -1,13 +1,16 @@
-package com.amychong.tourmanagementapp.dto;
+package com.amychong.tourmanagementapp.dto.auth;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 public class AuthenticationRequestDTO {
 
-    private String email;
+    @NotBlank(message = "Email is mandatory")
+    @Email(message = "Email should be valid")
+    private final String email;
 
-    private String password;
-
-    public AuthenticationRequestDTO() {
-    }
+    @NotBlank(message = "Password is mandatory")
+    private final String password;
 
     public AuthenticationRequestDTO(String email, String password) {
         this.email = email;
@@ -18,16 +21,8 @@ public class AuthenticationRequestDTO {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getPassword() {
         return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     @Override

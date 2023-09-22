@@ -9,6 +9,9 @@ import com.amychong.tourmanagementapp.service.tour.TourImageService;
 import com.amychong.tourmanagementapp.service.tour.TourPointOfInterestService;
 import com.amychong.tourmanagementapp.service.tour.TourService;
 import com.amychong.tourmanagementapp.service.tour.TourStartDateService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tours")
@@ -38,53 +40,53 @@ public class TourController extends GenericController<Tour, Tour> {
 
     @GetMapping("/available")
     public ResponseEntity<List<Tour>> getAvailableToursWithinRange(
-            @RequestParam("startDate") LocalDate startDate,
-            @RequestParam("endDate") LocalDate endDate) {
+            @NotNull @RequestParam("startDate") LocalDate startDate,
+            @NotNull @RequestParam("endDate") LocalDate endDate) {
 
         List<Tour> availableTours = tourService.findAvailableToursWithinRange(startDate, endDate);
 
         return new ResponseEntity<>(availableTours, HttpStatus.OK);
     }
 
-    @Override
     @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
     @PostMapping
-    public ResponseEntity<Tour> add(@RequestBody Tour tour) {
-        return super.add(tour);
+    public ResponseEntity<Tour> add(@NotNull @Valid @RequestBody Tour tour) {
+        Tour newTour = tourService.create(tour);
+        return new ResponseEntity<>(newTour, HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
     @PutMapping("/{tourId}")
-    public ResponseEntity<Tour> updateMainInfo(@PathVariable Integer tourId, @RequestBody Tour tour) {
+    public ResponseEntity<Tour> updateMainInfo(@Min(1) @PathVariable Integer tourId, @NotNull @Valid @RequestBody Tour tour) {
         Tour updatedTour = tourService.updateMainInfo(tourId, tour);
         return new ResponseEntity<>(updatedTour, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
     @PutMapping("/{tourId}/images")
-    public ResponseEntity<List<TourImage>> updateImages(@PathVariable Integer tourId, @RequestBody Map<String, List<TourImage>> requestBody) {
-        List<TourImage> updatedTourImages = tourImageService.updateTourImages(tourId, requestBody.get("tourImages"));
+    public ResponseEntity<List<TourImage>> updateImages(@Min(1) @PathVariable Integer tourId, @NotNull @Valid @RequestBody List<TourImage> tourImages) {
+        List<TourImage> updatedTourImages = tourImageService.updateTourImages(tourId, tourImages);
         return new ResponseEntity<>(updatedTourImages, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
     @PutMapping("/{tourId}/points-of-interest")
-    public ResponseEntity<List<TourPointOfInterest>> updatePointsOfInterest(@PathVariable Integer tourId, @RequestBody Map<String, List<TourPointOfInterest>> requestBody) {
-        List<TourPointOfInterest> updatedTourPOIs = tourPointOfInterestService.updateTourPointsOfInterest(tourId, requestBody.get("tourPointsOfInterest"));
+    public ResponseEntity<List<TourPointOfInterest>> updatePointsOfInterest(@Min(1) @PathVariable Integer tourId, @NotNull @Valid @RequestBody List<TourPointOfInterest> tourPointsOfInterest) {
+        List<TourPointOfInterest> updatedTourPOIs = tourPointOfInterestService.updateTourPointsOfInterest(tourId, tourPointsOfInterest);
         return new ResponseEntity<>(updatedTourPOIs, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
     @PutMapping("/{tourId}/start-dates")
-    public ResponseEntity<List<TourStartDate>> updateStartDates(@PathVariable Integer tourId, @RequestBody Map<String, List<TourStartDate>> requestBody) {
-        List<TourStartDate> updatedTourStartDates = tourStartDateService.updateTourStartDates(tourId, requestBody.get("tourStartDates"));
+    public ResponseEntity<List<TourStartDate>> updateStartDates(@Min(1) @PathVariable Integer tourId, @NotNull @Valid @RequestBody List<TourStartDate> tourStartDates) {
+        List<TourStartDate> updatedTourStartDates = tourStartDateService.updateTourStartDates(tourId, tourStartDates);
         return new ResponseEntity<>(updatedTourStartDates, HttpStatus.OK);
     }
 
     @Override
     @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
     @DeleteMapping("/{tourId}")
-    public ResponseEntity<String> delete(@PathVariable Integer tourId) {
+    public ResponseEntity<String> delete(@Min(1) @PathVariable Integer tourId) {
         return super.delete(tourId);
     }
 }

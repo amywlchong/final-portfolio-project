@@ -1,6 +1,9 @@
 package com.amychong.tourmanagementapp.service.payment;
 
 import com.amychong.tourmanagementapp.entity.booking.Booking;
+import com.amychong.tourmanagementapp.exception.PaymentProcessingException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -20,8 +23,10 @@ import java.util.*;
 @Service
 public class PayPalServiceImpl implements PayPalService {
 
-    private final String paypalApiUrl;
+    private static final int HTTP_OK = HttpURLConnection.HTTP_OK;
+    private static final int HTTP_CREATED = HttpURLConnection.HTTP_CREATED;
 
+    private final String paypalApiUrl;
     private final String paypalAuthToken;
 
     @Autowired
@@ -31,17 +36,59 @@ public class PayPalServiceImpl implements PayPalService {
     }
 
     @Override
-    public String createOrder(Integer inputBookingId, Booking dbBooking) throws IOException {
-        URL url = new URL(paypalApiUrl);
+    public String createOrder(Integer inputBookingId, Booking dbBooking) {
+        try {
+            HttpURLConnection httpConn = setUpConnection(paypalApiUrl, "POST", inputBookingId);
+
+            String requestBody = constructRequestBody(inputBookingId, dbBooking);
+            sendRequest(httpConn, requestBody);
+
+            int responseCode = httpConn.getResponseCode();
+            String fullResponse = extractResponse(httpConn);
+
+            if (responseCode != HTTP_OK) {
+                throw new PaymentProcessingException("Error creating order in PayPal for booking: " + inputBookingId);
+            }
+
+            return extractOrderId(fullResponse);
+
+        } catch (JsonProcessingException e) {
+            throw new PaymentProcessingException("Error serializing order data for booking: " + inputBookingId, e);
+        } catch (JSONException | IOException e) {
+            throw new PaymentProcessingException("Error in communication with PayPal for booking: " + inputBookingId, e);
+        }
+    }
+
+    @Override
+    public JSONObject capturePaymentForOrder(Integer inputBookingId, String inputOrderId) {
+        try {
+            HttpURLConnection httpConn = setUpConnection(paypalApiUrl + inputOrderId + "/capture", "POST", inputBookingId);
+
+            int responseCode = httpConn.getResponseCode();
+            String fullResponse = extractResponse(httpConn);
+
+            if (responseCode != HTTP_OK && responseCode != HTTP_CREATED) {
+                throw new PaymentProcessingException("Error capturing payment in PayPal for order: " + inputOrderId);
+            }
+
+            return extractCaptureResponse(fullResponse);
+
+        } catch (JSONException | IOException e) {
+            throw new PaymentProcessingException("Error in communication with PayPal for order: " + inputOrderId, e);
+        }
+    }
+
+    private HttpURLConnection setUpConnection(String apiUrl, String requestMethod, Integer inputBookingId) throws IOException {
+        URL url = new URL(apiUrl);
         HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-        httpConn.setRequestMethod("POST");
-
-        // Set headers
+        httpConn.setRequestMethod(requestMethod);
         httpConn.setRequestProperty("Content-Type", "application/json");
-        httpConn.setRequestProperty("PayPal-Request-Id", UUID.randomUUID().toString());
+        httpConn.setRequestProperty("PayPal-Request-Id", inputBookingId.toString());
         httpConn.setRequestProperty("Authorization", paypalAuthToken);
+        return httpConn;
+    }
 
-        // Construct payload dynamically and send request
+    private String constructRequestBody(Integer inputBookingId, Booking dbBooking) throws JsonProcessingException {
         Map<String, Object> payload = new HashMap<>();
 
         payload.put("intent", "CAPTURE");
@@ -73,54 +120,43 @@ public class PayPalServiceImpl implements PayPalService {
         payload.put("payment_source", paymentSource);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String requestBody = objectMapper.writeValueAsString(payload);
+        return objectMapper.writeValueAsString(payload);
+    }
 
+    private void sendRequest(HttpURLConnection httpConn, String requestBody) throws IOException {
         httpConn.setDoOutput(true);
         try (OutputStream os = httpConn.getOutputStream();
              OutputStreamWriter writer = new OutputStreamWriter(os)) {
             writer.write(requestBody);
             writer.flush();
         }
-
-        // Process response
-        InputStream responseStream = httpConn.getResponseCode() / 100 == 2
-                ? httpConn.getInputStream()
-                : httpConn.getErrorStream();
-        Scanner s = new Scanner(responseStream).useDelimiter("\\A");
-        String fullResponse = s.hasNext() ? s.next() : "";
-        System.out.println("fullResponse: " + fullResponse);
-
-        // Parse the JSON response and get the 'id' value
-        JSONObject jsonResponse = new JSONObject(fullResponse);
-        String id = jsonResponse.optString("id", "");
-
-        return id;
     }
 
-    @Override
-    public JSONObject capturePaymentForOrder(Integer inputBookingId, String inputOrderId) throws IOException {
-        URL url = new URL(paypalApiUrl + inputOrderId + "/capture");
-        HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-        httpConn.setRequestMethod("POST");
-        httpConn.setRequestProperty("Content-Type", "application/json");
-        httpConn.setRequestProperty("PayPal-Request-Id", inputBookingId.toString());
-        httpConn.setRequestProperty("Authorization", paypalAuthToken);
-
-        String fullResponse = "";
-
+    private String extractResponse(HttpURLConnection httpConn) throws IOException {
+        String fullResponse;
         try (InputStream responseStream = httpConn.getResponseCode() / 100 == 2
                 ? httpConn.getInputStream()
                 : httpConn.getErrorStream();
              Scanner s = new Scanner(responseStream).useDelimiter("\\A")) {
-
             fullResponse = s.hasNext() ? s.next() : "";
-            System.out.println("fullResponse: "+ fullResponse);
+            System.out.println("fullResponse: " + fullResponse);
         }
+        return fullResponse;
+    }
 
-        // Parse the original response
+    private String extractOrderId(String fullResponse) {
         JSONObject jsonResponse = new JSONObject(fullResponse);
 
-        // Extract the necessary fields and create a minimal response
+        if (!jsonResponse.has("id") || jsonResponse.getString("id").isEmpty()) {
+            throw new PaymentProcessingException("Expected 'id' field not present in PayPal response.");
+        }
+
+        return jsonResponse.getString("id");
+    }
+
+    private JSONObject extractCaptureResponse(String fullResponse) {
+        JSONObject jsonResponse = new JSONObject(fullResponse);
+
         JSONObject minimalResponse = new JSONObject();
         minimalResponse.put("orderId", jsonResponse.getString("id"));
         minimalResponse.put("status", jsonResponse.getString("status"));

@@ -7,6 +7,7 @@ import com.amychong.tourmanagementapp.entity.schedule.TourGuideSchedule;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
@@ -25,11 +26,13 @@ public class TourStartDate implements Identifiable<TourStartDateKey>, Serializab
     @Transient
     private Integer availableSpaces;
 
+    @NotNull(message = "Tour is required")
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @MapsId("tourId")  // map to the tourId attribute of embedded id
     @JoinColumn(name="tour_id")
     private Tour tour;
 
+    @NotNull(message = "Start date is required")
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @MapsId("startDateId") // map to the startDateId attribute of embedded id
     @JoinColumn(name="start_date_id")

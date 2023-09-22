@@ -1,10 +1,10 @@
-package com.amychong.tourmanagementapp.dto;
+package com.amychong.tourmanagementapp.dto.schedule;
 
 import com.amychong.tourmanagementapp.entity.user.Role;
 
 import java.time.LocalDateTime;
 
-public class TourGuideScheduleDTO {
+public class ScheduleResponseDTO {
 
     private Integer id;
 
@@ -25,10 +25,10 @@ public class TourGuideScheduleDTO {
     private LocalDateTime startDateTime;
 
     // constructors
-    public TourGuideScheduleDTO() {
+    public ScheduleResponseDTO() {
     }
 
-    public TourGuideScheduleDTO(Integer id, Integer userId, String userName, Boolean userActive, Role userRole, Integer tourId, String tourName, int tourDuration, String tourRegion, Integer startDateId, LocalDateTime startDateTime) {
+    public ScheduleResponseDTO(Integer id, Integer userId, String userName, Boolean userActive, Role userRole, Integer tourId, String tourName, int tourDuration, String tourRegion, Integer startDateId, LocalDateTime startDateTime) {
         this.id = id;
         this.userId = userId;
         this.userName = userName;

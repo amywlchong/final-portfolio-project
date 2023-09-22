@@ -1,8 +1,6 @@
 package com.amychong.tourmanagementapp.entity.schedule;
 
 import com.amychong.tourmanagementapp.entity.interfaces.DeepCopyable;
-import com.amychong.tourmanagementapp.entity.interfaces.HasTourStartDate;
-import com.amychong.tourmanagementapp.entity.interfaces.HasUser;
 import com.amychong.tourmanagementapp.entity.interfaces.Identifiable;
 import com.amychong.tourmanagementapp.entity.tour.TourStartDate;
 import com.amychong.tourmanagementapp.entity.user.User;
@@ -13,7 +11,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name="tour_guide_schedules")
-public class TourGuideSchedule implements Identifiable<Integer>, Serializable, DeepCopyable, HasUser, HasTourStartDate {
+public class TourGuideSchedule implements Identifiable<Integer>, Serializable, DeepCopyable {
 
     // define fields
     @Id

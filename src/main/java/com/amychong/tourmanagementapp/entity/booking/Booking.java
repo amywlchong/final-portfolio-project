@@ -1,8 +1,6 @@
 package com.amychong.tourmanagementapp.entity.booking;
 
 import com.amychong.tourmanagementapp.entity.interfaces.DeepCopyable;
-import com.amychong.tourmanagementapp.entity.interfaces.HasTourStartDate;
-import com.amychong.tourmanagementapp.entity.interfaces.HasUser;
 import com.amychong.tourmanagementapp.entity.interfaces.Identifiable;
 import com.amychong.tourmanagementapp.entity.tour.TourStartDate;
 import com.amychong.tourmanagementapp.entity.user.User;
@@ -15,7 +13,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name="bookings")
-public class Booking implements Identifiable<Integer>, Serializable, DeepCopyable, HasUser, HasTourStartDate {
+public class Booking implements Identifiable<Integer>, Serializable, DeepCopyable {
 
     // define fields
     @Id
@@ -127,7 +125,6 @@ public class Booking implements Identifiable<Integer>, Serializable, DeepCopyabl
         this.createdDate = createdDate;
     }
 
-    @Override
     public User getUser() {
         return user;
     }
@@ -136,7 +133,6 @@ public class Booking implements Identifiable<Integer>, Serializable, DeepCopyabl
         this.user = user;
     }
 
-    @Override
     public TourStartDate getTourStartDate() {
         return tourStartDate;
     }

@@ -3,6 +3,9 @@ package com.amychong.tourmanagementapp.entity.tour;
 import com.amychong.tourmanagementapp.entity.interfaces.DeepCopyable;
 import com.amychong.tourmanagementapp.entity.interfaces.Identifiable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
@@ -18,16 +21,19 @@ public class TourPointOfInterest implements Identifiable<Integer>, Serializable,
     @Column(name="id")
     private Integer id;
 
+    @NotNull(message = "Tour is required")
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name="tour_id")
     private Tour tour;
 
+    @NotNull(message = "Point of interest is required")
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name="point_of_interest_id")
     private PointOfInterest pointOfInterest;
 
+    @Positive(message = "Day must be a positive number")
     @Column(name="day")
-    private int day;
+    private Integer day;
 
     // define constructors
 
@@ -35,7 +41,7 @@ public class TourPointOfInterest implements Identifiable<Integer>, Serializable,
 
     }
 
-    public TourPointOfInterest(Tour tour, PointOfInterest pointOfInterest, int day) {
+    public TourPointOfInterest(Tour tour, PointOfInterest pointOfInterest, Integer day) {
         this.tour = tour;
         this.pointOfInterest = pointOfInterest;
         this.day = day;
@@ -65,11 +71,11 @@ public class TourPointOfInterest implements Identifiable<Integer>, Serializable,
         this.pointOfInterest = pointOfInterest;
     }
 
-    public int getDay() {
+    public Integer getDay() {
         return day;
     }
 
-    public void setDay(int day) {
+    public void setDay(Integer day) {
         this.day = day;
     }
 

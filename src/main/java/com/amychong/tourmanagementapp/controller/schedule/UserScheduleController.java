@@ -1,7 +1,8 @@
 package com.amychong.tourmanagementapp.controller.schedule;
 
-import com.amychong.tourmanagementapp.dto.TourGuideScheduleDTO;
+import com.amychong.tourmanagementapp.dto.schedule.ScheduleResponseDTO;
 import com.amychong.tourmanagementapp.service.schedule.TourGuideScheduleService;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +27,8 @@ public class UserScheduleController {
 
     @PreAuthorize("hasAnyRole('GUIDE', 'LEAD_GUIDE','ADMIN')")
     @GetMapping
-    public ResponseEntity<List<TourGuideScheduleDTO>> getByUserId(@PathVariable Integer userId) {
-        List<TourGuideScheduleDTO> TourGuideScheduleDTOs = tourGuideScheduleService.findByUserId(userId);
+    public ResponseEntity<List<ScheduleResponseDTO>> getByUserId(@Min(1) @PathVariable Integer userId) {
+        List<ScheduleResponseDTO> TourGuideScheduleDTOs = tourGuideScheduleService.findByUserId(userId);
         return new ResponseEntity<>(TourGuideScheduleDTOs, HttpStatus.OK);
     }
 }

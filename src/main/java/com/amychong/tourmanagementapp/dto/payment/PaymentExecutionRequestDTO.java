@@ -1,7 +1,18 @@
-package com.amychong.tourmanagementapp.dto;
+package com.amychong.tourmanagementapp.dto.payment;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 public class PaymentExecutionRequestDTO {
+
+    @NotNull(message = "Booking ID is required")
+    @Positive(message = "Booking ID must be positive")
     private final Integer bookingId;
+
+    @NotBlank(message = "Order ID is required")
+    @Size(max = 19, message = "Order ID should have at most 19 characters")
     private final String orderId;
 
     // constructor

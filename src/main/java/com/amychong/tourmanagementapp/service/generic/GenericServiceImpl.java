@@ -3,24 +3,23 @@ package com.amychong.tourmanagementapp.service.generic;
 import com.amychong.tourmanagementapp.entity.interfaces.Identifiable;
 import com.amychong.tourmanagementapp.exception.NotFoundException;
 import com.amychong.tourmanagementapp.mapper.GenericMapper;
-import com.amychong.tourmanagementapp.service.helper.ValidationHelper;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public abstract class GenericServiceImpl<T extends Identifiable<Integer>, DTO> implements GenericService<T, DTO> {
+public abstract class GenericServiceImpl<T extends Identifiable<Integer>, Response> implements GenericService<T, Response> {
 
     private final JpaRepository<T, Integer> repository;
     private final Class<T> entityClass;
-    private final Class<DTO> dtoClass;
-    private final GenericMapper<T, DTO> mapper;
+    private final Class<Response> dtoClass;
+    private final GenericMapper<T, Response> mapper;
 
-    public GenericServiceImpl(JpaRepository<T, Integer> repository, Class<T> entityClass, Class<DTO> dtoClass) {
+    public GenericServiceImpl(JpaRepository<T, Integer> repository, Class<T> entityClass, Class<Response> dtoClass) {
         this(repository, entityClass, dtoClass, null);
     }
 
-    public GenericServiceImpl(JpaRepository<T, Integer> repository, Class<T> entityClass, Class<DTO> dtoClass, GenericMapper<T, DTO> mapper) {
+    public GenericServiceImpl(JpaRepository<T, Integer> repository, Class<T> entityClass, Class<Response> dtoClass, GenericMapper<T, Response> mapper) {
         this.repository = repository;
         this.entityClass = entityClass;
         this.dtoClass = dtoClass;
@@ -28,10 +27,10 @@ public abstract class GenericServiceImpl<T extends Identifiable<Integer>, DTO> i
     }
 
     @Override
-    public List<DTO> findAll() {
+    public List<Response> findAll() {
         List<T> entities = repository.findAll();
         if (isSameType()) {
-            return (List<DTO>) entities;
+            return (List<Response>) entities;
         }
         if (mapper != null) {
             return mapper.toDTOList(entities);
@@ -40,12 +39,10 @@ public abstract class GenericServiceImpl<T extends Identifiable<Integer>, DTO> i
     }
 
     @Override
-    public DTO findById(Integer theId) {
-        ValidationHelper.validateId(theId);
-
+    public Response findById(Integer theId) {
         T entity = repository.findById(theId).orElseThrow(() -> new NotFoundException("Did not find " + entityClass.getSimpleName() + " id - " + theId));
         if (isSameType()) {
-            return (DTO) entity;
+            return (Response) entity;
         }
         if (mapper != null) {
             return mapper.toDTO(entity);
@@ -54,10 +51,10 @@ public abstract class GenericServiceImpl<T extends Identifiable<Integer>, DTO> i
     }
 
     @Transactional
-    protected DTO save(T entity) {
+    protected Response save(T entity) {
         T savedEntity = repository.save(entity);
         if (isSameType()) {
-            return (DTO) savedEntity;
+            return (Response) savedEntity;
         }
         if (mapper != null) {
             return mapper.toDTO(savedEntity);
@@ -65,11 +62,8 @@ public abstract class GenericServiceImpl<T extends Identifiable<Integer>, DTO> i
         return defaultMapToDTO(savedEntity);
     }
 
-    @Override
     @Transactional
-    public DTO create(T entity) {
-        ValidationHelper.validateNotNull(entity, entityClass.getSimpleName() + " must not be null.");
-
+    protected Response create(T entity) {
         // Ensure entity has ID = 0 to always create a new entry
         entity.setId(0);
 
@@ -91,11 +85,11 @@ public abstract class GenericServiceImpl<T extends Identifiable<Integer>, DTO> i
     }
 
     // Default mapping methods; can be overridden by specific services
-    protected DTO defaultMapToDTO(T entity) {
+    protected Response defaultMapToDTO(T entity) {
         throw new UnsupportedOperationException("Mapping to DTO not supported without a defined mapper.");
     }
 
-    protected List<DTO> defaultMapToDTOList(List<T> entities) {
+    protected List<Response> defaultMapToDTOList(List<T> entities) {
         throw new UnsupportedOperationException("Mapping list to DTO list not supported without a defined mapper.");
     }
 

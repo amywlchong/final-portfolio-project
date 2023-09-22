@@ -1,8 +1,8 @@
 package com.amychong.tourmanagementapp.service.auth;
 
-import com.amychong.tourmanagementapp.dto.AuthenticationRequestDTO;
-import com.amychong.tourmanagementapp.dto.AuthenticationResponseDTO;
-import com.amychong.tourmanagementapp.dto.RegisterRequestDTO;
+import com.amychong.tourmanagementapp.dto.auth.AuthenticationRequestDTO;
+import com.amychong.tourmanagementapp.dto.auth.AuthenticationResponseDTO;
+import com.amychong.tourmanagementapp.dto.auth.RegisterRequestDTO;
 import com.amychong.tourmanagementapp.entity.user.Role;
 import com.amychong.tourmanagementapp.entity.user.User;
 import com.amychong.tourmanagementapp.exception.AuthenticatedUserNotFoundException;

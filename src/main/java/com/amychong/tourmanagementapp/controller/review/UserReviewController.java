@@ -1,7 +1,8 @@
 package com.amychong.tourmanagementapp.controller.review;
 
-import com.amychong.tourmanagementapp.dto.ReviewDTO;
+import com.amychong.tourmanagementapp.dto.review.ReviewResponseDTO;
 import com.amychong.tourmanagementapp.service.review.ReviewService;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,8 @@ public class UserReviewController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReviewDTO>> getByUserId(@PathVariable Integer userId) {
-        List<ReviewDTO> reviewDTOs = reviewService.findByUserId(userId);
+    public ResponseEntity<List<ReviewResponseDTO>> getByUserId(@Min(1) @PathVariable Integer userId) {
+        List<ReviewResponseDTO> reviewDTOs = reviewService.findByUserId(userId);
         return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
     }
 }

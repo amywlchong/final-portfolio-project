@@ -1,22 +1,20 @@
 package com.amychong.tourmanagementapp.service.booking;
 
-import com.amychong.tourmanagementapp.dto.BookingDTO;
+import com.amychong.tourmanagementapp.dto.booking.BookingResponseDTO;
+import com.amychong.tourmanagementapp.dto.booking.BookingRequestDTO;
 import com.amychong.tourmanagementapp.entity.booking.Booking;
 import com.amychong.tourmanagementapp.entity.tour.Tour;
 import com.amychong.tourmanagementapp.entity.tour.TourStartDate;
 import com.amychong.tourmanagementapp.entity.user.Role;
-import com.amychong.tourmanagementapp.exception.NotFoundException;
 import com.amychong.tourmanagementapp.exception.PermissionDeniedException;
 import com.amychong.tourmanagementapp.mapper.BookingMapper;
 import com.amychong.tourmanagementapp.repository.booking.BookingRepository;
 import com.amychong.tourmanagementapp.service.auth.AuthenticationService;
 import com.amychong.tourmanagementapp.service.generic.GenericServiceImpl;
-import com.amychong.tourmanagementapp.service.helper.UserHelper;
-import com.amychong.tourmanagementapp.service.helper.ValidationHelper;
 import com.amychong.tourmanagementapp.service.tour.TourService;
-import com.amychong.tourmanagementapp.service.helper.TourStartDateHelper;
-import com.amychong.tourmanagementapp.service.tour.TourStartDateService;
+import com.amychong.tourmanagementapp.service.tour.TourStartDateHelper;
 import com.amychong.tourmanagementapp.service.user.UserService;
+import com.amychong.tourmanagementapp.service.EntityLookup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,73 +26,60 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingDTO> implements BookingService {
+public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingResponseDTO> implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
+    private final EntityLookup entityLookup;
     private final UserService userService;
-    private final TourStartDateService tourStartDateService;
     private final TourService tourService;
     private final AuthenticationService authService;
 
     @Autowired
-    public BookingServiceImpl(BookingRepository theBookingRepository, BookingMapper theBookingMapper, UserService theUserService, TourStartDateService theTourStartDateService, TourService theTourService, AuthenticationService theAuthService) {
-        super(theBookingRepository, Booking.class, BookingDTO.class, theBookingMapper);
+    public BookingServiceImpl(BookingRepository theBookingRepository, BookingMapper theBookingMapper, EntityLookup theEntityLookup, UserService theUserService, TourService theTourService, AuthenticationService theAuthService) {
+        super(theBookingRepository, Booking.class, BookingResponseDTO.class, theBookingMapper);
         bookingRepository = theBookingRepository;
         bookingMapper = theBookingMapper;
+        entityLookup = theEntityLookup;
         userService = theUserService;
-        tourStartDateService = theTourStartDateService;
         tourService = theTourService;
         authService = theAuthService;
     }
 
     @Override
-    public Booking validateBookingIdAndFindBooking(Integer bookingId) {
-        ValidationHelper.validateId(bookingId);
-        return bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException("Did not find booking id - " + bookingId));
-    }
-
-    @Override
-    public List<BookingDTO> findByUserId(Integer theUserId) {
-        ValidationHelper.validateId(theUserId);
-
+    public List<BookingResponseDTO> findByUserId(Integer theUserId) {
         List<Booking> theBookings = bookingRepository.findByUser_Id(theUserId);
         return bookingMapper.toDTOList(theBookings);
     }
 
     @Override
-    public List<BookingDTO> findByTourId(Integer theTourId) {
-        ValidationHelper.validateId(theTourId);
-
+    public List<BookingResponseDTO> findByTourId(Integer theTourId) {
         List<Booking> theBookings = bookingRepository.findByTourStartDate_Tour_Id(theTourId);
         return bookingMapper.toDTOList(theBookings);
     }
 
     @Override
     @Transactional
-    public BookingDTO create(Booking inputBooking) {
-        ValidationHelper.validateNotNull(inputBooking, "Booking must not be null.");
+    public BookingResponseDTO create(BookingRequestDTO inputBooking) {
         validateUser(inputBooking);
         TourStartDate dbTourStartDate = validateTourStartDateAndFindFromDB(inputBooking);
         validateAvailableSpacesConstraint(dbTourStartDate, inputBooking.getNumberOfParticipants());
 
-        Booking processedBooking = processBookingForCreate(inputBooking, dbTourStartDate);
+        Booking processedBooking = processBookingForCreate(inputBooking);
 
         return super.create(processedBooking);
     }
 
     // Allow only the 'startDate' field to be updated.
-    // Throw an exception if client tries to update other fields
+    // Throw an exception if client tries to update other fields (# of participants, user id, or tour id)
     @Override
     @Transactional
-    public BookingDTO update(Integer inputBookingId, Booking inputBooking) {
-        ValidationHelper.validateNotNull(inputBooking, "Booking must not be null.");
+    public BookingResponseDTO update(Integer inputBookingId, BookingRequestDTO inputBooking) {
         validateUser(inputBooking);
         TourStartDate dbTourStartDate = validateTourStartDateAndFindFromDB(inputBooking);
         validateAvailableSpacesConstraint(dbTourStartDate, inputBooking.getNumberOfParticipants());
 
-        Booking existingBooking = validateBookingIdAndFindBooking(inputBookingId);
+        Booking existingBooking = entityLookup.findBookingById(inputBookingId);
         validateUnchangedFields(existingBooking, inputBooking);
 
         Booking copyOfExistingBooking = existingBooking.deepCopy();
@@ -116,21 +101,21 @@ public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingDTO> 
         }
     }
 
-    private void validateUser(Booking inputBooking) {
-        Integer inputUserId = UserHelper.extractUserId(inputBooking);
+    private void validateUser(BookingRequestDTO inputBooking) {
+        Integer inputUserId = inputBooking.getUserId();
 
         if (authService.verifyAuthenticatedUserHasRole(Role.ROLE_CUSTOMER) && !authService.verifyAuthenticatedUserHasId(inputUserId)) {
             throw new PermissionDeniedException("Customer can only create or update bookings for themselves.");
         }
         if (!userService.verifyInputUserHasRole(inputUserId, "ROLE_CUSTOMER")) {
-            throw new RuntimeException("User associated with booking must be a customer");
+            throw new IllegalArgumentException("User associated with booking must be a customer");
         }
     }
 
-    private TourStartDate validateTourStartDateAndFindFromDB(Booking inputBooking) {
-        Integer inputTourId = TourStartDateHelper.extractTourId(inputBooking);
-        LocalDateTime inputStartDateTime = TourStartDateHelper.extractStartDateTime(inputBooking);
-        TourStartDate dbTourStartDate = tourStartDateService.validateTourStartDateAndFindFromDB(inputTourId, inputStartDateTime);
+    private TourStartDate validateTourStartDateAndFindFromDB(BookingRequestDTO inputBooking) {
+        Integer inputTourId = inputBooking.getTourId();
+        LocalDateTime inputStartDateTime = inputBooking.getStartDateTime();
+        TourStartDate dbTourStartDate = entityLookup.findTourStartDateByTourIdAndStartDateTime(inputTourId, inputStartDateTime);
         return dbTourStartDate;
     }
 
@@ -143,14 +128,10 @@ public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingDTO> 
         }
     }
 
-    private void validateUnchangedFields(Booking existingBooking, Booking inputBooking) {
-        validateFieldsAreSame("paid", existingBooking.isPaid(), inputBooking.isPaid());
-        validateFieldsAreSame("transactionId", existingBooking.getTransactionId(), inputBooking.getTransactionId());
+    private void validateUnchangedFields(Booking existingBooking, BookingRequestDTO inputBooking) {
         validateFieldsAreSame("numberOfParticipants", existingBooking.getNumberOfParticipants(), inputBooking.getNumberOfParticipants());
-        validateFieldsAreSame("unitPrice", existingBooking.getUnitPrice(), inputBooking.getUnitPrice());
-        validateFieldsAreSame("totalPrice", existingBooking.getTotalPrice(), inputBooking.getTotalPrice());
-        validateFieldsAreSame("user", existingBooking.getUser(), inputBooking.getUser());
-        validateFieldsAreSame("tour", existingBooking.getTourStartDate().getTour(), inputBooking.getTourStartDate().getTour());
+        validateFieldsAreSame("userId", existingBooking.getUser().getId(), inputBooking.getUserId());
+        validateFieldsAreSame("tourId", existingBooking.getTourStartDate().getTour().getId(), inputBooking.getTourId());
     }
 
     private <T> void validateFieldsAreSame(String fieldName, T existingValue, T inputValue) {
@@ -161,19 +142,18 @@ public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingDTO> 
         }
     }
 
-    private Booking processBookingForCreate(Booking theBooking, TourStartDate dbTourStartDate) {
-        Booking copyOfBooking = theBooking.deepCopy();
+    private Booking processBookingForCreate(BookingRequestDTO inputBooking) {
+        Booking bookingToBeAdded = bookingMapper.toBooking(inputBooking, entityLookup);
 
-        setBookingPricing(TourStartDateHelper.extractTourId(theBooking), copyOfBooking, theBooking.getNumberOfParticipants());
-        copyOfBooking.setPaid(false);
-        copyOfBooking.setTransactionId(null);
-        copyOfBooking.setTourStartDate(dbTourStartDate);
-        copyOfBooking.setCreatedDate(LocalDate.now());
+        setBookingPricing(bookingToBeAdded, inputBooking.getTourId(), inputBooking.getNumberOfParticipants());
+        bookingToBeAdded.setPaid(false);
+        bookingToBeAdded.setTransactionId(null);
+        bookingToBeAdded.setCreatedDate(LocalDate.now());
 
-        return copyOfBooking;
+        return bookingToBeAdded;
     }
 
-    private void setBookingPricing(Integer theTourId, Booking theBooking, int numberOfParticipants) {
+    private void setBookingPricing(Booking theBooking, Integer theTourId, int numberOfParticipants) {
         Tour existingTour = tourService.findById(theTourId);
 
         BigDecimal tourUnitPrice = existingTour.getPrice();

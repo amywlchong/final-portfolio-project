@@ -4,7 +4,6 @@ import com.amychong.tourmanagementapp.entity.tour.Tour;
 import com.amychong.tourmanagementapp.entity.tour.TourImage;
 import com.amychong.tourmanagementapp.repository.tour.TourImageRepository;
 import com.amychong.tourmanagementapp.repository.tour.TourRepository;
-import com.amychong.tourmanagementapp.service.helper.ValidationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +26,6 @@ public class TourImageServiceImpl implements TourImageService{
     @Override
     @Transactional
     public List<TourImage> updateTourImages(Integer inputTourId, List<TourImage> inputTourImages) {
-        ValidationHelper.validateId(inputTourId);
-        ValidationHelper.validateNotNull(inputTourImages, "Tour images must not be null.");
 
         Tour existingTour = tourService.findByIdWithDetails(inputTourId);
         Tour copyOfExistingTour = existingTour.deepCopy();

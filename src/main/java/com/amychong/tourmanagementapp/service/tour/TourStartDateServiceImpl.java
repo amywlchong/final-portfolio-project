@@ -3,10 +3,8 @@ package com.amychong.tourmanagementapp.service.tour;
 import com.amychong.tourmanagementapp.entity.tour.StartDate;
 import com.amychong.tourmanagementapp.entity.tour.Tour;
 import com.amychong.tourmanagementapp.entity.tour.TourStartDate;
-import com.amychong.tourmanagementapp.exception.NotFoundException;
 import com.amychong.tourmanagementapp.repository.tour.StartDateRepository;
 import com.amychong.tourmanagementapp.repository.tour.TourStartDateRepository;
-import com.amychong.tourmanagementapp.service.helper.ValidationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,18 +27,8 @@ public class TourStartDateServiceImpl implements TourStartDateService {
     }
 
     @Override
-    public TourStartDate validateTourStartDateAndFindFromDB(Integer tourId, LocalDateTime startDateTime) {
-        TourStartDate dbTourStartDate = tourStartDateRepository.findByTour_IdAndStartDate_StartDateTime(tourId, startDateTime)
-                .orElseThrow(() -> new NotFoundException("You're referencing a tour-start date pair that does not exist - tourId: " + tourId + ", startDateTime: " + startDateTime));
-
-        return dbTourStartDate;
-    }
-
-    @Override
     @Transactional
     public List<TourStartDate> updateTourStartDates(Integer inputTourId, List<TourStartDate> inputTourStartDates) {
-        ValidationHelper.validateId(inputTourId);
-        ValidationHelper.validateNotNull(inputTourStartDates, "Tour start dates must not be null.");
 
         TourUpdateProcessor<TourStartDate, StartDate, LocalDateTime> helper = new TourUpdateProcessor<>();
         helper.inputTourId = inputTourId;

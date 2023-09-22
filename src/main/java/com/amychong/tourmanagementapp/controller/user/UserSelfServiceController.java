@@ -1,9 +1,9 @@
 package com.amychong.tourmanagementapp.controller.user;
 
-import com.amychong.tourmanagementapp.dto.BookingDTO;
-import com.amychong.tourmanagementapp.dto.ReviewDTO;
-import com.amychong.tourmanagementapp.dto.TourGuideScheduleDTO;
-import com.amychong.tourmanagementapp.dto.UserDTO;
+import com.amychong.tourmanagementapp.dto.booking.BookingResponseDTO;
+import com.amychong.tourmanagementapp.dto.review.ReviewResponseDTO;
+import com.amychong.tourmanagementapp.dto.schedule.ScheduleResponseDTO;
+import com.amychong.tourmanagementapp.dto.user.UserResponseDTO;
 import com.amychong.tourmanagementapp.entity.user.User;
 import com.amychong.tourmanagementapp.mapper.UserMapper;
 import com.amychong.tourmanagementapp.service.auth.AuthenticationService;
@@ -11,6 +11,8 @@ import com.amychong.tourmanagementapp.service.booking.BookingService;
 import com.amychong.tourmanagementapp.service.review.ReviewService;
 import com.amychong.tourmanagementapp.service.schedule.TourGuideScheduleService;
 import com.amychong.tourmanagementapp.service.user.UserService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,37 +44,37 @@ public class UserSelfServiceController {
     }
 
     @GetMapping("/profile-details")
-    public ResponseEntity<UserDTO> getMyProfile() {
+    public ResponseEntity<UserResponseDTO> getMyProfile() {
         User authenticatedUser = authService.getAuthenticatedUser();
         return new ResponseEntity<>(userService.findById(authenticatedUser.getId()), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('GUIDE', 'LEAD_GUIDE')")
     @GetMapping("/schedules")
-    public ResponseEntity<List<TourGuideScheduleDTO>> getMySchedules() {
+    public ResponseEntity<List<ScheduleResponseDTO>> getMySchedules() {
         User authenticatedUser = authService.getAuthenticatedUser();
         return new ResponseEntity<>(tourGuideScheduleService.findByUserId(authenticatedUser.getId()), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/bookings")
-    public ResponseEntity<List<BookingDTO>> getMyBookings() {
+    public ResponseEntity<List<BookingResponseDTO>> getMyBookings() {
         User authenticatedUser = authService.getAuthenticatedUser();
         return new ResponseEntity<>(bookingService.findByUserId(authenticatedUser.getId()), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/reviews")
-    public ResponseEntity<List<ReviewDTO>> getMyReviews() {
+    public ResponseEntity<List<ReviewResponseDTO>> getMyReviews() {
         User authenticatedUser = authService.getAuthenticatedUser();
         return new ResponseEntity<>(reviewService.findByUserId(authenticatedUser.getId()), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @PutMapping("/active")
-    public ResponseEntity<UserDTO> updateActiveStatus(@RequestBody Map<String, Boolean> requestBody) {
+    public ResponseEntity<UserResponseDTO> updateActiveStatus(@NotNull @Valid @RequestBody Map<String, Boolean> requestBody) {
         User authenticatedUser = authService.getAuthenticatedUser();
-        UserDTO updatedUser = userService.updateActiveStatus(authenticatedUser.getId(), requestBody.get("active"));
+        UserResponseDTO updatedUser = userService.updateActiveStatus(authenticatedUser.getId(), requestBody.get("active"));
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 }

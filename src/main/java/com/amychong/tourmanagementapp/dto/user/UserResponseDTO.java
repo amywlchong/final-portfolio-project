@@ -1,8 +1,8 @@
-package com.amychong.tourmanagementapp.dto;
+package com.amychong.tourmanagementapp.dto.user;
 
 import com.amychong.tourmanagementapp.entity.user.Role;
 
-public class UserDTO {
+public class UserResponseDTO {
 
     private Integer id;
     private String name;
@@ -11,12 +11,12 @@ public class UserDTO {
     private Role role;
 
     // Default constructor
-    public UserDTO() {
+    public UserResponseDTO() {
 
     }
 
     // Parameterized constructor
-    public UserDTO(Integer id, String name, String email, Boolean active, Role role) {
+    public UserResponseDTO(Integer id, String name, String email, Boolean active, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;

@@ -7,8 +7,6 @@ import com.amychong.tourmanagementapp.repository.tour.PointOfInterestRepository;
 import com.amychong.tourmanagementapp.repository.tour.StartDateRepository;
 import com.amychong.tourmanagementapp.repository.tour.TourImageRepository;
 import com.amychong.tourmanagementapp.repository.tour.TourRepository;
-import com.amychong.tourmanagementapp.service.helper.TourStartDateHelper;
-import com.amychong.tourmanagementapp.service.helper.ValidationHelper;
 import com.amychong.tourmanagementapp.service.generic.GenericServiceImpl;
 import com.amychong.tourmanagementapp.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +38,9 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
 
     @Override
     public Tour findById(Integer inputTourId) {
-        Tour foundTour = super.findById(inputTourId);
-        setAvailableSpaces(foundTour);
-        return foundTour;
+        Tour dbTour = super.findById(inputTourId);
+        setAvailableSpaces(dbTour);
+        return dbTour;
     }
 
     @Override
@@ -56,8 +54,9 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
 
     @Override
     public List<Tour> findAvailableToursWithinRange(LocalDate startDate, LocalDate endDate) {
-        ValidationHelper.validateNotNull(startDate, "startDate must not be null.");
-        ValidationHelper.validateNotNull(endDate, "endDate must not be null.");
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("Start date cannot be after end date");
+        }
 
         return tourRepository.findAvailableToursWithinRange(startDate, endDate);
     }
@@ -71,8 +70,6 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
     @Override
     @Transactional
     public Tour create(Tour inputTour) {
-        ValidationHelper.validateNotNull(inputTour, "Tour must not be null.");
-
         Tour copyOfInputTour = inputTour.deepCopy();
         processTourImagesForCreate(copyOfInputTour);
         processTourPointsOfInterestForCreate(copyOfInputTour);
@@ -132,8 +129,6 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
     @Override
     @Transactional
     public Tour updateMainInfo(Integer inputTourId, Tour inputTour) {
-        ValidationHelper.validateNotNull(inputTour, "Tour must not be null.");
-
         Tour existingTour = findById(inputTourId);
         validateMaxGroupSize(existingTour, inputTour.getMaxGroupSize());
 

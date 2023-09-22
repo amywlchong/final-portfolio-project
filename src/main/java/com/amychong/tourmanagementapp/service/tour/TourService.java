@@ -14,6 +14,8 @@ public interface TourService extends GenericService<Tour, Tour> {
 
     Tour save(Tour tour);
 
+    Tour create(Tour inputTour);
+
     Tour update(Integer theTourId, Tour theTour);
 
     Tour updateMainInfo(Integer theTourId, Tour theTour);

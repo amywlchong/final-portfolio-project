@@ -4,10 +4,12 @@ import com.amychong.tourmanagementapp.entity.interfaces.DeepCopyable;
 import com.amychong.tourmanagementapp.entity.interfaces.Identifiable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 @Entity
 @Table(name="tour_images")
@@ -19,12 +21,15 @@ public class TourImage implements Identifiable<Integer>, Serializable, DeepCopya
     @Column(name="id")
     private Integer id;
 
+    @NotBlank(message = "Name is required")
+    @Size(max = 255, message = "Name should have at most 255 characters")
     @Column(name="name")
     private String name;
 
     @Column(name="is_cover")
     private boolean isCover = false;
 
+    @NotNull(message = "Tour is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="tour_id")
     private Tour tour;

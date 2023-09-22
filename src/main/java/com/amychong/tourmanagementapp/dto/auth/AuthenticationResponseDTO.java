@@ -1,4 +1,4 @@
-package com.amychong.tourmanagementapp.dto;
+package com.amychong.tourmanagementapp.dto.auth;
 
 public class AuthenticationResponseDTO {
 
