@@ -58,7 +58,7 @@ public class ReviewServiceImpl extends GenericServiceImpl<Review, ReviewResponse
     @Override
     @Transactional
     public ReviewResponseDTO create(ReviewRequestDTO inputReview) {
-        Booking dbBooking = findBookingById(inputReview.getBookingId());
+        Booking dbBooking = findBookingByIdOrThrow(inputReview.getBookingId());
         validateUser(dbBooking.getUser().getId());
 
         Review reviewToBeAdded = reviewMapper.toReview(inputReview, entityLookup);
@@ -85,7 +85,7 @@ public class ReviewServiceImpl extends GenericServiceImpl<Review, ReviewResponse
         reviewRepository.deleteById(inputReviewId);
     }
 
-    private Booking findBookingById(Integer bookingId) {
+    private Booking findBookingByIdOrThrow(Integer bookingId) {
         return bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Did not find booking id: " + bookingId + ". Review cannot be created without an associated booking."));
     }

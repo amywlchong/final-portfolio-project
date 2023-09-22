@@ -37,7 +37,7 @@ public class UserAdministrationController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponseDTO> getById(@Min(1) @PathVariable Integer userId) {
-        return new ResponseEntity<>(userService.findById(userId), HttpStatus.OK);
+        return new ResponseEntity<>(userService.findByIdOrThrow(userId), HttpStatus.OK);
     }
 
     @PostMapping

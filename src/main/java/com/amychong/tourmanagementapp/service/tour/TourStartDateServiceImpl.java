@@ -32,7 +32,7 @@ public class TourStartDateServiceImpl implements TourStartDateService {
 
         TourUpdateProcessor<TourStartDate, StartDate, LocalDateTime> helper = new TourUpdateProcessor<>();
         helper.inputTourId = inputTourId;
-        helper.findTourFunction = tourService::findByIdWithDetails;
+        helper.findTourFunction = tourService::findByIdWithDetailsOrThrow;
         helper.inputTourRelatedEntities = inputTourStartDates;
         helper.findTourRelatedEntityFromDB = tourStartDateRepository::findByTour_IdAndStartDate_StartDateTime;
         helper.getEntitiesFromTourFunction = Tour::getTourStartDates;
@@ -42,7 +42,7 @@ public class TourStartDateServiceImpl implements TourStartDateService {
         helper.findExistingAssociatedEntitiesFunction = datetimes -> startDateRepository.findAllByStartDateTimeIn(datetimes);
 
         Tour processedTour = helper.processTourForUpdate();
-        Tour existingTour = tourService.findById(inputTourId);
+        Tour existingTour = tourService.findByIdOrThrow(inputTourId);
 
         deleteTourStartDates(existingTour.getTourStartDates(), processedTour.getTourStartDates());
         Tour processedTourWithSchedules = setSchedulesForUpdatedStartDates(existingTour, processedTour);

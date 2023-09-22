@@ -10,6 +10,6 @@ import java.time.LocalDateTime;
 public interface TourStartDateMapper {
 
     static TourStartDate mapToTourStartDate(Integer tourId, LocalDateTime startDateTime, EntityLookup entityLookup) {
-        return entityLookup.findTourStartDateByTourIdAndStartDateTime(tourId, startDateTime);
+        return entityLookup.findTourStartDateByTourIdAndStartDateTimeOrThrow(tourId, startDateTime);
     }
 }

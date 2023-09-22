@@ -36,6 +36,6 @@ public interface BookingMapper extends GenericMapper<Booking, BookingResponseDTO
     }
 
     static Booking mapToBooking(Integer bookingId, EntityLookup entityLookup) {
-        return entityLookup.findBookingById(bookingId);
+        return entityLookup.findBookingByIdOrThrow(bookingId);
     }
 }

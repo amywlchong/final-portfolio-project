@@ -31,7 +31,7 @@ public class TourPointOfInterestServiceImpl implements TourPointOfInterestServic
 
         TourUpdateProcessor<TourPointOfInterest, PointOfInterest, String> helper = new TourUpdateProcessor<>();
         helper.inputTourId = inputTourId;
-        helper.findTourFunction = tourService::findByIdWithDetails;
+        helper.findTourFunction = tourService::findByIdWithDetailsOrThrow;
         helper.inputTourRelatedEntities = inputTourPointsOfInterest;
         helper.findTourRelatedEntityFromDB = tourPointOfInterestRepository::findByTour_IdAndPointOfInterest_Name;
         helper.getEntitiesFromTourFunction = Tour::getTourPointsOfInterest;

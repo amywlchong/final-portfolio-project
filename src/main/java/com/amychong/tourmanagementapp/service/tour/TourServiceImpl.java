@@ -37,14 +37,14 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
     }
 
     @Override
-    public Tour findById(Integer inputTourId) {
-        Tour dbTour = super.findById(inputTourId);
+    public Tour findByIdOrThrow(Integer inputTourId) {
+        Tour dbTour = super.findByIdOrThrow(inputTourId);
         setAvailableSpaces(dbTour);
         return dbTour;
     }
 
     @Override
-    public Tour findByIdWithDetails(Integer tourId) {
+    public Tour findByIdWithDetailsOrThrow(Integer tourId) {
         Optional<Tour> tourWithImages = tourRepository.findByIdWithTourImages(tourId);
         tourRepository.findByIdWithTourPointsOfInterest(tourId); // This populates the cache
         tourRepository.findByIdWithTourStartDates(tourId); // This too populates the cache
@@ -129,7 +129,7 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, Tour> implements T
     @Override
     @Transactional
     public Tour updateMainInfo(Integer inputTourId, Tour inputTour) {
-        Tour existingTour = findById(inputTourId);
+        Tour existingTour = findByIdOrThrow(inputTourId);
         validateMaxGroupSize(existingTour, inputTour.getMaxGroupSize());
 
         Tour copyOfExistingTour = existingTour.deepCopy();

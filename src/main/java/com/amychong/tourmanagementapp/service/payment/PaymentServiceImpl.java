@@ -26,20 +26,20 @@ public class PaymentServiceImpl implements PaymentService{
 
     @Override
     public String initiatePayment(Integer inputBookingId) {
-        Booking dbBooking = entityLookup.findBookingById(inputBookingId);
+        Booking dbBooking = entityLookup.findBookingByIdOrThrow(inputBookingId);
         return payPalService.createOrder(inputBookingId, dbBooking);
     }
 
     @Override
     @Transactional
     public String processPaymentAndBooking(Integer inputBookingId, String inputOrderId) {
-        entityLookup.findBookingById(inputBookingId);   // validate booking exists
+        entityLookup.findBookingByIdOrThrow(inputBookingId);   // validate booking exists
 
         JSONObject response = payPalService.capturePaymentForOrder(inputBookingId, inputOrderId);
         String transactionId = response.getString("transactionId");
         String status = response.getString("status");
         Integer responseBookingId = Integer.parseInt(response.getString("referenceId"));
-        Booking dbBooking = entityLookup.findBookingById(responseBookingId);
+        Booking dbBooking = entityLookup.findBookingByIdOrThrow(responseBookingId);
 
         bookingService.updateOrDeleteBookingAfterPaymentProcessing(dbBooking, transactionId, status);
 

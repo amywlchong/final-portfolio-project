@@ -39,7 +39,7 @@ public abstract class GenericServiceImpl<T extends Identifiable<Integer>, Respon
     }
 
     @Override
-    public Response findById(Integer theId) {
+    public Response findByIdOrThrow(Integer theId) {
         T entity = repository.findById(theId).orElseThrow(() -> new NotFoundException("Did not find " + entityClass.getSimpleName() + " id - " + theId));
         if (isSameType()) {
             return (Response) entity;
@@ -74,7 +74,7 @@ public abstract class GenericServiceImpl<T extends Identifiable<Integer>, Respon
     @Transactional
     public void deleteById(Integer theId) {
         // find by id or else throw an exception
-        findById(theId);
+        findByIdOrThrow(theId);
 
         // delete by id
         repository.deleteById(theId);

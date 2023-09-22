@@ -68,7 +68,7 @@ public class TourGuideScheduleServiceImpl extends GenericServiceImpl<TourGuideSc
 
         Integer inputTourId = inputTourGuideSchedule.getTourId();
         LocalDateTime inputStartDateTime = inputTourGuideSchedule.getStartDateTime();
-        entityLookup.findTourStartDateByTourIdAndStartDateTime(inputTourId, inputStartDateTime);    // validate tour start date exists
+        entityLookup.findTourStartDateByTourIdAndStartDateTimeOrThrow(inputTourId, inputStartDateTime);    // validate tour start date exists
 
         TourGuideSchedule scheduleToBeAdded = tourGuideScheduleMapper.toTourGuideSchedule(inputTourGuideSchedule, entityLookup);
 

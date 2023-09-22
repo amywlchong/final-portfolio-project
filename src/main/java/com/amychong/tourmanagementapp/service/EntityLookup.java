@@ -26,18 +26,18 @@ public class EntityLookup {
         this.bookingRepository = bookingRepository;
     }
 
-    public User findUserById(Integer userId) {
+    public User findUserByIdOrThrow(Integer userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Did not find user id - " + userId));
     }
 
-    public TourStartDate findTourStartDateByTourIdAndStartDateTime(Integer tourId, LocalDateTime startDateTime) {
+    public TourStartDate findTourStartDateByTourIdAndStartDateTimeOrThrow(Integer tourId, LocalDateTime startDateTime) {
         return tourStartDateRepository.findByTour_IdAndStartDate_StartDateTime(tourId, startDateTime)
                 .orElseThrow(() -> new NotFoundException("Did not find tour start date with tour id: " + tourId +
                         " and start date time: " + startDateTime));
     }
 
-    public Booking findBookingById(Integer bookingId) {
+    public Booking findBookingByIdOrThrow(Integer bookingId) {
         return bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Did not find booking id - " + bookingId));
     }

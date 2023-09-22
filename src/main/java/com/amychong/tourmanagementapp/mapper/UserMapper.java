@@ -9,6 +9,6 @@ import org.mapstruct.Mapper;
 public interface UserMapper extends GenericMapper<User, UserResponseDTO> {
 
     static User mapToUser(Integer userId, EntityLookup entityLookup) {
-        return entityLookup.findUserById(userId);
+        return entityLookup.findUserByIdOrThrow(userId);
     }
 }

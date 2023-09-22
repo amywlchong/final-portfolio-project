@@ -23,7 +23,7 @@ public abstract class GenericController<T, Response> {
 
     @GetMapping("/{id}")
     public ResponseEntity<Response> getById(@Min(1) @PathVariable Integer id) {
-        Response response = service.findById(id);
+        Response response = service.findByIdOrThrow(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

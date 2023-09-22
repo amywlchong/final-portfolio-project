@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TourService extends GenericService<Tour, Tour> {
 
-    Tour findByIdWithDetails(Integer tourId);
+    Tour findByIdWithDetailsOrThrow(Integer tourId);
 
     List<Tour> findAvailableToursWithinRange(LocalDate startDate, LocalDate endDate);
 

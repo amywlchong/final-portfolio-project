@@ -79,7 +79,7 @@ public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingRespo
         TourStartDate dbTourStartDate = validateTourStartDateAndFindFromDB(inputBooking);
         validateAvailableSpacesConstraint(dbTourStartDate, inputBooking.getNumberOfParticipants());
 
-        Booking existingBooking = entityLookup.findBookingById(inputBookingId);
+        Booking existingBooking = entityLookup.findBookingByIdOrThrow(inputBookingId);
         validateUnchangedFields(existingBooking, inputBooking);
 
         Booking copyOfExistingBooking = existingBooking.deepCopy();
@@ -115,7 +115,7 @@ public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingRespo
     private TourStartDate validateTourStartDateAndFindFromDB(BookingRequestDTO inputBooking) {
         Integer inputTourId = inputBooking.getTourId();
         LocalDateTime inputStartDateTime = inputBooking.getStartDateTime();
-        TourStartDate dbTourStartDate = entityLookup.findTourStartDateByTourIdAndStartDateTime(inputTourId, inputStartDateTime);
+        TourStartDate dbTourStartDate = entityLookup.findTourStartDateByTourIdAndStartDateTimeOrThrow(inputTourId, inputStartDateTime);
         return dbTourStartDate;
     }
 
@@ -154,7 +154,7 @@ public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingRespo
     }
 
     private void setBookingPricing(Booking theBooking, Integer theTourId, int numberOfParticipants) {
-        Tour existingTour = tourService.findById(theTourId);
+        Tour existingTour = tourService.findByIdOrThrow(theTourId);
 
         BigDecimal tourUnitPrice = existingTour.getPrice();
         BigDecimal totalPrice = tourUnitPrice.multiply(BigDecimal.valueOf(numberOfParticipants));

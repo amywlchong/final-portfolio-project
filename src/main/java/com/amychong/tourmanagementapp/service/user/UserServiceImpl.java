@@ -24,7 +24,7 @@ public class UserServiceImpl extends GenericServiceImpl<User, UserResponseDTO> i
         userMapper = theUserMapper;
     }
 
-    private User findSensitiveUserById(Integer theId) {
+    private User findSensitiveUserByIdOrThrow(Integer theId) {
         return userRepository.findById(theId).orElseThrow(() -> new NotFoundException("Did not find user id - " + theId));
     }
 
@@ -42,7 +42,7 @@ public class UserServiceImpl extends GenericServiceImpl<User, UserResponseDTO> i
     @Override
     @Transactional
     public UserResponseDTO updateActiveStatus(Integer theId, Boolean isActive) {
-        User existingUser = findSensitiveUserById(theId);
+        User existingUser = findSensitiveUserByIdOrThrow(theId);
         User copyOfExistingUser = existingUser.deepCopy();
         copyOfExistingUser.setActive(isActive);
         return super.save(copyOfExistingUser);
@@ -51,7 +51,7 @@ public class UserServiceImpl extends GenericServiceImpl<User, UserResponseDTO> i
     @Override
     @Transactional
     public UserResponseDTO updateRole(Integer theId, Role newRole) {
-        User existingUser = findSensitiveUserById(theId);
+        User existingUser = findSensitiveUserByIdOrThrow(theId);
         User copyOfExistingUser = existingUser.deepCopy();
         copyOfExistingUser.setRole(newRole);
         return super.save(copyOfExistingUser);
@@ -59,7 +59,7 @@ public class UserServiceImpl extends GenericServiceImpl<User, UserResponseDTO> i
 
     @Override
     public boolean verifyInputUserHasRole(Integer userId, String... validRoles) {
-        UserResponseDTO existingUser = findById(userId);
+        UserResponseDTO existingUser = findByIdOrThrow(userId);
 
         Role userRole = existingUser.getRole();
 

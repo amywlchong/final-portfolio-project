@@ -46,7 +46,7 @@ public class UserSelfServiceController {
     @GetMapping("/profile-details")
     public ResponseEntity<UserResponseDTO> getMyProfile() {
         User authenticatedUser = authService.getAuthenticatedUser();
-        return new ResponseEntity<>(userService.findById(authenticatedUser.getId()), HttpStatus.OK);
+        return new ResponseEntity<>(userService.findByIdOrThrow(authenticatedUser.getId()), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('GUIDE', 'LEAD_GUIDE')")

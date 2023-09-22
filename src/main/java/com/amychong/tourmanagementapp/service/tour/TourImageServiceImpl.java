@@ -27,7 +27,7 @@ public class TourImageServiceImpl implements TourImageService{
     @Transactional
     public List<TourImage> updateTourImages(Integer inputTourId, List<TourImage> inputTourImages) {
 
-        Tour existingTour = tourService.findByIdWithDetails(inputTourId);
+        Tour existingTour = tourService.findByIdWithDetailsOrThrow(inputTourId);
         Tour copyOfExistingTour = existingTour.deepCopy();
 
         List<TourImage> imagesOfExistingTour = copyOfExistingTour.getTourImages();

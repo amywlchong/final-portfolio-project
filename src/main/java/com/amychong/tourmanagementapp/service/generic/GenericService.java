@@ -6,7 +6,7 @@ public interface GenericService<T, Response> {
 
     List<Response> findAll();
 
-    Response findById(Integer theId);
+    Response findByIdOrThrow(Integer theId);
 
     void deleteById(Integer theId);
 }
