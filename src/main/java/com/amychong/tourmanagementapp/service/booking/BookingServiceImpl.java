@@ -154,7 +154,7 @@ public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingRespo
     }
 
     private void setBookingPricing(Booking theBooking, Integer theTourId, int numberOfParticipants) {
-        Tour existingTour = tourService.findByIdOrThrow(theTourId);
+        Tour existingTour = entityLookup.findTourByIdOrThrow(theTourId);
 
         BigDecimal tourUnitPrice = existingTour.getPrice();
         BigDecimal totalPrice = tourUnitPrice.multiply(BigDecimal.valueOf(numberOfParticipants));

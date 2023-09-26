@@ -1,24 +1,21 @@
 package com.amychong.tourmanagementapp.service.tour;
 
+import com.amychong.tourmanagementapp.dto.tour.TourResponseDTO;
 import com.amychong.tourmanagementapp.entity.tour.Tour;
 import com.amychong.tourmanagementapp.service.generic.GenericService;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public interface TourService extends GenericService<Tour, Tour> {
+public interface TourService extends GenericService<Tour, TourResponseDTO> {
 
-    Tour findByIdWithDetailsOrThrow(Integer tourId);
+    List<TourResponseDTO> findAvailableToursWithinRange(LocalDate startDate, LocalDate endDate);
 
-    List<Tour> findAvailableToursWithinRange(LocalDate startDate, LocalDate endDate);
+    TourResponseDTO create(Tour inputTour);
 
-    Tour save(Tour tour);
+    TourResponseDTO update(Integer theTourId, Tour theTour);
 
-    Tour create(Tour inputTour);
-
-    Tour update(Integer theTourId, Tour theTour);
-
-    Tour updateMainInfo(Integer theTourId, Tour theTour);
+    TourResponseDTO updateMainInfo(Integer theTourId, Tour theTour);
 
     void updateTourRatingsAfterAddingReview(Tour associatedTour, Integer newRating);
 

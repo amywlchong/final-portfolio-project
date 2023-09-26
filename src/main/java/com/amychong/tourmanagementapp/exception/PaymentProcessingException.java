@@ -1,7 +1,5 @@
 package com.amychong.tourmanagementapp.exception;
 
-import java.io.IOException;
-
 public class PaymentProcessingException extends RuntimeException {
 
     public PaymentProcessingException(String message) {

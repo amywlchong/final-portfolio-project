@@ -75,6 +75,8 @@ public class TourImage implements Identifiable<Integer>, Serializable, DeepCopya
         isCover = cover;
     }
 
+    public Tour getTour() { return tour; }
+
     public void setTour(Tour tour) {
         this.tour = tour;
     }

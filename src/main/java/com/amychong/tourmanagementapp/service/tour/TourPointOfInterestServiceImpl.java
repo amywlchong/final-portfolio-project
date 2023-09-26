@@ -5,6 +5,8 @@ import com.amychong.tourmanagementapp.entity.tour.Tour;
 import com.amychong.tourmanagementapp.entity.tour.TourPointOfInterest;
 import com.amychong.tourmanagementapp.repository.tour.PointOfInterestRepository;
 import com.amychong.tourmanagementapp.repository.tour.TourPointOfInterestRepository;
+import com.amychong.tourmanagementapp.repository.tour.TourRepository;
+import com.amychong.tourmanagementapp.service.EntityLookup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,13 +18,15 @@ public class TourPointOfInterestServiceImpl implements TourPointOfInterestServic
 
     private final PointOfInterestRepository pointOfInterestRepository;
     private final TourPointOfInterestRepository tourPointOfInterestRepository;
-    private final TourService tourService;
+    private final TourRepository tourRepository;
+    private final EntityLookup entityLookup;
 
     @Autowired
-    public TourPointOfInterestServiceImpl(PointOfInterestRepository thePointOfInterestRepository, TourPointOfInterestRepository theTourPointOfInterestRepository, TourService theTourService) {
+    public TourPointOfInterestServiceImpl(PointOfInterestRepository thePointOfInterestRepository, TourPointOfInterestRepository theTourPointOfInterestRepository, TourRepository theTourRepository, EntityLookup theEntityLookup) {
         pointOfInterestRepository = thePointOfInterestRepository;
         tourPointOfInterestRepository = theTourPointOfInterestRepository;
-        tourService = theTourService;
+        tourRepository = theTourRepository;
+        entityLookup = theEntityLookup;
     }
 
     @Override
@@ -31,7 +35,7 @@ public class TourPointOfInterestServiceImpl implements TourPointOfInterestServic
 
         TourUpdateProcessor<TourPointOfInterest, PointOfInterest, String> helper = new TourUpdateProcessor<>();
         helper.inputTourId = inputTourId;
-        helper.findTourFunction = tourService::findByIdWithDetailsOrThrow;
+        helper.findTourFunction = entityLookup::findTourByIdWithDetailsOrThrow;
         helper.inputTourRelatedEntities = inputTourPointsOfInterest;
         helper.findTourRelatedEntityFromDB = tourPointOfInterestRepository::findByTour_IdAndPointOfInterest_Name;
         helper.getEntitiesFromTourFunction = Tour::getTourPointsOfInterest;
@@ -42,6 +46,6 @@ public class TourPointOfInterestServiceImpl implements TourPointOfInterestServic
 
         Tour processedTour = helper.processTourForUpdate();
 
-        return tourService.save(processedTour).getTourPointsOfInterest();
+        return tourRepository.save(processedTour).getTourPointsOfInterest();
     }
 }

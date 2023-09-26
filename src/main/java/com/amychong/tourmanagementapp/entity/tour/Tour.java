@@ -2,6 +2,7 @@ package com.amychong.tourmanagementapp.entity.tour;
 
 import com.amychong.tourmanagementapp.entity.interfaces.DeepCopyable;
 import com.amychong.tourmanagementapp.entity.interfaces.Identifiable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.apache.commons.lang3.SerializationUtils;
@@ -76,6 +77,7 @@ public class Tour implements Identifiable<Integer>, Serializable, DeepCopyable {
     @Column(name="ratings_average")
     private Float ratingsAverage;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "tour", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TourImage> tourImages = new ArrayList<>();
 

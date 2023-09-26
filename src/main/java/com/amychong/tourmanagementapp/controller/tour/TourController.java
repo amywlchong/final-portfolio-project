@@ -1,8 +1,8 @@
 package com.amychong.tourmanagementapp.controller.tour;
 
 import com.amychong.tourmanagementapp.controller.generic.GenericController;
+import com.amychong.tourmanagementapp.dto.tour.TourResponseDTO;
 import com.amychong.tourmanagementapp.entity.tour.Tour;
-import com.amychong.tourmanagementapp.entity.tour.TourImage;
 import com.amychong.tourmanagementapp.entity.tour.TourPointOfInterest;
 import com.amychong.tourmanagementapp.entity.tour.TourStartDate;
 import com.amychong.tourmanagementapp.service.tour.TourImageService;
@@ -23,7 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tours")
-public class TourController extends GenericController<Tour, Tour> {
+public class TourController extends GenericController<Tour, TourResponseDTO> {
     private final TourService tourService;
     private final TourImageService tourImageService;
     private final TourPointOfInterestService tourPointOfInterestService;
@@ -39,34 +39,27 @@ public class TourController extends GenericController<Tour, Tour> {
     }
 
     @GetMapping("/available")
-    public ResponseEntity<List<Tour>> getAvailableToursWithinRange(
+    public ResponseEntity<List<TourResponseDTO>> getAvailableToursWithinRange(
             @NotNull @RequestParam("startDate") LocalDate startDate,
             @NotNull @RequestParam("endDate") LocalDate endDate) {
 
-        List<Tour> availableTours = tourService.findAvailableToursWithinRange(startDate, endDate);
+        List<TourResponseDTO> availableTours = tourService.findAvailableToursWithinRange(startDate, endDate);
 
         return new ResponseEntity<>(availableTours, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
     @PostMapping
-    public ResponseEntity<Tour> add(@NotNull @Valid @RequestBody Tour tour) {
-        Tour newTour = tourService.create(tour);
+    public ResponseEntity<TourResponseDTO> add(@NotNull @Valid @RequestBody Tour tour) {
+        TourResponseDTO newTour = tourService.create(tour);
         return new ResponseEntity<>(newTour, HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
     @PutMapping("/{tourId}")
-    public ResponseEntity<Tour> updateMainInfo(@Min(1) @PathVariable Integer tourId, @NotNull @Valid @RequestBody Tour tour) {
-        Tour updatedTour = tourService.updateMainInfo(tourId, tour);
+    public ResponseEntity<TourResponseDTO> updateMainInfo(@Min(1) @PathVariable Integer tourId, @NotNull @Valid @RequestBody Tour tour) {
+        TourResponseDTO updatedTour = tourService.updateMainInfo(tourId, tour);
         return new ResponseEntity<>(updatedTour, HttpStatus.OK);
-    }
-
-    @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
-    @PutMapping("/{tourId}/images")
-    public ResponseEntity<List<TourImage>> updateImages(@Min(1) @PathVariable Integer tourId, @NotNull @Valid @RequestBody List<TourImage> tourImages) {
-        List<TourImage> updatedTourImages = tourImageService.updateTourImages(tourId, tourImages);
-        return new ResponseEntity<>(updatedTourImages, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
@@ -87,6 +80,8 @@ public class TourController extends GenericController<Tour, Tour> {
     @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
     @DeleteMapping("/{tourId}")
     public ResponseEntity<String> delete(@Min(1) @PathVariable Integer tourId) {
-        return super.delete(tourId);
+        super.delete(tourId);
+        return new ResponseEntity<>("Successfully deleted tour id " +  tourId + ", its associated images, " +
+                "its relationships with points of interest, and its relationships with start dates.", HttpStatus.OK);
     }
 }

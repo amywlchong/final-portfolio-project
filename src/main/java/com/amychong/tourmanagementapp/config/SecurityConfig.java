@@ -43,6 +43,7 @@ public class SecurityConfig {
                 new AntPathRequestMatcher("/api/tours/*/reviews", "GET"),
                 new AntPathRequestMatcher("/api/tours/*", "GET"),
                 new AntPathRequestMatcher("/api/tours", "GET"),
+                new AntPathRequestMatcher("/api/tours/*/images/*", "GET"),
                 new AntPathRequestMatcher("/api/users/*/reviews", "GET"),
                 new AntPathRequestMatcher("/api/reviews/*", "GET"),
                 new AntPathRequestMatcher("/api/reviews", "GET")

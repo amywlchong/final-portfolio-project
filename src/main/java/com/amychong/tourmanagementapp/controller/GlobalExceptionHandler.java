@@ -1,9 +1,6 @@
 package com.amychong.tourmanagementapp.controller;
 
-import com.amychong.tourmanagementapp.exception.AuthenticatedUserNotFoundException;
-import com.amychong.tourmanagementapp.exception.NotFoundException;
-import com.amychong.tourmanagementapp.exception.PaymentProcessingException;
-import com.amychong.tourmanagementapp.exception.PermissionDeniedException;
+import com.amychong.tourmanagementapp.exception.*;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +11,11 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestValueException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
@@ -54,13 +54,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exc.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException exc) {
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException exc) {
         return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException exc) {
+    @ExceptionHandler(MissingRequestValueException.class)
+    public ResponseEntity<String> handleMissingRequestValueException(MissingRequestValueException exc) {
+        return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<String> handleMissingServletRequestPartException(MissingServletRequestPartException exc) {
+        return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException exc) {
         return new ResponseEntity<>(exc.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
@@ -92,6 +102,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<String> handleIllegalStateException(IllegalStateException exc) {
         return new ResponseEntity<>(exc.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(S3Exception.class)
+    public ResponseEntity<String> handleS3Exception(S3Exception exc) {
+        String exceptionMessage = exc.awsErrorDetails().errorMessage();
+        int statusCode = exc.statusCode();
+
+        if (statusCode == 400) {
+            return new ResponseEntity<>(exceptionMessage, HttpStatus.BAD_REQUEST);
+        } else if (statusCode == 404) {
+            return new ResponseEntity<>(exceptionMessage, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(exceptionMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(S3OperationException.class)
+    public ResponseEntity<String> handleS3OperationException(S3OperationException exc) {
+        return new ResponseEntity<>(exc.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(PaymentProcessingException.class)

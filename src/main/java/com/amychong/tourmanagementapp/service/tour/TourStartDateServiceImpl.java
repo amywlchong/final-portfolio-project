@@ -4,7 +4,9 @@ import com.amychong.tourmanagementapp.entity.tour.StartDate;
 import com.amychong.tourmanagementapp.entity.tour.Tour;
 import com.amychong.tourmanagementapp.entity.tour.TourStartDate;
 import com.amychong.tourmanagementapp.repository.tour.StartDateRepository;
+import com.amychong.tourmanagementapp.repository.tour.TourRepository;
 import com.amychong.tourmanagementapp.repository.tour.TourStartDateRepository;
+import com.amychong.tourmanagementapp.service.EntityLookup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,13 +19,15 @@ public class TourStartDateServiceImpl implements TourStartDateService {
 
     private final TourStartDateRepository tourStartDateRepository;
     private final StartDateRepository startDateRepository;
-    private final TourService tourService;
+    private final TourRepository tourRepository;
+    private final EntityLookup entityLookup;
 
     @Autowired
-    public TourStartDateServiceImpl(TourStartDateRepository theTourStartDateRepository, StartDateRepository theStartDateRepository, TourService theTourService) {
+    public TourStartDateServiceImpl(TourStartDateRepository theTourStartDateRepository, StartDateRepository theStartDateRepository, TourRepository theTourRepository, EntityLookup theEntityLookup) {
         tourStartDateRepository = theTourStartDateRepository;
         startDateRepository = theStartDateRepository;
-        tourService = theTourService;
+        tourRepository = theTourRepository;
+        entityLookup = theEntityLookup;
     }
 
     @Override
@@ -32,7 +36,7 @@ public class TourStartDateServiceImpl implements TourStartDateService {
 
         TourUpdateProcessor<TourStartDate, StartDate, LocalDateTime> helper = new TourUpdateProcessor<>();
         helper.inputTourId = inputTourId;
-        helper.findTourFunction = tourService::findByIdWithDetailsOrThrow;
+        helper.findTourFunction = entityLookup::findTourByIdWithDetailsOrThrow;
         helper.inputTourRelatedEntities = inputTourStartDates;
         helper.findTourRelatedEntityFromDB = tourStartDateRepository::findByTour_IdAndStartDate_StartDateTime;
         helper.getEntitiesFromTourFunction = Tour::getTourStartDates;
@@ -42,12 +46,12 @@ public class TourStartDateServiceImpl implements TourStartDateService {
         helper.findExistingAssociatedEntitiesFunction = datetimes -> startDateRepository.findAllByStartDateTimeIn(datetimes);
 
         Tour processedTour = helper.processTourForUpdate();
-        Tour existingTour = tourService.findByIdOrThrow(inputTourId);
+        Tour existingTour = entityLookup.findTourByIdOrThrow(inputTourId);
 
         deleteTourStartDates(existingTour.getTourStartDates(), processedTour.getTourStartDates());
         Tour processedTourWithSchedules = setSchedulesForUpdatedStartDates(existingTour, processedTour);
 
-        return tourService.save(processedTourWithSchedules).getTourStartDates();
+        return tourRepository.save(processedTourWithSchedules).getTourStartDates();
     }
 
     @Override
