@@ -47,11 +47,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .passwordChangedDate(System.currentTimeMillis())
                 .authorities(Role.ROLE_CUSTOMER.toString())
                 .build();
-        userRepository.save(user);
+        User dbUser = userRepository.save(user);
 
-        String jwtToken = jwtService.generateToken(user);
+        String jwtToken = jwtService.generateToken(dbUser);
 
-        return new AuthenticationResponseDTO(jwtToken);
+        return new AuthenticationResponseDTO(jwtToken, dbUser.getId(), dbUser.getName(), dbUser.getActive(), dbUser.getRole());
     }
 
     @Override
@@ -63,12 +63,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 )
         );
 
-        User user = userRepository.findByEmail(request.getEmail())
+        User dbUser = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Did not find user"));
 
-        String jwtToken = jwtService.generateToken(user);
+        String jwtToken = jwtService.generateToken(dbUser);
 
-        return new AuthenticationResponseDTO(jwtToken);
+        return new AuthenticationResponseDTO(jwtToken, dbUser.getId(), dbUser.getName(), dbUser.getActive(), dbUser.getRole());
     }
 
     @Override
@@ -85,11 +85,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         copyOfUser.setPassword(passwordEncoder.encode(newPassword));
         copyOfUser.setPasswordChangedDate(System.currentTimeMillis());
 
-        userRepository.save(copyOfUser);
+        User dbUser = userRepository.save(copyOfUser);
 
-        String jwtToken = jwtService.generateToken(copyOfUser);
+        String jwtToken = jwtService.generateToken(dbUser);
 
-        return new AuthenticationResponseDTO(jwtToken);
+        return new AuthenticationResponseDTO(jwtToken, dbUser.getId(), dbUser.getName(), dbUser.getActive(), dbUser.getRole());
     }
 
     @Override
