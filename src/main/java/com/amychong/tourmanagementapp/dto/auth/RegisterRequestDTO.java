@@ -1,5 +1,7 @@
 package com.amychong.tourmanagementapp.dto.auth;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
 public class RegisterRequestDTO {
@@ -19,7 +21,8 @@ public class RegisterRequestDTO {
             message = "Password should contain at least one digit, one uppercase letter, one lowercase letter, and one special character (!, @, #, $, %, ^, &, +, or =). No white space is allowed in the password.")
     private final String password;
 
-    public RegisterRequestDTO(String name, String email, String password) {
+    @JsonCreator
+    public RegisterRequestDTO(@JsonProperty("name") String name, @JsonProperty("email") String email, @JsonProperty("password") String password) {
         this.name = name;
         this.email = email;
         this.password = password;

@@ -1,5 +1,7 @@
 package com.amychong.tourmanagementapp.dto.auth;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -15,7 +17,8 @@ public class UpdatePasswordRequestDTO {
             message = "Password should contain at least one digit, one uppercase letter, one lowercase letter, and one special character (!, @, #, $, %, ^, &, +, or =). No white space is allowed in the password.")
     private final String newPassword;
 
-    public UpdatePasswordRequestDTO(String oldPassword, String newPassword) {
+    @JsonCreator
+    public UpdatePasswordRequestDTO(@JsonProperty("oldPassword") String oldPassword, @JsonProperty("newPassword") String newPassword) {
         this.oldPassword = oldPassword;
         this.newPassword = newPassword;
     }

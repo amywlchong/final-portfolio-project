@@ -1,5 +1,7 @@
 package com.amychong.tourmanagementapp.dto.review;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
 public class ReviewRequestDTO {
@@ -16,7 +18,8 @@ public class ReviewRequestDTO {
     @Positive(message = "Booking ID must be positive")
     private final Integer bookingId;
 
-    public ReviewRequestDTO(String review, Integer rating, Integer bookingId) {
+    @JsonCreator
+    public ReviewRequestDTO(@JsonProperty("review") String review, @JsonProperty("rating") Integer rating, @JsonProperty("bookingId") Integer bookingId) {
         this.review = review;
         this.rating = rating;
         this.bookingId = bookingId;

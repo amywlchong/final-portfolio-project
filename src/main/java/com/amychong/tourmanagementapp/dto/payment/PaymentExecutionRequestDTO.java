@@ -1,5 +1,7 @@
 package com.amychong.tourmanagementapp.dto.payment;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -16,7 +18,8 @@ public class PaymentExecutionRequestDTO {
     private final String orderId;
 
     // constructor
-    public PaymentExecutionRequestDTO(Integer bookingId, String orderId) {
+    @JsonCreator
+    public PaymentExecutionRequestDTO(@JsonProperty("bookingId") Integer bookingId, @JsonProperty("orderId") String orderId) {
         this.bookingId = bookingId;
         this.orderId = orderId;
     }

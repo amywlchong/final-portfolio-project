@@ -1,5 +1,7 @@
 package com.amychong.tourmanagementapp.dto.schedule;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -20,7 +22,8 @@ public class ScheduleRequestDTO {
     @Future(message = "Start date time must be in the future")
     private final LocalDateTime startDateTime;
 
-    public ScheduleRequestDTO(Integer userId, Integer tourId, LocalDateTime startDateTime) {
+    @JsonCreator
+    public ScheduleRequestDTO(@JsonProperty("userId") Integer userId, @JsonProperty("tourId") Integer tourId, @JsonProperty("startDateTime") LocalDateTime startDateTime) {
         this.userId = userId;
         this.tourId = tourId;
         this.startDateTime = startDateTime;
