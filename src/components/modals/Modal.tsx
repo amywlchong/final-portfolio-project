@@ -64,7 +64,7 @@ const Modal = ({
   }, [secondaryAction, disabled]);
 
   return (
-    <Dialog open={isOpen} onClose={handleClose}>
+    <Dialog open={isOpen} onClose={handleClose} maxWidth={'xs'} fullWidth={true} >
       <DialogTitle>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {title}

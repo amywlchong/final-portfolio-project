@@ -1,6 +1,6 @@
-import React from "react";
 import { useCallback, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
+import Box from "@mui/material/Box";
 
 import useLoginModal from "../../hooks/useLoginModal";
 import useRegisterModal from "../../hooks/useRegisterModal";
@@ -21,39 +21,45 @@ const UserMenu = () => {
   }, []);
 
   return (
-    <div>
-      <div>
-        <div onClick={toggleOpen}>
-          <AiOutlineMenu />
-        </div>
-      </div>
+    <Box>
+      <Box>
+        <Box onClick={toggleOpen}>
+          <AiOutlineMenu size={28} />
+        </Box>
+      </Box>
       {isOpen && (
-        <div>
-          <div>
+        <Box
+          sx={{
+            position: 'absolute',
+            zIndex: 1,
+            backgroundColor: 'white',
+          }}
+        >
+          <Box>
             {currentUser ? (
               <>
-                <div>
+                <Box>
                   My tours
-                </div>
-                <div onClick={() => dispatch(logout())}>
+                </Box>
+                <Box onClick={() => dispatch(logout())}>
                   Logout
-                </div>
+                </Box>
               </>
             ) : (
               <>
-                <div onClick={loginModal.onOpen}>
+                <Box onClick={loginModal.onOpen}>
                   Login
-                </div>
-                <div onClick={registerModal.onOpen}>
+                </Box>
+                <Box onClick={registerModal.onOpen}>
                   Sign up
-                </div>
+                </Box>
               </>
             )}
-          </div>
-        </div>
+          </Box>
+        </Box>
       )}
-    </div>
-   );
+    </Box>
+  );
 }
 
 export default UserMenu;

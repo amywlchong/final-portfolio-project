@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "../redux/slices/userSlice";
+import tourReducer from "../redux/slices/tourSlice";
 import userTokenMiddleware from "../redux/middlewares/userTokenMiddleware";
 
 const store = configureStore({
   reducer: {
-    user: userReducer
+    user: userReducer,
+    tours: tourReducer
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(userTokenMiddleware)
 });

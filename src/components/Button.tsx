@@ -1,3 +1,4 @@
+import { Button } from "@mui/material";
 import { IconType } from "react-icons";
 
 interface ButtonProps {
@@ -5,29 +6,28 @@ interface ButtonProps {
   onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
   outline?: boolean;
-  small?: boolean;
   icon?: IconType;
+  width?: string | number;
 }
 
-const Button = ({
+const ButtonComponent = ({
   label,
   onClick,
   disabled,
   outline,
-  small,
   icon: Icon,
+  width,
 }: ButtonProps) => {
   return (
-    <button
+    <Button
+      variant={outline ? "outlined" : "contained"}
       disabled={disabled}
       onClick={onClick}
+      style={{ width }}
     >
-      {Icon && (
-        <Icon />
-      )}
-      {label}
-    </button>
-   );
+      {label} {Icon && (<Icon style={{ marginLeft: '5px' }} />)}
+    </Button>
+  );
 }
 
-export default Button;
+export default ButtonComponent;
