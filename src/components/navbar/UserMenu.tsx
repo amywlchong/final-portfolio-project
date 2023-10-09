@@ -6,6 +6,7 @@ import useLoginModal from "../../hooks/useLoginModal";
 import useRegisterModal from "../../hooks/useRegisterModal";
 import { useAppDispatch, useAppSelector } from "../../app/reduxHooks";
 import { logout } from "../../redux/slices/userSlice";
+import { Link } from "react-router-dom";
 
 const UserMenu = () => {
   const loginModal = useLoginModal();
@@ -38,19 +39,21 @@ const UserMenu = () => {
           <Box>
             {currentUser ? (
               <>
-                <Box>
-                  My tours
-                </Box>
-                <Box onClick={() => dispatch(logout())}>
+                <Link to={"/me/bookings"}>
+                  <Box>
+                    My bookings
+                  </Box>
+                </Link>
+                <Box onClick={() => dispatch(logout())} style={{ cursor: 'pointer' }}>
                   Logout
                 </Box>
               </>
             ) : (
               <>
-                <Box onClick={loginModal.onOpen}>
+                <Box onClick={loginModal.onOpen} style={{ cursor: 'pointer' }}>
                   Login
                 </Box>
-                <Box onClick={registerModal.onOpen}>
+                <Box onClick={registerModal.onOpen} style={{ cursor: 'pointer' }}>
                   Sign up
                 </Box>
               </>

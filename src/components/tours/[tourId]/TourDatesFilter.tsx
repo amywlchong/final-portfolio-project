@@ -7,6 +7,7 @@ import BookingModal from '../../modals/BookingModal';
 import Button from '../../Button';
 import { useAppSelector } from '../../../app/reduxHooks';
 import { formatDateAndTime } from '../../../utils/dataProcessing';
+import useBookingModal from '../../../hooks/useBookingModal';
 
 const TourDatesFilter = () => {
   const tour = useAppSelector(state => state.tours.currentTour);
@@ -16,9 +17,9 @@ const TourDatesFilter = () => {
     key: 'selection'
   };
   const [userAvailability, setUserAvailability] = useState<Range>(initialDateRange);
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [selectedStartDateTime, setSelectedStartDateTime] = useState<string | null>(null);
   const [availableSpacesOfSelected, setAvailableSpacesOfSelected] = useState(0);
+  const bookingModal = useBookingModal();
 
   if (!tour) {
     return <div>An error occurred.</div>;
@@ -75,7 +76,7 @@ const TourDatesFilter = () => {
             <Button
               label="Book Now"
               onClick={() => {
-                setIsBookingModalOpen(true);
+                bookingModal.onOpen();
                 setSelectedStartDateTime(formatDateAndTime(date.startDate.startDateTime));
                 setAvailableSpacesOfSelected(date.availableSpaces || 0);
               }}
@@ -86,8 +87,6 @@ const TourDatesFilter = () => {
 
       {selectedStartDateTime &&
         <BookingModal
-          isOpen={isBookingModalOpen}
-          onClose={() => setIsBookingModalOpen(false)}
           startDateTime={selectedStartDateTime}
           availableSpaces={availableSpacesOfSelected}
         />
