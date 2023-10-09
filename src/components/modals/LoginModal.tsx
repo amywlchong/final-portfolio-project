@@ -13,6 +13,8 @@ import Heading from "../Heading";
 import authService from "../../services/authService";
 import { useAppDispatch } from "../../app/reduxHooks";
 import { authenticate } from "../../redux/slices/userSlice";
+import { createServiceHandler } from "../../utils/serviceHandler";
+import { ApiError } from "../../utils/ApiError";
 
 const LoginModal = () => {
   const loginModal = useLoginModal();
@@ -36,26 +38,28 @@ const LoginModal = () => {
     defaultValues: defaultFormValues,
   });
 
-  const onSubmit = (data: FieldValues<LoginFormValues>) => {
-    setIsLoading(true);
-
-    authService.login(data)
-      .then((loginResponse) => {
-        toast.success('Logged in');
-        dispatch(authenticate(loginResponse));
-        loginModal.onClose();
-        reset(defaultFormValues);
-      })
-      .catch((error) => {
-        toast.error(error?.response?.data || "An unexpected error occurred. Please log in again.");
-      })
-      .finally(() => {
-        setIsLoading(false);
-      })
+  const onModalClose = () => {
+    reset(defaultFormValues);
+    loginModal.onClose();
   }
 
+  const onSubmit = async (data: FieldValues<LoginFormValues>) => {
+    const loginHandler = createServiceHandler(authService.login, {
+      startLoading: () => setIsLoading(true),
+      endLoading: () => setIsLoading(false),
+    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please log in again.")}});
+
+    const response = await loginHandler(data);
+
+    if (response.success && response.data) {
+      toast.success('Logged in');
+      dispatch(authenticate(response.data));
+      onModalClose();
+    }
+  };
+
   const onToggle = useCallback(() => {
-    loginModal.onClose();
+    onModalClose();
     registerModal.onOpen();
   }, [loginModal, registerModal])
 
@@ -104,7 +108,7 @@ const LoginModal = () => {
       isOpen={loginModal.isOpen}
       title="Login"
       actionLabel="Continue"
-      onClose={loginModal.onClose}
+      onClose={onModalClose}
       onSubmit={handleSubmit(onSubmit)}
       body={bodyContent}
       footer={footerContent}

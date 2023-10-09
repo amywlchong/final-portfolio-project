@@ -8,7 +8,7 @@ import { StyledGrid } from "../../styles";
 
 const ToursPage = () => {
 
-  const { loadingAllTours, allToursErrorMessage, loadingAvailableTours, availableToursErrorMessage } = useTours();
+  const { loadingAllTours, allToursError, loadingAvailableTours, availableToursError } = useTours();
   const tours = useAppSelector(state => state.tours.filteredTours);
 
   if (loadingAllTours == true || loadingAvailableTours == true) {
@@ -17,10 +17,10 @@ const ToursPage = () => {
     )
   }
 
-  const errorMessage = allToursErrorMessage || availableToursErrorMessage;
-  if (errorMessage) {
+  const error = allToursError || availableToursError;
+  if (error) {
     return (
-      <div>Error: {errorMessage}</div>
+      <div>Error: An error occurred while fetching tours.</div>
     );
   }
 

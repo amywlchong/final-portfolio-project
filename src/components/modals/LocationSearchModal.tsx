@@ -9,17 +9,26 @@ import { useAppSelector } from '../../app/reduxHooks';
 import useLocationSearchModal from "../../hooks/useLocationSearchModal";
 
 import useTours from "../../hooks/useTours"
+import { createServiceHandler } from "../../utils/serviceHandler";
+import toast from "react-hot-toast";
+import { ApiError } from "../../utils/ApiError";
 
 const LocationSearchModal = () => {
 
   const locationSearch = useLocationSearchModal();
+  const [isLoading, setIsLoading] = useState(false);
   const params = qs.parse(window.location.search);
 
   const { filterTours } = useTours();
   const allRegions = useAppSelector(state => state.tours.allRegions);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
 
-  const onSubmit = () => {
+  const filterToursHandler = createServiceHandler(filterTours, {
+    startLoading: () => setIsLoading(true),
+    endLoading: () => setIsLoading(false),
+  }, { handle: (_error: ApiError) => { toast.error("An error occurred. Please try again.")}});
+
+  const onSubmit = async () => {
     if (selectedRegions.length == 0) {
       onClear();
       return;
@@ -39,11 +48,12 @@ const LocationSearchModal = () => {
 
     window.history.pushState({}, '', url);
 
-    filterTours(selectedRegions, params.startDate, params.endDate);
+    await filterToursHandler(selectedRegions, params.startDate, params.endDate);
+
     locationSearch.onClose();
   };
 
-  const onClear = () => {
+  const onClear = async () => {
     setSelectedRegions([]);
 
     const currentQuery = { ...params };
@@ -60,8 +70,7 @@ const LocationSearchModal = () => {
 
     window.history.pushState({}, '', url);
 
-    filterTours([], params.startDate, params.endDate);
-    locationSearch.onClose();
+    await filterToursHandler([], params.startDate, params.endDate);
   }
 
   const bodyContent = (
@@ -86,6 +95,7 @@ const LocationSearchModal = () => {
 
   return (
     <Modal
+      disabled={isLoading}
       isOpen={locationSearch.isOpen}
       title="Filters"
       actionLabel={"Search"}

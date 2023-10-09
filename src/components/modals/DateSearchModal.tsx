@@ -8,10 +8,14 @@ import DatePicker from "../inputs/DatePicker";
 import Heading from '../Heading';
 import useDateSearchModal from '../../hooks/useDateSearchModal';
 import useTours from '../../hooks/useTours';
+import { createServiceHandler } from '../../utils/serviceHandler';
+import toast from 'react-hot-toast';
+import { ApiError } from '../../utils/ApiError';
 
 const DateSearchModal = () => {
 
   const dateSearch = useDateSearchModal();
+  const [isLoading, setIsLoading] = useState(false);
   const params = qs.parse(window.location.search);
 
   const { filterTours } = useTours();
@@ -22,7 +26,12 @@ const DateSearchModal = () => {
   };
   const [selectedDateRange, setSelectedDateRange] = useState<Range>(initialDateRange);
 
-  const onSubmit = () => {
+  const filterToursHandler = createServiceHandler(filterTours, {
+    startLoading: () => setIsLoading(true),
+    endLoading: () => setIsLoading(false),
+  }, { handle: (_error: ApiError) => { toast.error("An error occurred. Please try again.")}});
+
+  const onSubmit = async () => {
     const currentQuery = { ...params };
     const updatedQuery = { ...currentQuery };
 
@@ -41,11 +50,12 @@ const DateSearchModal = () => {
 
     window.history.pushState({}, '', url);
 
-    filterTours(params.regions, updatedQuery.startDate, updatedQuery.endDate);
+    await filterToursHandler(params.regions, updatedQuery.startDate, updatedQuery.endDate);
+
     dateSearch.onClose();
   };
 
-  const onClear = () => {
+  const onClear = async () => {
     setSelectedDateRange(initialDateRange);
 
     const currentQuery = { ...params };
@@ -63,8 +73,7 @@ const DateSearchModal = () => {
 
     window.history.pushState({}, '', url);
 
-    filterTours(params.regions, null, null);
-    dateSearch.onClose();
+    await filterToursHandler(params.regions, null, null);
   }
 
   const bodyContent = (
@@ -82,6 +91,7 @@ const DateSearchModal = () => {
 
   return (
     <Modal
+      disabled={isLoading}
       isOpen={dateSearch.isOpen}
       title="Filters"
       actionLabel={"Search"}

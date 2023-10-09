@@ -1,13 +1,11 @@
 interface HeadingProps {
   title: string;
   subtitle?: string;
-  center?: boolean;
 }
 
 const Heading = ({
   title,
-  subtitle,
-  center
+  subtitle
 }: HeadingProps) => {
   return (
     <div>

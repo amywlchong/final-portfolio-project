@@ -1,4 +1,4 @@
-import { InputLabel, Select, Box, Chip, FormControl } from '@mui/material';
+import { InputLabel, Select, FormControl } from '@mui/material';
 import { ReactElement } from 'react';
 
 interface Props<T extends { toString(): string }> {

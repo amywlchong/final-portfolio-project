@@ -3,24 +3,34 @@ import { Range } from 'react-date-range';
 import { Typography, List, ListItem, ListItemText } from '@mui/material';
 import { addDays } from 'date-fns';
 import DatePicker from '../../inputs/DatePicker';
-import { TourStartDate } from '../../../types';
+import BookingModal from '../../modals/BookingModal';
+import Button from '../../Button';
+import { useAppSelector } from '../../../app/reduxHooks';
+import { formatDateAndTime } from '../../../utils/dataProcessing';
 
-interface TourDatesFilterProps {
-  tourStartDates: TourStartDate[];
-  tourDuration: number;
-}
-
-const TourDatesFilter = ({ tourStartDates, tourDuration }: TourDatesFilterProps) => {
+const TourDatesFilter = () => {
+  const tour = useAppSelector(state => state.tours.currentTour);
   const initialDateRange = {
     startDate: addDays(new Date(), 1),
     endDate: addDays(new Date(), 1),
     key: 'selection'
   };
   const [userAvailability, setUserAvailability] = useState<Range>(initialDateRange);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [selectedStartDateTime, setSelectedStartDateTime] = useState<string | null>(null);
+  const [availableSpacesOfSelected, setAvailableSpacesOfSelected] = useState(0);
 
-  const filteredTourStartDates = tourStartDates.filter(date => {
+  if (!tour) {
+    return <div>An error occurred.</div>;
+  }
+
+  if (!tour.tourStartDates || tour.tourStartDates.length == 0) {
+    return <Typography variant="h3">Upcoming dates to be posted</Typography>;
+  }
+
+  const filteredTourStartDates = tour.tourStartDates.filter(date => {
     const tourStartDate = new Date(date.startDate.startDateTime);
-    const tourEndDate = addDays(tourStartDate, (tourDuration - 1));
+    const tourEndDate = addDays(tourStartDate, (tour.duration - 1));
 
     if (!userAvailability.startDate || !userAvailability.endDate) return true;
 
@@ -52,14 +62,36 @@ const TourDatesFilter = ({ tourStartDates, tourDuration }: TourDatesFilterProps)
       </Typography>
       <List>
         {filteredTourStartDates.map(date => (
-          <ListItem key={date.id.startDateId}>
+          <ListItem
+            key={date.id.startDateId}
+            style={{
+              width: '360px'
+            }}
+          >
             <ListItemText
-              primary={new Date(date.startDate.startDateTime).toDateString()}
+              primary={formatDateAndTime(date.startDate.startDateTime)}
               secondary={`Available Spaces: ${date.availableSpaces}`}
+            />
+            <Button
+              label="Book Now"
+              onClick={() => {
+                setIsBookingModalOpen(true);
+                setSelectedStartDateTime(formatDateAndTime(date.startDate.startDateTime));
+                setAvailableSpacesOfSelected(date.availableSpaces || 0);
+              }}
             />
           </ListItem>
         ))}
       </List>
+
+      {selectedStartDateTime &&
+        <BookingModal
+          isOpen={isBookingModalOpen}
+          onClose={() => setIsBookingModalOpen(false)}
+          startDateTime={selectedStartDateTime}
+          availableSpaces={availableSpacesOfSelected}
+        />
+      }
     </div>
   );
 }

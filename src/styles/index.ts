@@ -31,7 +31,7 @@ export const StyledLink = styled(RouterLink)`
   }
 `;
 
-export const StyledCard = styled(Card)(({ theme }) => ({
+export const StyledCard = styled(Card)({
   width: '100%',
   maxWidth: '400px',
   height: '400px',
@@ -40,7 +40,7 @@ export const StyledCard = styled(Card)(({ theme }) => ({
   '&:hover': {
     boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
   }
-}));
+});
 
 interface IrregularRectangleProps {
   backgroundImageUrl: string;

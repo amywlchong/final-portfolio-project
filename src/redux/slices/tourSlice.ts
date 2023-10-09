@@ -5,11 +5,13 @@ type TourState = {
   allTours: Tour[];
   filteredTours: Tour[];
   allRegions: string[];
+  currentTour: Tour | null;
 }
 const initialState: TourState = {
   allTours: [],
   filteredTours: [],
   allRegions: [],
+  currentTour: null,
 }
 
 const tourSlice = createSlice({
@@ -24,8 +26,11 @@ const tourSlice = createSlice({
     setFilteredTours: (state, action: PayloadAction<Tour[]>) => {
       state.filteredTours = action.payload;
     },
+    setCurrentTour: (state, action: PayloadAction<Tour | null>) => {
+      state.currentTour = action.payload;
+    },
   }
 })
 
 export default tourSlice.reducer
-export const { setAllTours, setFilteredTours } = tourSlice.actions
+export const { setAllTours, setFilteredTours, setCurrentTour } = tourSlice.actions

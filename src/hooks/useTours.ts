@@ -4,13 +4,14 @@ import tourService from "../services/tourService";
 import { setAllTours, setFilteredTours } from "../redux/slices/tourSlice";
 import { useAppDispatch, useAppSelector } from "../app/reduxHooks";
 import { createServiceHandler } from "../utils/serviceHandler";
+import { ApiError } from "../utils/ApiError";
 
 const useTours = () => {
   const [loadingAllTours, setLoadingAllTours] = useState(false);
   const [loadingAvailableTours, setLoadingAvailableTours] = useState(false);
 
-  const [allToursErrorMessage, setAllToursErrorMessage] = useState("");
-  const [availableToursErrorMessage, setAvailableToursErrorMessage] = useState("");
+  const [allToursError, setAllToursError] = useState<ApiError | null>(null);
+  const [availableToursError, setAvailableToursError] = useState<ApiError | null>(null);
 
   const dispatch = useAppDispatch();
   const allTours = useAppSelector(state => state.tours.allTours);
@@ -20,6 +21,9 @@ const useTours = () => {
     {
       startLoading: () => setLoadingAllTours(true),
       endLoading: () => setLoadingAllTours(false),
+    },
+    {
+      handle: (error: ApiError) => setAllToursError(error)
     }
   );
 
@@ -29,9 +33,7 @@ const useTours = () => {
 
       if (response.success && response.data) {
         dispatch(setAllTours(response.data));
-        setAllToursErrorMessage("");
-      } else {
-        setAllToursErrorMessage("An error occurred while fetching tours.");
+        setAllToursError(null);
       }
     }
 
@@ -45,6 +47,9 @@ const useTours = () => {
     {
       startLoading: () => setLoadingAvailableTours(true),
       endLoading: () => setLoadingAvailableTours(false),
+    },
+    {
+      handle: (error: ApiError) => setAvailableToursError(error)
     }
   );
 
@@ -55,9 +60,7 @@ const useTours = () => {
       const response = await getAvailableToursWithinRange(startDate, endDate);
       if (response.success && response.data) {
         toursInRange = response.data;
-        setAvailableToursErrorMessage("");
-      } else {
-        setAvailableToursErrorMessage("An error occurred while fetching tours.");
+        setAvailableToursError(null);
       }
     } else {
       toursInRange = allTours;
@@ -72,7 +75,7 @@ const useTours = () => {
     }
   }
 
-  return { getAllTours, loadingAllTours, allToursErrorMessage, filterTours, loadingAvailableTours, availableToursErrorMessage }
+  return { getAllTours, loadingAllTours, allToursError, filterTours, loadingAvailableTours, availableToursError }
 }
 
 export default useTours;

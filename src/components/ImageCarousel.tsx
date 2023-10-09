@@ -29,7 +29,7 @@ const ImageCarousel = ({ images, title }: ImageCarouselProps) => {
   };
 
   // Make sure cover image is first
-  const sortedImages = images.sort((a, b) => (a.coverImage ? -1 : 1));
+  const sortedImages = [...images].sort((a) => (a.coverImage ? -1 : 1));
 
   return (
     <div style={{ position: 'relative', borderRadius: '5px', overflow: 'hidden' }}>

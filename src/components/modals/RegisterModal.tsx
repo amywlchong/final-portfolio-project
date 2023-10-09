@@ -13,6 +13,8 @@ import Heading from "../Heading";
 import authService from "../../services/authService";
 import { authenticate } from "../../redux/slices/userSlice";
 import { useAppDispatch } from "../../app/reduxHooks";
+import { createServiceHandler } from "../../utils/serviceHandler";
+import { ApiError } from "../../utils/ApiError";
 
 const RegisterModal= () => {
   const registerModal = useRegisterModal();
@@ -37,26 +39,28 @@ const RegisterModal= () => {
     defaultValues: defaultFormValues,
   });
 
-  const onSubmit = (data: FieldValues<RegisterFormValues>) => {
-    setIsLoading(true);
-
-    authService.register(data)
-      .then((registerResponse) => {
-        toast.success('Registered!');
-        dispatch(authenticate(registerResponse));
-        registerModal.onClose();
-        reset(defaultFormValues);
-      })
-      .catch((error) => {
-        toast.error(error?.response?.data || "An unexpected error occurred. Please sign up again.");
-      })
-      .finally(() => {
-        setIsLoading(false);
-      })
+  const onModalClose = () => {
+    reset(defaultFormValues);
+    registerModal.onClose();
   }
 
+  const onSubmit = async (data: FieldValues<RegisterFormValues>) => {
+    const registerHandler = createServiceHandler(authService.register, {
+      startLoading: () => setIsLoading(true),
+      endLoading: () => setIsLoading(false),
+    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please sign up again.")}});
+
+    const response = await registerHandler(data);
+
+    if (response.success && response.data) {
+      toast.success('Registered!');
+      dispatch(authenticate(response.data));
+      onModalClose();
+    }
+  };
+
   const onToggle = useCallback(() => {
-    registerModal.onClose();
+    onModalClose();
     loginModal.onOpen();
   }, [registerModal, loginModal])
 
@@ -113,7 +117,7 @@ const RegisterModal= () => {
       isOpen={registerModal.isOpen}
       title="Register"
       actionLabel="Continue"
-      onClose={registerModal.onClose}
+      onClose={onModalClose}
       onSubmit={handleSubmit(onSubmit)}
       body={bodyContent}
       footer={footerContent}

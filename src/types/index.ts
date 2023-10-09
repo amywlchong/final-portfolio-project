@@ -1,5 +1,3 @@
-import bigDecimal from "js-big-decimal";
-
 export interface FieldValues<T = any> {
   [x: string]: T;
 }
@@ -40,7 +38,7 @@ export interface Tour {
   duration: number;
   maxGroupSize: number;
   difficulty: Difficulty;
-  price: bigDecimal;
+  price: string;
   summary: string;
   description?: string;
   region: string;
@@ -91,5 +89,54 @@ export interface TourStartDateKey {
 
 export interface StartDate {
   id: number;
-  startDateTime: Date;
+  startDateTime: string;
+}
+
+export interface BookingRequest {
+  userId: number;
+  tourId: number;
+  startDateTime: string;
+  numberOfParticipants: number;
+}
+
+export interface BookingResponse {
+  id: number;
+  unitPrice: string;
+  totalPrice: string;
+  paid: boolean;
+  transactionId: string;
+  numberOfParticipants: number;
+  createdDate: string;
+
+  // User fields
+  userId: number;
+  userName: string;
+  userActive: boolean;
+  userRole: Role;
+
+  // Tour fields
+  tourId: number;
+  tourName: string;
+  tourDuration: number;
+  tourRegion: string;
+
+  // StartDate fields
+  startDateId: number;
+  startDateTime: string;
+}
+
+export interface CapturePaymentRequest {
+  bookingId: number;
+  orderId: string;
+}
+
+export interface CapturePaymentResponse {
+  amount: {
+    value: string;
+    currency_code: string;
+  };
+  orderId: string;
+  referenceId: string;
+  transactionId: string;
+  status: string;
 }

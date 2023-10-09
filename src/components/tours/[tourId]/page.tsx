@@ -1,47 +1,52 @@
 import { useParams } from 'react-router-dom';
-import { Box, Card, CardContent, CardMedia, List, ListItem, ListItemText, Typography } from '@mui/material';
+import { Box, Card, CardContent, List, ListItem, ListItemText, Typography } from '@mui/material';
 import tourService from '../../../services/tourService';
 import { useEffect, useState } from 'react';
-import { Tour } from '../../../types';
 
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import RatingBar from '../../RatingBar';
 import TourDatesFilter from './TourDatesFilter';
 import ImageCarousel from '../../ImageCarousel';
+import { setCurrentTour } from '../../../redux/slices/tourSlice';
+import { useAppDispatch, useAppSelector } from '../../../app/reduxHooks';
+import { ApiError } from '../../../utils/ApiError';
+import { createServiceHandler } from '../../../utils/serviceHandler';
 
 const TourPage = () => {
   const { id } = useParams<{ id: string }>();
   const tourId = Number(id);
 
-  const [tour, setTour] = useState<Tour | undefined>(undefined);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const tour = useAppSelector(state => state.tours.currentTour);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<ApiError | null>(null);
 
   useEffect(() => {
     const fetchTour = async () => {
-      setLoading(true);
-      try {
-        const fetchedTour = await tourService.getOneTour(tourId);
-        setTour(fetchedTour);
+      const getTourHandler = createServiceHandler(tourService.getOneTour, {
+        startLoading: () => setIsLoading(true),
+        endLoading: () => setIsLoading(false),
+      }, { handle: (error: ApiError) => setError(error) });
+
+      const response = await getTourHandler(tourId);
+
+      if (response.success) {
+        dispatch(setCurrentTour(response.data || null));
         setError(null);
-      } catch (error: any) {
-        setError('An error occurred while fetching the tour.');
-        console.error("Error:", error?.response?.data || "An unknown error occurred while fetching the tour.");
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchTour();
   }, [tourId]);
 
-  if (loading) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div>Error: An error occurred while fetching the tour.</div>;
   }
 
   if (!tour) {
@@ -114,7 +119,7 @@ const TourPage = () => {
         }
 
         {tour.tourStartDates && tour.tourStartDates.length > 0
-          ? <TourDatesFilter tourStartDates={tour.tourStartDates} tourDuration={tour.duration} />
+          ? <TourDatesFilter />
           : <Typography variant="h3">Upcoming dates to be posted</Typography>
         }
       </CardContent>

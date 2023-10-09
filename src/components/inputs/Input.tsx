@@ -9,6 +9,8 @@ interface InputProps {
   id: string;
   label: string;
   type?: string;
+  min?: number;
+  max?: number;
   disabled?: boolean;
   required?: boolean;
   register: UseFormRegister<FieldValues>,
@@ -19,6 +21,8 @@ const Input = ({
   id,
   label,
   type = "text",
+  min,
+  max,
   disabled,
   register,
   required,
@@ -27,7 +31,13 @@ const Input = ({
   return (
     <div>
       <label>
-        <Typography variant="body1" component="span">{label}</Typography>
+        <Typography
+          variant="body1"
+          component="span"
+          style={{ color: errors[id] ? 'red' : 'inherit' }}
+        >
+          {label}
+        </Typography>
       </label>
       <input
         id={id}
@@ -35,6 +45,8 @@ const Input = ({
         {...register(id, { required })}
         placeholder=" "
         type={type}
+        min={min}
+        max={max}
       />
     </div>
    );
