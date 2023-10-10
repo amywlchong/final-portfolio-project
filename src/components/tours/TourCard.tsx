@@ -58,7 +58,7 @@ const TourCard = ({ tour }: ListingCardProps) => {
           {tour.ratingsAverage &&
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
               <ThumbUpIcon style={{ marginRight: '8px' }} />
-              <RatingBar rating={tour.ratingsAverage} readOnly={true} />
+              <RatingBar id={`${tour.id}`} rating={tour.ratingsAverage} readOnly={true} />
             </div>
           }
         </Box>

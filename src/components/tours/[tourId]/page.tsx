@@ -12,6 +12,8 @@ import { setCurrentTour } from '../../../redux/slices/tourSlice';
 import { useAppDispatch, useAppSelector } from '../../../app/reduxHooks';
 import { ApiError } from '../../../utils/ApiError';
 import { createServiceHandler } from '../../../utils/serviceHandler';
+import { ReviewResponse } from '../../../types';
+import reviewService from '../../../services/reviewService';
 
 const TourPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,6 +24,21 @@ const TourPage = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
+
+  const [reviews, setReviews] = useState<ReviewResponse[]>([]);
+  const [showReviews, setShowReviews] = useState(false);
+
+  const handleShowReviews = async () => {
+    if (!showReviews) {
+      try {
+        const fetchedReviews = await reviewService.getReviewsByTourId(tourId);
+        setReviews(fetchedReviews);
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      }
+    }
+    setShowReviews(prev => !prev);
+  };
 
   useEffect(() => {
     const fetchTour = async () => {
@@ -67,7 +84,7 @@ const TourPage = () => {
             {tour.name}
           </Typography>
           {tour.ratingsAverage &&
-            <RatingBar rating={tour.ratingsAverage} readOnly={true} />
+            <RatingBar id={`${tour.id}`} rating={tour.ratingsAverage} readOnly={true} />
           }
         </div>
 
@@ -122,6 +139,31 @@ const TourPage = () => {
           ? <TourDatesFilter />
           : <Typography variant="h3">Upcoming dates to be posted</Typography>
         }
+
+        <>
+          <Typography variant="body1" onClick={handleShowReviews} style={{ cursor: 'pointer' }}>
+            See Reviews
+          </Typography>
+          {showReviews && (
+            reviews.length > 0
+            ? <List>
+                {reviews.map(review => (
+                  <ListItem key={review.id} style={{ flexDirection: 'column', alignItems: 'flex-start', padding: '16px' }}>
+
+                      <RatingBar id={`review-${review.id}`} rating={review.rating} readOnly={true} />
+
+                      <Typography variant="body1">{review.review}</Typography>
+
+                      <Typography variant="caption">
+                        {`by ${review.userName} on ${new Date(review.createdDate).toLocaleDateString()}`}
+                      </Typography>
+
+                  </ListItem>
+                ))}
+              </List>
+            : <Typography variant="body1">No reviews yet</Typography>
+          )}
+        </>
       </CardContent>
     </Card>
   );

@@ -9,15 +9,17 @@ import { useAppSelector } from '../../app/reduxHooks';
 import Button from '../Button';
 import { createServiceHandler } from '../../utils/serviceHandler';
 import { ApiError } from '../../utils/ApiError';
+import useReviewModal from '../../hooks/useReviewModal';
+import ReviewModal from '../modals/ReviewModal';
 import tourService from '../../services/tourService';
 import { BiSolidSave } from 'react-icons/bi';
 
 type SortFields = 'startDateTime' | 'tourDuration' | 'numberOfParticipants' | 'totalPrice' | 'paid';
 type SortDirection = 'asc' | 'desc';
 
-const UserBookings = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<ApiError | null>(null);
+const BookingsPage = () => {
+  const [isLoadingBookings, setIsLoadingBookings] = useState(false);
+  const [errorFetchingBookings, setErrorFetchingBookings] = useState<ApiError | null>(null);
   const currentUser = useAppSelector(state => state.user.loggedInUser);
 
   const [pastBookings, setPastBookings] = useState<BookingResponse[]>([]);
@@ -33,6 +35,9 @@ const UserBookings = () => {
   const [availableStartDates, setAvailableStartDates] = useState<string[]>([]);
   const [newStartDate, setNewStartDate] = useState<string>('');
 
+  const [bookingIdOfReview, setBookingIdOfReview] = useState<number | null>(null);
+  const reviewModal = useReviewModal();
+
   useEffect(() => {
     if (!currentUser) {
       toast("Please log in or sign up to continue", { icon: '❗' });
@@ -41,9 +46,9 @@ const UserBookings = () => {
 
     const fetchBookings = async () => {
       const getMyBookingsHandler = createServiceHandler(bookingService.getMyBookings, {
-        startLoading: () => setIsLoading(true),
-        endLoading: () => setIsLoading(false),
-      }, { handle: (error: ApiError) => setError(error) });
+        startLoading: () => setIsLoadingBookings(true),
+        endLoading: () => setIsLoadingBookings(false),
+      }, { handle: (error: ApiError) => setErrorFetchingBookings(error) });
 
       const response = await getMyBookingsHandler();
 
@@ -53,18 +58,18 @@ const UserBookings = () => {
         const pastBookings = response.data.filter(booking => booking.startDateTime < currentDateTime);
         setPastBookings(pastBookings.sort((a, b) => (a.startDateTime > b.startDateTime) ? 1 : -1));
         setFutureBookings(futureBookings.sort((a, b) => (a.startDateTime > b.startDateTime) ? 1 : -1));
-        setError(null);
+        setErrorFetchingBookings(null);
       }
     };
 
     fetchBookings();
   }, [currentUser]);
 
-  if (isLoading) {
+  if (isLoadingBookings) {
     return <div>Loading...</div>;
   }
 
-  if (error) {
+  if (errorFetchingBookings) {
     return <div>Error: An error occurred while fetching bookings.</div>;
   }
 
@@ -219,9 +224,14 @@ const UserBookings = () => {
             <TableCell>${booking.totalPrice}</TableCell>
             <TableCell>{booking.paid ? 'Yes' : 'No'}</TableCell>
             <TableCell>
-              <Button label="Add Review" disabled={!enableReviewButton} onClick={() => {
-                // to be updated
-              }} />
+              <Button
+                label="Review"
+                disabled={!enableReviewButton}
+                onClick={() => {
+                  setBookingIdOfReview(booking.id);
+                  reviewModal.onOpen();
+                }}
+              />
             </TableCell>
           </TableRow>
         ))}
@@ -246,8 +256,10 @@ const UserBookings = () => {
           {renderTable(pastBookings, pastSortField, pastSortDirection, setPastBookings, setPastSortField, setPastSortDirection, false, true)}
         </TableContainer>
       </Box>
+
+      {bookingIdOfReview && <ReviewModal bookingId={bookingIdOfReview} />}
     </div>
   );
 };
 
-export default UserBookings;
+export default BookingsPage;

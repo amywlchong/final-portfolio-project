@@ -140,3 +140,35 @@ export interface CapturePaymentResponse {
   transactionId: string;
   status: string;
 }
+
+export interface ReviewRequest {
+  bookingId: number;
+  rating: number;
+  review: string;
+}
+
+export interface ReviewResponse {
+  id: number;
+  review: string;
+  rating: number;
+  createdDate: string;
+
+  // Booking field
+  bookingId: number;
+
+  // User fields
+  userId: number;
+  userName: string;
+  userActive: boolean;
+  userRole: Role;
+
+  // Tour fields
+  tourId: number;
+  tourName: string;
+  tourDuration: number;
+  tourRegion: string;
+
+  // StartDate fields
+  startDateId: number;
+  startDateTime: string;
+}
