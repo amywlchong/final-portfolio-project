@@ -1,13 +1,14 @@
-import { Button } from "@mui/material";
+import { Button, SxProps, Theme } from "@mui/material";
 import { IconType } from "react-icons";
 
 interface ButtonProps {
   label: string;
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
   disabled?: boolean;
   outline?: boolean;
   icon?: IconType;
   width?: string | number;
+  sx?: SxProps<Theme>;
 }
 
 const ButtonComponent = ({
@@ -17,6 +18,7 @@ const ButtonComponent = ({
   outline,
   icon: Icon,
   width,
+  sx
 }: ButtonProps) => {
   return (
     <Button
@@ -24,6 +26,7 @@ const ButtonComponent = ({
       disabled={disabled}
       onClick={onClick}
       style={{ width }}
+      sx={sx}
     >
       {label} {Icon && (<Icon style={{ marginLeft: '5px' }} />)}
     </Button>

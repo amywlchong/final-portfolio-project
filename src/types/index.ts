@@ -13,6 +13,11 @@ export interface LoginFormValues {
   password: string;
 }
 
+export interface UpdatePasswordValues {
+  oldPassword: string;
+  newPassword: string;
+}
+
 export interface AuthResponse {
   token: string;
   user: User;

@@ -44,6 +44,11 @@ const UserMenu = () => {
                     My bookings
                   </Box>
                 </Link>
+                <Link to={"/me/profile"}>
+                  <Box>
+                    My profile
+                  </Box>
+                </Link>
                 <Box onClick={() => dispatch(logout())} style={{ cursor: 'pointer' }}>
                   Logout
                 </Box>
