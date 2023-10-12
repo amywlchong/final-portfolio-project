@@ -1,4 +1,4 @@
-import { InputLabel, Select, FormControl } from '@mui/material';
+import { InputLabel, Select, FormControl, SxProps, Theme } from '@mui/material';
 import { ReactElement } from 'react';
 
 interface Props<T extends { toString(): string }> {
@@ -6,12 +6,16 @@ interface Props<T extends { toString(): string }> {
   selectedOptions: T[];
   setSelectedOptions: React.Dispatch<React.SetStateAction<T[]>>;
   menuItems: Array<ReactElement>;
+  sx?: SxProps<Theme>;
+  formControlSize?: "small" | "medium";
 }
 
-const MultiSelect = <T extends { toString(): string }>({ label, selectedOptions, setSelectedOptions, menuItems }: Props<T>) => {
+const MultiSelect = <T extends { toString(): string }>({ label, selectedOptions, setSelectedOptions, menuItems, sx, formControlSize }: Props<T>) => {
+
+  const MAX_LENGTH = 15;
 
   return (
-    <FormControl fullWidth sx={{ marginTop: '20px'}}>
+    <FormControl fullWidth sx={sx} size={formControlSize}>
       <InputLabel>{label}</InputLabel>
       <Select
         multiple
@@ -20,7 +24,10 @@ const MultiSelect = <T extends { toString(): string }>({ label, selectedOptions,
           const newSelected = target.value as T[];
           setSelectedOptions(newSelected);
         }}
-        renderValue={(selected) => selected.join(', ')}
+        renderValue={(selected) => {
+          const joinedValue = selected.join(', ');
+          return joinedValue.length > MAX_LENGTH ? `${joinedValue.slice(0, MAX_LENGTH - 3)}...` : joinedValue;
+        }}
       >
         {menuItems}
       </Select>

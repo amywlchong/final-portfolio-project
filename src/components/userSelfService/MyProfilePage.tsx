@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Role } from '../../types';
 import { Typography, Box } from '@mui/material';
 import toast from 'react-hot-toast';
 import Button from '../Button';
@@ -13,6 +12,7 @@ import { useAppDispatch } from "../../app/reduxHooks";
 import { createServiceHandler } from '../../utils/serviceHandler';
 import { ApiError } from '../../utils/ApiError';
 import { logout } from '../../redux/slices/userSlice';
+import { roleToLabel } from '../../utils/dataProcessing';
 
 const ProfilePage = () => {
   const currentUser = useAppSelector(state => state.user.loggedInUser);
@@ -56,21 +56,6 @@ const ProfilePage = () => {
     setShowDeactivationConfirmation(false);
   }
 
-  const getRoleLabel = (role: Role): string => {
-    switch(role) {
-      case Role.Customer:
-        return 'Customer';
-      case Role.Guide:
-        return 'Guide';
-      case Role.LeadGuide:
-        return 'Lead Guide';
-      case Role.Admin:
-        return 'Admin';
-      default:
-        return 'Unknown Role';
-    }
-  }
-
   return (
     <Box>
       <Typography variant="h1">
@@ -87,7 +72,7 @@ const ProfilePage = () => {
         <Box component="span" sx={{ fontWeight: 'bold' }}>Status:</Box> {currentUser.active ? 'Active' : 'Inactive'}
       </Typography>
       <Typography variant="body1">
-        <Box component="span" sx={{ fontWeight: 'bold' }}>Role:</Box> {getRoleLabel(currentUser.role)}
+        <Box component="span" sx={{ fontWeight: 'bold' }}>Role:</Box> {roleToLabel(currentUser.role)}
       </Typography>
 
       <Box mt={3} mb={3}>

@@ -85,6 +85,7 @@ const DateSearchModal = () => {
       <DatePicker
         onChange={(value) => setSelectedDateRange(value.selection)}
         value={selectedDateRange}
+        minDate={addDays(new Date(), 1)}
       />
     </div>
   )

@@ -36,12 +36,12 @@ const TourDatesFilter = () => {
     if (!userAvailability.startDate || !userAvailability.endDate) return true;
 
     // Set the user's end availability to the very end of the day
-    const userEndOfDay = new Date(userAvailability.endDate);
-    userEndOfDay.setHours(23, 59, 59, 999);
+    const userEndDateEndOfDay = new Date(userAvailability.endDate);
+    userEndDateEndOfDay.setHours(23, 59, 59, 999);
 
     return (
       tourStartDate.getTime() >= userAvailability.startDate.getTime() &&
-      tourEndDate.getTime() <= userEndOfDay.getTime()
+      tourEndDate.getTime() <= userEndDateEndOfDay.getTime()
     );
   });
 
@@ -56,6 +56,7 @@ const TourDatesFilter = () => {
       <DatePicker
         onChange={(value) => setUserAvailability(value.selection)}
         value={userAvailability}
+        minDate={addDays(new Date(), 1)}
       />
 
       <Typography variant="h3">

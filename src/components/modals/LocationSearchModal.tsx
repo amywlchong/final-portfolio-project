@@ -89,6 +89,7 @@ const LocationSearchModal = () => {
             <ListItemText primary={region} />
           </MenuItem>
         ))}
+        sx={{ marginTop: '20px'}}
       />
     </div>
   )

@@ -12,22 +12,25 @@ interface DatePickerProps {
   value: Range,
   onChange: (value: RangeKeyDict) => void;
   disabledDates?: Date[];
+  minDate?: Date;
 }
 
 const DatePicker = ({
   value,
   onChange,
-  disabledDates
+  disabledDates,
+  minDate
 }: DatePickerProps) => {
   return (
     <DateRange
       rangeColors={['#262626']}
       ranges={[value]}
-      date={addDays(new Date(), 1)}
+      date={new Date()}
+      shownDate={new Date()}
       onChange={onChange}
       direction="vertical"
       showDateDisplay={false}
-      minDate={addDays(new Date(), 1)}
+      minDate={minDate || new Date()}
       disabledDates={disabledDates}
     />
    );
