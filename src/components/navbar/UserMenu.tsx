@@ -39,6 +39,11 @@ const UserMenu = () => {
           <Box>
             {currentUser ? (
               <>
+                <Link to={"/users"}>
+                  <Box>
+                    Users
+                  </Box>
+                </Link>
                 <Link to={"/me/bookings"}>
                   <Box>
                     My bookings

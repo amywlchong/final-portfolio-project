@@ -8,6 +8,7 @@ import TourPage from "../components/tours/[tourId]/page";
 import { Container } from '@mui/material';
 import BookingsPage from "../components/userSelfService/BookingsPage";
 import ProfilePage from "../components/userSelfService/ProfilePage";
+import UsersPage from "../components/userAdministration/UsersPage";
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
             <Route path="/tours/:id" element={<TourPage />} />
             <Route path="/me/bookings" element={<BookingsPage />} />
             <Route path="/me/profile" element={<ProfilePage />} />
+            <Route path="/users" element={<UsersPage />} />
           </Routes>
         </Container>
       </Router>
