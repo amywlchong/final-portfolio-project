@@ -9,6 +9,12 @@ const getAllUsers = async () => {
   return data;
 }
 
+const getAvailableGuidesWithinRange = async (formattedStartDate: string, formattedEndDate: string) => {
+  const authHeader = getAuthHeader();
+  const { data } = await axios.get<User[]>(`${apiBaseUrl}/users/available-guides?startDate=${formattedStartDate}&endDate=${formattedEndDate}`, authHeader);
+  return data;
+}
+
 const deleteUser = async (userId: number) => {
   const authHeader = getAuthHeader();
   const { data } = await axios.delete<string>(`${apiBaseUrl}/users/${userId}`, authHeader);
@@ -27,4 +33,4 @@ const updateRole = async (userId: number, newRole: Role) => {
   return data;
 }
 
-export default { getAllUsers, deleteUser, updateActive, updateRole }
+export default { getAllUsers, getAvailableGuidesWithinRange, deleteUser, updateActive, updateRole }

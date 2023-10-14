@@ -177,3 +177,29 @@ export interface ReviewResponse {
   startDateId: number;
   startDateTime: string;
 }
+
+export interface ScheduleRequest {
+  userId: number;
+  tourId: number;
+  startDateTime: string;
+}
+
+export interface ScheduleResponse {
+  id?: number;
+
+  // User fields
+  userId?: number;
+  userName?: string;
+  userActive?: boolean;
+  userRole?: Role;
+
+  // Tour fields
+  tourId: number;
+  tourName: string;
+  tourDuration: number;
+  tourRegion: string;
+
+  // StartDate fields
+  startDateId: number;
+  startDateTime: string;
+}

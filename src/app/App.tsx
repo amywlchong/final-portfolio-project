@@ -9,6 +9,7 @@ import { Container } from '@mui/material';
 import BookingsPage from "../components/userSelfService/BookingsPage";
 import ProfilePage from "../components/userSelfService/ProfilePage";
 import UsersPage from "../components/userAdministration/UsersPage";
+import SchedulesPage from "../components/schedules/SchedulesPage";
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
             <Route path="/me/bookings" element={<BookingsPage />} />
             <Route path="/me/profile" element={<ProfilePage />} />
             <Route path="/users" element={<UsersPage />} />
+            <Route path="/tour-guide-schedules" element={<SchedulesPage />} />
           </Routes>
         </Container>
       </Router>
