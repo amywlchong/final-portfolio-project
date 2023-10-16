@@ -38,6 +38,7 @@ const BookingModal = ({ startDateTime, availableSpaces }: BookingModalProps) => 
   };
   const {
     register,
+    handleSubmit,
     watch,
     reset,
     formState: {
@@ -146,19 +147,17 @@ const BookingModal = ({ startDateTime, availableSpaces }: BookingModalProps) => 
         <Typography variant="body1">Location: {tour.region}</Typography>
         <Typography variant="body1">Start Date & Time: {startDateTime}</Typography>
         <Typography variant="body1">Duration: {`${tour.duration} ${tour.duration > 1 ? 'days' : 'day'}`}</Typography>
-        <label>
-          <Input
-            id="participants"
-            label="Number of Participants"
-            type="number"
-            disabled={isLoading}
-            min={1}
-            max={availableSpaces}
-            register={register}
-            errors={errors}
-            required
-          />
-        </label>
+        <Input
+          id="participants"
+          label="Number of Participants: "
+          type="number"
+          disabled={isLoading}
+          min={1}
+          max={availableSpaces}
+          register={register}
+          errors={errors}
+          required
+        />
         <Typography variant="body1">Price: ${tour.price} per person</Typography>
         <Typography variant="body1">Total: ${(new BigNumber(tour.price)).times(watchedParticipants).toString()}</Typography>
       </div>
@@ -241,7 +240,7 @@ const BookingModal = ({ startDateTime, availableSpaces }: BookingModalProps) => 
       isOpen={bookingModal.isOpen}
       title={title}
       actionLabel={actionLabel}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit(onSubmit)}
       onClose={onModalClose}
       body={bodyContent}
     />

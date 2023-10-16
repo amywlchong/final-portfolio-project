@@ -27,6 +27,7 @@ const SchedulesPage = () => {
 
   const [schedules, setSchedules] = useState<ScheduleResponse[]>([]);
 
+  const [showFilters, setShowFilters] = useState(false);
   const [filterGuideNameOrId, setFilterGuideNameOrId] = useState<string>('');
   const [filterGuideRole, setFilterGuideRole] = useState<string[]>([]);
   const [filterTourName, setFilterTourName] = useState<string>('');
@@ -241,6 +242,7 @@ const SchedulesPage = () => {
   const renderTableFilters = () => {
     return (
       <TableRow>
+        <TableCell style={{ width: '5%' }}></TableCell>
         <TableCell style={{ width: '20%', padding: '10px' }}>
           <TextField
             variant="outlined"
@@ -250,7 +252,7 @@ const SchedulesPage = () => {
             onChange={(e) => setFilterGuideNameOrId(e.target.value)}
           />
         </TableCell>
-        <TableCell style={{ width: '10%', padding: '10px' }}>
+        <TableCell style={{ width: '10%', padding: '10px', borderRight: '1px solid rgba(200, 200, 200, 1)' }}>
           <MultiSelect
             label="Filter by Role"
             selectedOptions={filterGuideRole}
@@ -263,7 +265,6 @@ const SchedulesPage = () => {
             formControlSize="small"
           />
         </TableCell>
-        <TableCell style={{ width: '5%', borderRight: '1px solid rgba(200, 200, 200, 1)' }}></TableCell>
         <TableCell style={{ width: '20%', padding: '10px' }}>
           <TextField
             variant="outlined"
@@ -307,9 +308,9 @@ const SchedulesPage = () => {
   const renderTableHeaders = () => {
     return (
       <TableRow>
+        <TableCell style={{ width: '5%' }}>Edit</TableCell>
         <TableCell style={{ width: '20%' }}>Name & ID</TableCell>
-        <TableCell style={{ width: '10%' }}>Role</TableCell>
-        <TableCell style={{ width: '5%', borderRight: '1px solid rgba(200, 200, 200, 1)' }}>Edit</TableCell>
+        <TableCell style={{ width: '10%', borderRight: '1px solid rgba(200, 200, 200, 1)' }}>Role</TableCell>
         <TableCell style={{ width: '20%' }}>Name</TableCell>
         <TableCell style={{ width: '20%' }}>Location</TableCell>
         <TableCell style={{ width: '20%' }}>Start Date & Time</TableCell>
@@ -325,6 +326,12 @@ const SchedulesPage = () => {
           const firstSchedule = schedulesGroup[0];
           return (
             <TableRow key={`${firstSchedule.tourId}-${firstSchedule.startDateId}`}>
+              <TableCell style={{ width: '5%' }}>
+                <EditIcon
+                  onClick={() => handleEditClick(firstSchedule.tourId, firstSchedule.tourDuration, firstSchedule.startDateTime)}
+                  style={{ cursor: 'pointer'}}
+                />
+              </TableCell>
               <TableCell style={{ width: '20%' }}>
               {editingTourId === firstSchedule.tourId && editingStartDateTime === firstSchedule.startDateTime ? (
                 <>
@@ -357,13 +364,7 @@ const SchedulesPage = () => {
                 getNamesAndIds(schedulesGroup)
               )}
               </TableCell>
-              <TableCell style={{ width: '10%' }}>{getRoles(schedulesGroup)}</TableCell>
-              <TableCell style={{ width: '5%', borderRight: '1px solid rgba(200, 200, 200, 1)' }}>
-                <EditIcon
-                  onClick={() => handleEditClick(firstSchedule.tourId, firstSchedule.tourDuration, firstSchedule.startDateTime)}
-                  style={{ cursor: 'pointer'}}
-                />
-              </TableCell>
+              <TableCell style={{ width: '10%', borderRight: '1px solid rgba(200, 200, 200, 1)' }}>{getRoles(schedulesGroup)}</TableCell>
               <TableCell style={{ width: '20%' }}>
                 <Link to={`/tours/${firstSchedule.tourId}`}>
                   {firstSchedule.tourName}
@@ -383,7 +384,10 @@ const SchedulesPage = () => {
     <>
       <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h1">Tour Guide Schedules</Typography>
-        <Button label={showCalendar ? "Table View" : "Calendar View"} onClick={() => setShowCalendar(prevState => !prevState)} />
+        <Box style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+          {!showCalendar && <Button label={showFilters ? "Hide Filters" : "Show Filters"} onClick={() => setShowFilters(prevState => !prevState)} outline sx={{marginRight: 2}} />}
+          <Button label={showCalendar ? "Table View" : "Calendar View"} onClick={() => setShowCalendar(prevState => !prevState)} />
+        </Box>
       </Box>
       {!showCalendar && (
         <TableContainer component={Paper} style={{ width: '100%'}}>
@@ -401,7 +405,7 @@ const SchedulesPage = () => {
                   </Typography>
                 </TableCell>
               </TableRow>
-                {renderTableFilters()}
+                {showFilters && renderTableFilters()}
                 {renderTableHeaders()}
             </TableHead>
             <TableBody>

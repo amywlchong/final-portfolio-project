@@ -26,6 +26,7 @@ export interface AuthResponse {
 export interface User {
   id: number;
   name: string;
+  email?: string;
   active: boolean;
   role: Role;
 }
@@ -109,7 +110,7 @@ export interface BookingResponse {
   unitPrice: string;
   totalPrice: string;
   paid: boolean;
-  transactionId: string;
+  transactionId?: string;
   numberOfParticipants: number;
   createdDate: string;
 

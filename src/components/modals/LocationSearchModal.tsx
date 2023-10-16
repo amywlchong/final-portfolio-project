@@ -3,8 +3,7 @@ import qs from 'query-string';
 
 import Modal from "./Modal";
 import Heading from '../Heading';
-import MultiSelect from '../inputs/MultiSelect';
-import { Checkbox, ListItemText, MenuItem } from '@mui/material';
+import { Autocomplete, Checkbox, ListItemText, TextField } from '@mui/material';
 import { useAppSelector } from '../../app/reduxHooks';
 import useLocationSearchModal from "../../hooks/useLocationSearchModal";
 
@@ -79,16 +78,23 @@ const LocationSearchModal = () => {
         title="Where do you wanna go?"
         subtitle="Find the perfect location!"
       />
-      <MultiSelect
-        label={'Locations'}
-        selectedOptions={selectedRegions}
-        setSelectedOptions={setSelectedRegions}
-        menuItems={allRegions.map((region) => (
-          <MenuItem key={region} value={region}>
-            <Checkbox checked={selectedRegions.indexOf(region) > -1} />
-            <ListItemText primary={region} />
-          </MenuItem>
-        ))}
+      <Autocomplete
+        multiple
+        id="locations-autocomplete"
+        options={allRegions}
+        value={selectedRegions}
+        onChange={(_, newValue) => setSelectedRegions([...newValue])}
+        disableCloseOnSelect
+        getOptionLabel={(option) => option}
+        renderOption={(props, option, { selected }) => (
+          <li {...props}>
+            <Checkbox checked={selected} />
+            <ListItemText primary={option} />
+          </li>
+        )}
+        renderInput={(params) => (
+          <TextField {...params} variant="outlined" label="Locations" />
+        )}
         sx={{ marginTop: '20px'}}
       />
     </div>

@@ -167,6 +167,7 @@ const BookingsPage = () => {
     <Table>
       <TableHead>
         <TableRow>
+          {enableEdit && <TableCell>Edit</TableCell>}
           <TableCell>Booking ID</TableCell>
           <TableCell>Tour Name</TableCell>
           <TableCell>Region</TableCell>
@@ -201,6 +202,14 @@ const BookingsPage = () => {
       <TableBody>
         {tableBookings.map((booking) => (
           <TableRow key={booking.id}>
+            {enableEdit &&
+              <TableCell>
+                <EditIcon
+                  onClick={() => handleEditClick(booking)}
+                  style={{ cursor: 'pointer' }}
+                />
+              </TableCell>
+            }
             <TableCell>{booking.id}</TableCell>
             <TableCell>
               <Link to={`/tours/${booking.tourId}`}>
@@ -209,34 +218,32 @@ const BookingsPage = () => {
             </TableCell>
             <TableCell>{booking.tourRegion}</TableCell>
             {enableEdit && (
-              <TableCell style={{ display: 'flex', alignItems: 'center' }}>
-                {editingBookingId === booking.id ? (
-                  <>
-                    <Select
-                      value={newStartDate}
-                      onChange={(e) => setNewStartDate(e.target.value as string)}
-                    >
-                      {availableStartDates.map(date => (
-                        <MenuItem key={date} value={date}>
-                          {formatDateAndTime(date)}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    <Button
-                      label="Save"
-                      onClick={() => handleSaveDateChange(booking.id, booking)}
-                      icon={BiSolidSave}
-                      disabled={isUpdating}
-                    />
-                  </>
-                ) : (
-                  formatDateAndTime(booking.startDateTime)
-                )}
-                <EditIcon
-                  onClick={() => handleEditClick(booking)}
-                  style={{ cursor: 'pointer', marginLeft: '10px' }}
-                />
-              </TableCell>
+              <>
+                <TableCell>
+                  {editingBookingId === booking.id ? (
+                    <>
+                      <Select
+                        value={newStartDate}
+                        onChange={(e) => setNewStartDate(e.target.value as string)}
+                      >
+                        {availableStartDates.map(date => (
+                          <MenuItem key={date} value={date}>
+                            {formatDateAndTime(date)}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <Button
+                        label="Save"
+                        onClick={() => handleSaveDateChange(booking.id, booking)}
+                        icon={BiSolidSave}
+                        disabled={isUpdating}
+                      />
+                    </>
+                  ) : (
+                    formatDateAndTime(booking.startDateTime)
+                  )}
+                </TableCell>
+              </>
             )}
             {!enableEdit && (
               <TableCell>{formatDateAndTime(booking.startDateTime)}</TableCell>
@@ -266,7 +273,7 @@ const BookingsPage = () => {
       <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h1">My Bookings</Typography>
         <Button
-          label={displayPastBookings ? "Show Future Bookings" : "Show Past Bookings"}
+          label={displayPastBookings ? "Future Bookings" : "Past Bookings"}
           onClick={() => setDisplayPastBookings(prev => !prev)}
         />
       </Box>
