@@ -6,10 +6,11 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import TourPage from "../components/tours/[tourId]/page";
 
 import { Container } from '@mui/material';
-import BookingsPage from "../components/userSelfService/BookingsPage";
-import ProfilePage from "../components/userSelfService/ProfilePage";
+import MyBookingsPage from "../components/userSelfService/MyBookingsPage";
+import MyProfilePage from "../components/userSelfService/MyProfilePage";
 import UsersPage from "../components/userAdministration/UsersPage";
 import SchedulesPage from "../components/schedules/SchedulesPage";
+import BookingManagementPage from "../components/bookingManagement/BookingsPage";
 
 const App = () => {
   return (
@@ -24,10 +25,11 @@ const App = () => {
           <Routes>
             <Route path="/" element={<ToursPage />} />
             <Route path="/tours/:id" element={<TourPage />} />
-            <Route path="/me/bookings" element={<BookingsPage />} />
-            <Route path="/me/profile" element={<ProfilePage />} />
+            <Route path="/me/bookings" element={<MyBookingsPage />} />
+            <Route path="/me/profile" element={<MyProfilePage />} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/tour-guide-schedules" element={<SchedulesPage />} />
+            <Route path="/bookings" element={<BookingManagementPage />} />
           </Routes>
         </Container>
       </Router>

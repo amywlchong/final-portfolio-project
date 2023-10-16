@@ -44,6 +44,11 @@ const UserMenu = () => {
                     Users
                   </Box>
                 </Link>
+                <Link to={"/bookings"}>
+                  <Box>
+                    Bookings
+                  </Box>
+                </Link>
                 <Link to={"/tour-guide-schedules"}>
                   <Box>
                     Schedules

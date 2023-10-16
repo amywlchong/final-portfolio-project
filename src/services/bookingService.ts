@@ -4,6 +4,12 @@ import { apiBaseUrl } from '../utils/constants';
 import { BookingRequest, BookingResponse } from '../types';
 import { getAuthHeader } from './authHeader';
 
+const getAllBookings = async () => {
+  const authHeader = getAuthHeader();
+  const { data } = await axios.get<BookingResponse[]>(`${apiBaseUrl}/bookings`, authHeader);
+  return data;
+}
+
 const getMyBookings = async () => {
   const authHeader = getAuthHeader();
   const { data } = await axios.get<BookingResponse[]>(`${apiBaseUrl}/me/bookings`, authHeader);
@@ -22,4 +28,10 @@ const updateBooking = async (bookingId: number, bookingRequest: BookingRequest) 
   return data;
 }
 
-export default { getMyBookings, createBooking, updateBooking };
+const deleteBooking = async (bookingId: number) => {
+  const authHeader = getAuthHeader();
+  const { data } = await axios.delete<string>(`${apiBaseUrl}/bookings/${bookingId}`, authHeader);
+  return data;
+}
+
+export default { getAllBookings, getMyBookings, createBooking, updateBooking, deleteBooking };

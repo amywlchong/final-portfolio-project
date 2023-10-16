@@ -13,6 +13,14 @@ export interface LoginFormValues {
   password: string;
 }
 
+export interface AdminBookingFormValues {
+  participants: number;
+  user: User | null;
+  tourName: string | null;
+  tour: Tour | null;
+  tourStartDate: TourStartDate | null;
+}
+
 export interface UpdatePasswordValues {
   oldPassword: string;
   newPassword: string;
