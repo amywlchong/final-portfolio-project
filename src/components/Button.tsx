@@ -3,7 +3,8 @@ import { IconType } from "react-icons";
 
 interface ButtonProps {
   label: string;
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
+  type?: "button" | "submit" | "reset" | undefined;
   disabled?: boolean;
   outline?: boolean;
   icon?: IconType;
@@ -14,6 +15,7 @@ interface ButtonProps {
 const ButtonComponent = ({
   label,
   onClick,
+  type,
   disabled,
   outline,
   icon: Icon,
@@ -22,6 +24,7 @@ const ButtonComponent = ({
 }: ButtonProps) => {
   return (
     <Button
+      type={type}
       variant={outline ? "outlined" : "contained"}
       disabled={disabled}
       onClick={onClick}

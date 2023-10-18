@@ -1,5 +1,15 @@
+import { FieldError } from "react-hook-form";
+
 export interface FieldValues<T = any> {
   [x: string]: T;
+}
+
+export interface nestedFieldErrors {
+  [x: string]: Array<{
+    [y: string]: {
+      [z: string]: FieldError | undefined;
+    }
+  }>
 }
 
 export interface RegisterFormValues {
@@ -57,13 +67,15 @@ export interface Tour {
   description?: string;
   region: string;
   startAddress: string;
-  createdDate: Date;
+  createdDate: string;
   ratingsCount: number;
   ratingsAverage?: number;
   tourImages?: TourImage[];
   tourPointsOfInterest?: TourPointOfInterest[];
   tourStartDates?: TourStartDate[];
 }
+
+export type TourRequest = Omit<Tour, 'id' | 'createdDate' | 'ratingsCount'>;
 
 export enum Difficulty {
   Easy = "easy",

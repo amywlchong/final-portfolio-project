@@ -101,7 +101,7 @@ const TourPage = () => {
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
           <MonetizationOnIcon style={{ marginRight: '8px' }} />
           <Typography variant="body1">
-            {`$${tour.price.toString()} per person`}
+            {`$${tour.price} per person`}
           </Typography>
         </div>
 
@@ -142,7 +142,7 @@ const TourPage = () => {
 
         <>
           <Typography variant="body1" onClick={handleShowReviews} style={{ cursor: 'pointer' }}>
-            See Reviews
+            {showReviews ? "Hide Reviews" : "See Reviews"}
           </Typography>
           {showReviews && (
             reviews.length > 0

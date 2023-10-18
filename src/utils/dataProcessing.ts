@@ -1,23 +1,24 @@
 import { format, parse } from 'date-fns';
-import { Role } from '../types';
+import { Role, nestedFieldErrors } from '../types';
+import { FieldError } from 'react-hook-form';
+
+export const dateToDateString = (date: Date): string => {
+  return format(date, "yyyy-MMM-dd");
+};
 
 export const formatDateAndTime = (dateString: string): string => {
   const dateObj = new Date(dateString);
-  return format(dateObj, "yyyy-MM-dd(eee) HH:mm");
+  return format(dateObj, "yyyy-MMM-dd(eee) HH:mm");
 };
 
 export const convertToISOlikeFormat = (formattedString: string): string => {
   // Remove the day of the week from the formatted string
   const cleanedString = formattedString.replace(/\([a-zA-Z]{3}\)/, '');
 
-  const parsedDate = parse(cleanedString, "yyyy-MM-dd HH:mm", new Date());
+  const parsedDate = parse(cleanedString, "yyyy-MMM-dd HH:mm", new Date());
 
   return format(parsedDate, "yyyy-MM-dd'T'HH:mm:ss");
 };
-
-export const getCurrentDateTimeInISOlikeFormat = (): string => {
-  return format(new Date(), "yyyy-MM-dd'T'HH:mm:ss");
-}
 
 export const roleToLabel = (role: Role): string => {
   switch (role) {
@@ -48,3 +49,33 @@ export const labelToRole = (label: string): Role => {
       throw new Error(`Unexpected role label: ${label}`);
   }
 }
+
+export const isErrorStructureNested = (obj: any, index: number): boolean => {
+  if (typeof obj !== "object" || obj === null) return false;
+  for (const key in obj) {
+    if (
+      !Array.isArray(obj[key]) ||
+      typeof obj[key][index] !== "object" ||
+      obj[key][index] === null
+    )
+      return false;
+  }
+  return true;
+}
+
+export const getNestedError = (
+  errors: nestedFieldErrors,
+  arrayName: string,
+  index: number,
+  path: string
+): FieldError | undefined => {
+  const pathSegments = path.split(".");
+
+  if (
+    errors[arrayName] &&
+    errors[arrayName][index] &&
+    errors[arrayName][index][pathSegments[1]]
+  ) {
+    return errors[arrayName][index][pathSegments[1]][pathSegments[2]];
+  }
+};

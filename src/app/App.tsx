@@ -11,6 +11,7 @@ import MyProfilePage from "../components/userSelfService/MyProfilePage";
 import UsersPage from "../components/userAdministration/UsersPage";
 import SchedulesPage from "../components/schedules/SchedulesPage";
 import BookingManagementPage from "../components/bookingManagement/BookingsPage";
+import TourManagementPage from "../components/tourManagement/ToursPage";
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
             <Route path="/users" element={<UsersPage />} />
             <Route path="/tour-guide-schedules" element={<SchedulesPage />} />
             <Route path="/bookings" element={<BookingManagementPage />} />
+            <Route path="/tours" element={<TourManagementPage />} />
           </Routes>
         </Container>
       </Router>

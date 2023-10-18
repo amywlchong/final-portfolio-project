@@ -52,7 +52,7 @@ const TourCard = ({ tour }: ListingCardProps) => {
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
             <MonetizationOnIcon style={{ marginRight: '8px' }} />
             <Typography variant="body1">
-              {`$${tour.price.toString()} per person`}
+              {`$${tour.price} per person`}
             </Typography>
           </div>
           {tour.ratingsAverage &&

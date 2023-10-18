@@ -39,9 +39,9 @@ const UserMenu = () => {
           <Box>
             {currentUser ? (
               <>
-                <Link to={"/users"}>
+                <Link to={"/tours"}>
                   <Box>
-                    Users
+                    Tours
                   </Box>
                 </Link>
                 <Link to={"/bookings"}>
@@ -52,6 +52,11 @@ const UserMenu = () => {
                 <Link to={"/tour-guide-schedules"}>
                   <Box>
                     Schedules
+                  </Box>
+                </Link>
+                <Link to={"/users"}>
+                  <Box>
+                    Users
                   </Box>
                 </Link>
                 <Link to={"/me/bookings"}>
