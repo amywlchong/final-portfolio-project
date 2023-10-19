@@ -39,6 +39,11 @@ const UserMenu = () => {
           <Box>
             {currentUser ? (
               <>
+                <Link to={"/"}>
+                  <Box>
+                    Home
+                  </Box>
+                </Link>
                 <Link to={"/tours"}>
                   <Box>
                     Tours
