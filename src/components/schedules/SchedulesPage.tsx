@@ -50,11 +50,6 @@ const SchedulesPage = () => {
   const [showCalendar, setShowCalendar] = useState(false);
 
   useEffect(() => {
-    if (!currentUser) {
-      toast("Please log in or sign up to continue", { icon: '❗' });
-      return;
-    }
-
     const fetchSchedules = async () => {
       const getAllSchedulesHandler = createServiceHandler(scheduleService.getAllSchedules, {
         startLoading: () => setIsLoading(true),
@@ -71,6 +66,10 @@ const SchedulesPage = () => {
 
     fetchSchedules();
   }, [currentUser]);
+
+  if (!currentUser) {
+    return <div>Please log in or sign up to continue.</div>;
+  }
 
   if (isLoading) {
     return <div>Loading...</div>;

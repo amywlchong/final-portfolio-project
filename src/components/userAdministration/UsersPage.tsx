@@ -37,11 +37,6 @@ const UsersPage = () => {
   const deleteUserModal = useDeleteUserModal();
 
   useEffect(() => {
-    if (!currentUser) {
-      toast("Please log in or sign up to continue", { icon: '❗' });
-      return;
-    }
-
     const fetchUsers = async () => {
       const getAllUsersHandler = createServiceHandler(userService.getAllUsers, {
         startLoading: () => setIsLoading(true),
@@ -58,6 +53,10 @@ const UsersPage = () => {
 
     fetchUsers();
   }, [currentUser]);
+
+  if (!currentUser) {
+    return <div>Please log in or sign up to continue.</div>;
+  }
 
   if (isLoading) {
     return <div>Loading...</div>;

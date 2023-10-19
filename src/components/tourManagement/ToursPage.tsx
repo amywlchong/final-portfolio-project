@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Box, IconButton, Typography } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -12,7 +12,6 @@ import { dateToDateString, formatDateAndTime } from "../../utils/dataProcessing"
 import useDeleteTourModal from "../../hooks/useDeleteTourModal";
 import { setAllTours } from "../../redux/slices/tourSlice";
 import DeleteTourModal from "../modals/DeleteTourModal";
-import toast from "react-hot-toast";
 
 const ToursPage = () => {
   const dispatch = useAppDispatch();
@@ -24,13 +23,6 @@ const ToursPage = () => {
 
   const [tourToDelete, setTourToDelete] = useState<Tour | null>(null);
   const deleteTourModal = useDeleteTourModal();
-
-  useEffect(() => {
-    if (!currentUser) {
-      toast("Please log in or sign up to continue", { icon: '❗' });
-      return;
-    }
-  }, [currentUser]);
 
   const columns = useMemo<MRT_ColumnDef<Tour>[]>(
     () => [
@@ -112,6 +104,10 @@ const ToursPage = () => {
     ],
     []
   );
+
+  if (!currentUser) {
+    return <div>Please log in or sign up to continue.</div>;
+  }
 
   const handleDeleteClick = (tour: Tour) => {
     setTourToDelete(tour);

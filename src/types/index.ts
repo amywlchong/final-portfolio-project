@@ -1,3 +1,4 @@
+import { JwtPayload } from "jwt-decode";
 import { FieldError } from "react-hook-form";
 
 export interface FieldValues<T = any> {
@@ -23,6 +24,11 @@ export interface LoginFormValues {
   password: string;
 }
 
+export interface UpdatePasswordValues {
+  oldPassword: string;
+  newPassword: string;
+}
+
 export interface AdminBookingFormValues {
   participants: number;
   user: User | null;
@@ -31,9 +37,11 @@ export interface AdminBookingFormValues {
   tourStartDate: TourStartDate | null;
 }
 
-export interface UpdatePasswordValues {
-  oldPassword: string;
-  newPassword: string;
+export interface CustomJwtPayload extends JwtPayload {
+  userId: number;
+  userName: string;
+  userActive: boolean;
+  userRole: Role;
 }
 
 export interface AuthResponse {

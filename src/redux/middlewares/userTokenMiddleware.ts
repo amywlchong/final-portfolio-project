@@ -6,10 +6,14 @@ const userTokenMiddleware: Middleware = (_store: MiddlewareAPI) => (next: Dispat
   if (action.type === "user/authenticate") {
     const token: string = action.payload.token;
     localStorage.setItem("toursAppLoggedInUserToken", token);
+
+    const expiryTime = Date.now() + (24 * 60 * 60 * 1000);  // Current time + 24 hours in milliseconds
+    localStorage.setItem("toursAppTokenExpiry", expiryTime.toString());
   }
 
   if (action.type === "user/logout") {
     localStorage.removeItem("toursAppLoggedInUserToken");
+    localStorage.removeItem("toursAppTokenExpiry");
   }
 
   return result;

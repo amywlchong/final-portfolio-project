@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Box, IconButton, Button as MUIButton, Typography } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { BiSolidImageAdd } from 'react-icons/bi';
@@ -55,12 +55,9 @@ const TourForm = ({ tour }: TourFormProps) => {
       name: "tourStartDates"
   });
 
-  useEffect(() => {
-    if (!currentUser) {
-      toast("Please log in or sign up to continue", { icon: '❗' });
-      return;
-    }
-  }, [currentUser]);
+  if (!currentUser) {
+    return <div>Please log in or sign up to continue.</div>;
+  }
 
   const handleDeleteUploadedImage = (index: number) => {
     setUploadedImages(prevImages => {

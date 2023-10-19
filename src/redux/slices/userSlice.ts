@@ -15,9 +15,12 @@ const userSlice = createSlice({
     authenticate: (state, action: PayloadAction<AuthResponse>) => {
       state.loggedInUser = action.payload.user;
     },
+    setUserFromLocalStorage: (state, action: PayloadAction<User>) => {
+      state.loggedInUser = action.payload;
+    },
     logout: () => initialState
   }
 })
 
 export default userSlice.reducer
-export const { authenticate, logout } = userSlice.actions
+export const { authenticate, logout, setUserFromLocalStorage } = userSlice.actions

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Typography, Box } from '@mui/material';
 import toast from 'react-hot-toast';
 import Button from '../Button';
@@ -22,16 +22,8 @@ const ProfilePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    if (!currentUser) {
-      toast("Please log in or sign up to continue", { icon: '❗' });
-      return;
-    }
-
-  }, [currentUser]);
-
   if (!currentUser) {
-    return <div>User is not logged in</div>
+    return <div>Please log in or sign up to continue.</div>;
   }
 
   const handleDeactivateAccount = () => {

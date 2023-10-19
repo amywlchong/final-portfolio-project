@@ -1,26 +1,26 @@
 import axios from 'axios';
+import jwtDecode from "jwt-decode";
 
 import { apiBaseUrl } from '../utils/constants';
-import { FieldValues, LoginFormValues, RegisterFormValues, UpdatePasswordValues, User } from '../types';
+import { CustomJwtPayload, FieldValues, LoginFormValues, RegisterFormValues, UpdatePasswordValues, User } from '../types';
 import { getAuthHeader } from './authHeader';
 
-const extractTokenAndUser = (data: any): { token: string, user: User } => {
+export const extractTokenAndUser = (data: any): { token: string, user: User } => {
   if (!data) {
-    throw new Error("Received no data or undefined from the server.");
+    throw new Error("Null or undefined data.");
   }
   if (!data.token) {
-    throw new Error("Token not provided in response.")
+    throw new Error("Token not provided.");
   }
-  if (!data.userId || !data.userName || data.userActive === undefined || !data.userRole) {
-    throw new Error("User fields missing in response.")
-  }
+
+  const decoded = jwtDecode<CustomJwtPayload>(data.token);
 
   const token: string = data.token;
   const user: User = {
-    id: data.userId,
-    name: data.userName,
-    active: data.userActive,
-    role: data.userRole
+    id: decoded.userId,
+    name: decoded.userName,
+    active: decoded.userActive,
+    role: decoded.userRole
   }
 
   return { token, user };

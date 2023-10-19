@@ -56,6 +56,7 @@ const AdminBookingModal = ({ setFutureBookings }: AdminBookingModalProps) => {
 
   useEffect(() => {
     if (!currentUser) {
+      toast("Please log in or sign up to continue", { icon: '❗' });
       return;
     }
 

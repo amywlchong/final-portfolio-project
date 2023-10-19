@@ -1,3 +1,7 @@
+import { useEffect } from "react";
+import { useAppDispatch } from "./reduxHooks";
+import { setUserFromLocalStorage } from "../redux/slices/userSlice";
+
 import ModalsProvider from "../providers/ModalsProvider";
 import ToasterProvider from "../providers/ToasterProvider";
 import ToursPage from "../components/tours/ToursPage";
@@ -12,8 +16,29 @@ import UsersPage from "../components/userAdministration/UsersPage";
 import SchedulesPage from "../components/schedules/SchedulesPage";
 import BookingManagementPage from "../components/bookingManagement/BookingsPage";
 import TourManagementPage from "../components/tourManagement/ToursPage";
+import { extractTokenAndUser } from "../services/authService";
 
 const App = () => {
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const loggedInUserToken = localStorage.getItem("toursAppLoggedInUserToken");
+    const tokenExpiry = localStorage.getItem("toursAppTokenExpiry");
+
+    if (loggedInUserToken && tokenExpiry) {
+      const currentTime = Date.now();
+
+      if (currentTime < Number(tokenExpiry)) {
+        const { user } = extractTokenAndUser({ token: loggedInUserToken });
+        dispatch(setUserFromLocalStorage(user));
+      } else {
+        localStorage.removeItem("toursAppLoggedInUserToken");
+        localStorage.removeItem("toursAppTokenExpiry");
+      }
+    }
+  }, []);
+
   return (
     <div className="App">
       <ToasterProvider />

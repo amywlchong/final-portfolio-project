@@ -65,6 +65,10 @@ const ReviewModal = ({ bookingId }: ReviewModalProps) => {
   const ratingValue = watch("rating");
   const reviewValue = watch("review");
 
+  if (!currentUser) {
+    return <></>;
+  }
+
   const onModalClose = () => {
     reset(defaultFormValues);
     reviewModal.onClose();

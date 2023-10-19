@@ -98,11 +98,6 @@ const BookingsPage = () => {
   const deleteBookingModal = useDeleteBookingModal();
 
   useEffect(() => {
-    if (!currentUser) {
-      toast("Please log in or sign up to continue", { icon: '❗' });
-      return;
-    }
-
     const fetchBookings = async () => {
       const getMyBookingsHandler = createServiceHandler(bookingService.getAllBookings, {
         startLoading: () => setIsLoadingBookings(true),
@@ -122,6 +117,10 @@ const BookingsPage = () => {
 
     fetchBookings();
   }, [currentUser]);
+
+  if (!currentUser) {
+    return <div>Please log in or sign up to continue.</div>;
+  }
 
   if (isLoadingBookings) {
     return <div>Loading...</div>;
