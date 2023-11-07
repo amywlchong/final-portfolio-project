@@ -5,11 +5,11 @@ import { setUserFromLocalStorage } from "../redux/slices/userSlice";
 import ModalsProvider from "../providers/ModalsProvider";
 import ToasterProvider from "../providers/ToasterProvider";
 import ToursPage from "../components/tours/ToursPage";
-import Navbar from "../components/navbar/Navbar";
+import Menu from "../components/menu";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import TourPage from "../components/tours/[tourId]/page";
 
-import { Container } from '@mui/material';
+import { Container } from "@mui/material";
 import MyBookingsPage from "../components/userSelfService/MyBookingsPage";
 import MyProfilePage from "../components/userSelfService/MyProfilePage";
 import UsersPage from "../components/userAdministration/UsersPage";
@@ -45,9 +45,9 @@ const App = () => {
       <ModalsProvider />
 
       <Router>
-        <Navbar />
+        <Menu />
 
-        <Container maxWidth={'lg'}>
+        <Container>
           <Routes>
             <Route path="/" element={<ToursPage />} />
             <Route path="/tours/:id" element={<TourPage />} />
@@ -62,6 +62,6 @@ const App = () => {
       </Router>
     </div>
   );
-}
+};
 
 export default App;

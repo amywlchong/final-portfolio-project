@@ -15,6 +15,7 @@ import { useAppDispatch } from "../../app/reduxHooks";
 import { authenticate } from "../../redux/slices/userSlice";
 import { createServiceHandler } from "../../utils/serviceHandler";
 import { ApiError } from "../../utils/ApiError";
+import { Typography } from "@mui/material";
 
 const LoginModal = () => {
   const loginModal = useLoginModal();
@@ -23,8 +24,8 @@ const LoginModal = () => {
   const dispatch = useAppDispatch();
 
   const defaultFormValues = {
-    email: '',
-    password: ''
+    email: "",
+    password: ""
   };
 
   const {
@@ -41,18 +42,18 @@ const LoginModal = () => {
   const onModalClose = () => {
     reset(defaultFormValues);
     loginModal.onClose();
-  }
+  };
 
   const onSubmit = async (data: FieldValues<LoginFormValues>) => {
     const loginHandler = createServiceHandler(authService.login, {
       startLoading: () => setIsLoading(true),
       endLoading: () => setIsLoading(false),
-    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please log in again.")}});
+    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please log in again.");}});
 
     const response = await loginHandler(data);
 
     if (response.success && response.data) {
-      toast.success('Logged in');
+      toast.success("Logged in");
       dispatch(authenticate(response.data));
       onModalClose();
     }
@@ -61,13 +62,12 @@ const LoginModal = () => {
   const onToggle = useCallback(() => {
     onModalClose();
     registerModal.onOpen();
-  }, [loginModal, registerModal])
+  }, [loginModal, registerModal]);
 
   const bodyContent = (
     <div>
       <Heading
-        title="Welcome back"
-        subtitle="Login to your account!"
+        title="Welcome back!"
       />
       <Input
         id="email"
@@ -87,20 +87,28 @@ const LoginModal = () => {
         required
       />
     </div>
-  )
+  );
 
   const footerContent = (
     <div>
       <hr />
-      <div>
-        <p>First time here?
-          <span
-            onClick={onToggle}
-            > Create an account</span>
-        </p>
-      </div>
+      <Typography variant="subtitle1" textAlign="center">
+        First time here?
+        <span
+          onClick={onToggle}
+          style={{
+            color: "blue",
+            textDecoration: "underline",
+            cursor: "pointer",
+            marginLeft: "5px",
+            fontWeight: "bold"
+          }}
+        >
+          Create an account
+        </span>
+      </Typography>
     </div>
-  )
+  );
 
   return (
     <Modal
@@ -114,6 +122,6 @@ const LoginModal = () => {
       footer={footerContent}
     />
   );
-}
+};
 
 export default LoginModal;

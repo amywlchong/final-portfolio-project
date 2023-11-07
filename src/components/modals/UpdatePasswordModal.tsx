@@ -17,9 +17,9 @@ const UpdatePasswordModal = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const defaultFormValues = {
-    currentPassword: '',
-    newPassword: '',
-    confirmNewPassword: ''
+    currentPassword: "",
+    newPassword: "",
+    confirmNewPassword: ""
   };
 
   const {
@@ -40,21 +40,21 @@ const UpdatePasswordModal = () => {
   const onModalClose = () => {
     reset(defaultFormValues);
     updatePasswordModal.onClose();
-  }
+  };
 
   const onUpdatePassword = async (data: FieldValues<UpdatePasswordValues>) => {
     const updatePasswordHandler = createServiceHandler(authService.updatePassword, {
       startLoading: () => setIsLoading(true),
       endLoading: () => setIsLoading(false),
-    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please try again.")}});
+    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please try again.");}});
 
     const response = await updatePasswordHandler(data);
 
     if (response.success && response.data) {
-      toast.success('Updated password');
+      toast.success("Updated password");
       onModalClose();
     }
-  }
+  };
 
   const onSubmit = async () => {
     if (newPasswordValue === confirmNewPasswordValue) {
@@ -63,7 +63,7 @@ const UpdatePasswordModal = () => {
         newPassword: newPasswordValue
       });
     } else {
-      toast.error('Passwords do not match!');
+      toast.error("Passwords do not match!");
     }
   };
 
@@ -97,7 +97,7 @@ const UpdatePasswordModal = () => {
         required
       />
     </div>
-  )
+  );
 
   return (
     <Modal
@@ -110,6 +110,6 @@ const UpdatePasswordModal = () => {
       body={bodyContent}
     />
   );
-}
+};
 
 export default UpdatePasswordModal;

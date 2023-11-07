@@ -1,8 +1,7 @@
-import { Favorite } from '@mui/icons-material';
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
-import { StyledRating } from "../styles";
-import { Typography } from '@mui/material';
-import { FieldValues } from '../types';
+import { Typography, Rating, InputLabel } from "@mui/material";
+import { FieldValues } from "../types";
 
 interface RatingBarProps {
   id: string;
@@ -36,18 +35,12 @@ const RatingBar = ({
 
   return (
     <div>
-      <label>
-        <Typography
-          variant="body1"
-          component="span"
-          style={{ color: hasError ? 'red' : 'inherit' }}
-        >
-          {label}
-        </Typography>
-      </label>
+      <InputLabel htmlFor={id}>
+        <Typography variant="body1">{label}</Typography>
+      </InputLabel>
 
       {rating &&
-        <StyledRating
+        <Rating
           id={id}
           readOnly={readOnly}
           disabled={disabled}
@@ -65,7 +58,7 @@ const RatingBar = ({
             type="hidden"
             {...register(id, { required })}
           />
-          <StyledRating
+          <Rating
             id={id}
             readOnly={readOnly}
             disabled={disabled}
@@ -74,12 +67,16 @@ const RatingBar = ({
             max={5}
             precision={precision || 0.5}
             icon={<Favorite fontSize="inherit" />}
-            emptyIcon={<Favorite style={{ opacity: 0.2 }} fontSize="inherit" />}
+            emptyIcon={hasError
+              ? <FavoriteBorder htmlColor="#D32F2F" fontSize="inherit" />
+              : <FavoriteBorder fontSize="inherit" />
+            }
           />
+          <Typography color="#D32F2F" variant="caption" marginLeft="12px">{hasError ? `${label} is required` : ""}</Typography>
         </>
       }
     </div>
   );
-}
+};
 
 export default RatingBar;

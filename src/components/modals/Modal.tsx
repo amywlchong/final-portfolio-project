@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import IconButton from "@mui/material/IconButton";
 
 import Button from "../Button";
+import { Box } from "@mui/material";
+import useScreenSize from "../../hooks/useScreenSize";
 
 interface ModalProps {
   isOpen: boolean;
@@ -33,6 +35,7 @@ const Modal = ({
   secondaryAction,
   secondaryActionLabel
 }: ModalProps) => {
+  const { isSmallAndUp } = useScreenSize();
   const [, setShowModal] = useState(isOpen);
 
   useEffect(() => {
@@ -67,40 +70,50 @@ const Modal = ({
   }, [secondaryAction, disabled]);
 
   return (
-    <Dialog open={isOpen} onClose={handleClose} maxWidth={'xs'} fullWidth={true} >
-      <DialogTitle>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Dialog open={isOpen} onClose={handleClose} maxWidth='xs' fullWidth>
+
+      <IconButton onClick={handleClose} style={{ display: "flex", justifyContent: "flex-end"}}>
+        <IoMdClose />
+      </IconButton>
+
+      <Box mx={isSmallAndUp ? 2 : 0} mb={2}>
+        <DialogTitle textAlign='center'>
           {title}
-          <IconButton onClick={handleClose}>
-            <IoMdClose />
-          </IconButton>
-        </div>
-      </DialogTitle>
-      <DialogContent>
-        {body}
-      </DialogContent>
-      <DialogActions>
-        <div>
-          {secondaryAction && secondaryActionLabel && (
-            <Button
-              disabled={disabled}
-              label={secondaryActionLabel}
-              onClick={handleSecondaryAction}
-              outline
-            />
+        </DialogTitle>
+        <DialogContent>
+          {body}
+        </DialogContent>
+        <DialogActions>
+          {secondaryAction && secondaryActionLabel && onSubmit && actionLabel && (
+            <>
+              <Button
+                disabled={disabled}
+                label={secondaryActionLabel}
+                onClick={handleSecondaryAction}
+                outline
+                sx={{ width: "50%"}}
+              />
+              <Button
+                disabled={disabled}
+                label={actionLabel}
+                onClick={handleSubmit}
+                sx={{ width: "50%"}}
+              />
+            </>
           )}
-          {onSubmit && actionLabel && (
+          {!secondaryAction && !secondaryActionLabel && onSubmit && actionLabel && (
             <Button
               disabled={disabled}
               label={actionLabel}
               onClick={handleSubmit}
+              fullWidth
             />
           )}
-        </div>
-      </DialogActions>
-      {footer}
+        </DialogActions>
+        {footer}
+      </Box>
     </Dialog>
   );
-}
+};
 
 export default Modal;

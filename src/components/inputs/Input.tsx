@@ -6,6 +6,7 @@ import { getNestedError, isErrorStructureNested } from "../../utils/dataProcessi
 interface InputProps {
   id: string;
   label: string;
+  boldLabel?: boolean;
   arrayName?: string;
   index?: number;
   type?: string;
@@ -21,6 +22,7 @@ interface InputProps {
 const Input = ({
   id,
   label,
+  boldLabel,
   arrayName,
   index,
   type = "text",
@@ -39,8 +41,8 @@ const Input = ({
 
   return (
     <Box mt={1} mb={1}>
-      <InputLabel htmlFor={id} style={{ color: errorForField ? 'red' : 'inherit' }}>
-        <Typography variant="body1">{label}</Typography>
+      <InputLabel htmlFor={id}>
+        <Typography variant="body1" fontWeight={boldLabel ? "bold" : "normal"}>{label}</Typography>
       </InputLabel>
       <TextField
         hiddenLabel
@@ -52,6 +54,8 @@ const Input = ({
         size="small"
         fullWidth={fullWidth}
         inputProps={{ min, max }}
+        error={!!errorForField}
+        helperText={errorForField ? `${label} is required` : ""}
       />
     </Box>
   );

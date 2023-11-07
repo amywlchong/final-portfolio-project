@@ -1,22 +1,22 @@
-import { useState } from 'react';
-import { Box, IconButton, Button as MUIButton, Typography } from '@mui/material';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { BiSolidImageAdd } from 'react-icons/bi';
-import { MdTour } from 'react-icons/md';
-import { BsFillCalendar2EventFill } from 'react-icons/bs'
-import { useFieldArray, useForm } from 'react-hook-form';
-import { Difficulty, FieldValues, Tour, TourImage, TourRequest } from '../../types';
-import Input from '../inputs/Input';
-import AutocompleteController from '../inputs/AutocompleteController';
-import Textarea from '../inputs/Textarea';
-import { useAppDispatch, useAppSelector } from '../../app/reduxHooks';
-import toast from 'react-hot-toast';
-import tourService from '../../services/tourService';
-import { createServiceHandler } from '../../utils/serviceHandler';
-import { ApiError } from '../../utils/ApiError';
-import Button from '../Button';
-import { setAllTours } from '../../redux/slices/tourSlice';
-import { getSignedImageUrl } from '../../services/aws';
+import { useState } from "react";
+import { Box, IconButton, Button as MUIButton, Typography, Grid } from "@mui/material";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { BiSolidImageAdd } from "react-icons/bi";
+import { MdTour } from "react-icons/md";
+import { BsFillCalendar2EventFill } from "react-icons/bs";
+import { useFieldArray, useForm } from "react-hook-form";
+import { Difficulty, FieldValues, Tour, TourImage, TourRequest } from "../../types";
+import Input from "../inputs/Input";
+import AutocompleteController from "../inputs/AutocompleteController";
+import Textarea from "../inputs/Textarea";
+import { useAppDispatch, useAppSelector } from "../../app/reduxHooks";
+import toast from "react-hot-toast";
+import tourService from "../../services/tourService";
+import { createServiceHandler } from "../../utils/serviceHandler";
+import { ApiError } from "../../utils/ApiError";
+import Button from "../Button";
+import { setAllTours } from "../../redux/slices/tourSlice";
+import { getSignedImageUrl } from "../../services/aws";
 
 interface TourFormProps {
   tour?: Tour | null;
@@ -51,15 +51,15 @@ const TourForm = ({ tour }: TourFormProps) => {
     name: "tourPointsOfInterest"
   });
   const { fields: startDateFields, append: appendStartDate, remove: removeStartDate } = useFieldArray({
-      control,
-      name: "tourStartDates"
+    control,
+    name: "tourStartDates"
   });
 
   if (!currentUser) {
     return <div>Please log in or sign up to continue.</div>;
   }
 
-  const handleDeleteUploadedImage = (index: number) => {
+  const handleDeleteUploadedImage = (index: number): void => {
     setUploadedImages(prevImages => {
       const newImages = [...prevImages];
       newImages.splice(index, 1);
@@ -67,7 +67,7 @@ const TourForm = ({ tour }: TourFormProps) => {
     });
   };
 
-  const handleDeleteSavedImage = (index: number) => {
+  const handleDeleteSavedImage = (index: number): void => {
     const imageToDelete = currentTourImages[index];
     if (imageToDelete) {
       setImagesToDelete(prevImages => prevImages.concat(imageToDelete));
@@ -80,24 +80,24 @@ const TourForm = ({ tour }: TourFormProps) => {
   const createTourHandler = createServiceHandler(tourService.createTour, {
     startLoading: () => setIsOperationInProgress(true),
     endLoading: () => setIsOperationInProgress(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "Error creating the tour.")}});
+  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "Error creating the tour.");}});
 
   const uploadImagesHandler = createServiceHandler(tourService.uploadTourImages, {
     startLoading: () => setIsOperationInProgress(true),
     endLoading: () => setIsOperationInProgress(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "Error uploading tour images.")}});
+  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "Error uploading tour images.");}});
 
   const deleteImageHandler = createServiceHandler(tourService.deleteTourImage, {
     startLoading: () => setIsOperationInProgress(true),
     endLoading: () => setIsOperationInProgress(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "Error deleting tour image.")}});
+  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "Error deleting tour image.");}});
 
   const updateTourHandler = createServiceHandler(tourService.updateTour, {
     startLoading: () => setIsOperationInProgress(true),
     endLoading: () => setIsOperationInProgress(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "Error updating the tour.")}});
+  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "Error updating the tour.");}});
 
-  const createTourAndUploadImages = async (data: FieldValues<TourRequest>) => {
+  const createTourAndUploadImages = async (data: FieldValues<TourRequest>): Promise<void> => {
 
     const createTourResponse = await createTourHandler(data);
 
@@ -118,7 +118,7 @@ const TourForm = ({ tour }: TourFormProps) => {
     }
   };
 
-  const updateTourAndImages = async (data: FieldValues<TourRequest>) => {
+  const updateTourAndImages = async (data: FieldValues<TourRequest>): Promise<void> => {
     if (!tour) {
       toast.error("Error updating tour - tour not provided.");
       return;
@@ -162,13 +162,13 @@ const TourForm = ({ tour }: TourFormProps) => {
     }
   };
 
-  const onSubmit = async (data: FieldValues<TourRequest>) => {
+  const onSubmit = async (data: FieldValues<TourRequest>): Promise<void> => {
     if (tour) {
       updateTourAndImages(data);
     } else {
       createTourAndUploadImages(data);
     }
-  }
+  };
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)}>
@@ -213,6 +213,7 @@ const TourForm = ({ tour }: TourFormProps) => {
         disabled={isOperationInProgress}
         errors={errors}
         fullWidth={false}
+        sx={{ width: "210px" }}
       />
 
       <Input
@@ -249,7 +250,7 @@ const TourForm = ({ tour }: TourFormProps) => {
         control={control}
         rules={{ required: true }}
         defaultValue={null}
-        label="Region"
+        label="Location"
         options={allRegions}
         freeSolo
         disabled={isOperationInProgress}
@@ -267,7 +268,7 @@ const TourForm = ({ tour }: TourFormProps) => {
 
       {poiFields.map((field, index) => (
         <Box key={field.id} mt={2} mb={2}>
-          <Box style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+          <Box style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
             <Typography fontWeight="bold">Point of Interest {`${index + 1}`}</Typography>
             <IconButton onClick={() => removePOI(index)} color="primary" disabled={isOperationInProgress}>
               <DeleteForeverIcon />
@@ -275,7 +276,7 @@ const TourForm = ({ tour }: TourFormProps) => {
           </Box>
           <Input
             id={`tourPointsOfInterest[${index}].pointOfInterest.name`}
-            label={`Name`}
+            label={"Name"}
             arrayName='tourPointsOfInterest'
             index={index}
             disabled={isOperationInProgress}
@@ -285,7 +286,7 @@ const TourForm = ({ tour }: TourFormProps) => {
           />
           <Textarea
             id={`tourPointsOfInterest[${index}].pointOfInterest.description`}
-            label={`Description`}
+            label={"Description"}
             arrayName='tourPointsOfInterest'
             index={index}
             minRows={5}
@@ -312,7 +313,7 @@ const TourForm = ({ tour }: TourFormProps) => {
 
       {startDateFields.map((field, index) => (
         <Box key={field.id} mt={2} mb={2}>
-          <Box style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+          <Box style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
             <Typography fontWeight="bold">Start Date & Time {`${index + 1}`}</Typography>
             <IconButton onClick={() => removeStartDate(index)} color="primary" disabled={isOperationInProgress}>
               <DeleteForeverIcon />
@@ -332,50 +333,56 @@ const TourForm = ({ tour }: TourFormProps) => {
         </Box>
       ))}
 
-      <Box mt={2} mb={2} style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-        <label htmlFor="upload-images">
-          <input
-            id="upload-images"
-            type="file"
-            multiple
-            accept=".jpg"
-            style={{ display: 'none' }}
-            onChange={(e) => {
-              if (e.target.files) {
-                setUploadedImages(Array.from(e.target.files));
-              }
-            }}
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={4} xl={3}>
+          <label htmlFor="upload-images">
+            <input
+              id="upload-images"
+              type="file"
+              multiple
+              accept=".jpg"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                if (e.target.files) {
+                  setUploadedImages(Array.from(e.target.files));
+                }
+              }}
+            />
+            <MUIButton
+              component="span"
+              variant="outlined"
+              endIcon={<BiSolidImageAdd />}
+              disabled={isOperationInProgress}
+              sx={{ marginRight: "10px", width: "100%" }}
+            >
+              Upload Images
+            </MUIButton>
+          </label>
+        </Grid>
+        <Grid item xs={12} md={4} xl={3}>
+          <Button
+            label="Add Point of Interest"
+            onClick={() => appendPOI({ pointOfInterest: { name: "", description: "" } })}
+            outline
+            icon={MdTour}
+            sx={{ marginRight: "10px", width: "100%" }}
           />
-          <MUIButton
-            component="span"
-            variant="outlined"
-            endIcon={<BiSolidImageAdd />}
-            disabled={isOperationInProgress}
-            sx={{ marginRight: '10px'}}
-          >
-            Upload Images
-          </MUIButton>
-        </label>
-        <Button
-          label="Add Point of Interest"
-          onClick={() => appendPOI({ pointOfInterest: { name: "", description: "" } })}
-          outline
-          icon={MdTour}
-          sx={{ marginRight: '10px'}}
-        />
-        <Button
-          label="Add Start Date"
-          onClick={() => appendStartDate({ startDate: { startDateTime: "" } })}
-          outline
-          icon={BsFillCalendar2EventFill}
-          sx={{ marginRight: '10px'}}
-        />
-      </Box>
+        </Grid>
+        <Grid item xs={12} md={4} xl={3}>
+          <Button
+            label="Add Start Date"
+            onClick={() => appendStartDate({ startDate: { startDateTime: "" } })}
+            outline
+            icon={BsFillCalendar2EventFill}
+            sx={{ marginRight: "10px", width: "100%" }}
+          />
+        </Grid>
+      </Grid>
 
       {uploadedImages.length > 0 && (
         <Box mt={2} mb={2}>
           <Typography variant="body2">
-            {`Uploaded ${uploadedImages.length} ${uploadedImages.length > 1 ? 'files: ' : 'file: '}`}
+            {`Uploaded ${uploadedImages.length} ${uploadedImages.length > 1 ? "files: " : "file: "}`}
             {uploadedImages[0].name}
             {uploadedImages.length > 1 && `, and ${uploadedImages.length - 1} more`}
           </Typography>
@@ -408,11 +415,13 @@ const TourForm = ({ tour }: TourFormProps) => {
         </Box>
       ))}
 
-      <Button
-        label={tour ? "Update Tour" : "Create Tour"}
-        type="submit"
-        disabled={isOperationInProgress}
-      />
+      <Box mt={2} mb={2}>
+        <Button
+          label={tour ? "Update Tour" : "Create Tour"}
+          type="submit"
+          disabled={isOperationInProgress}
+        />
+      </Box>
     </Box>
   );
 };

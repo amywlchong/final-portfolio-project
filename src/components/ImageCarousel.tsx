@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { IconButton, CardMedia } from '@mui/material';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import { getSignedImageUrl } from '../services/aws';
+import { useState } from "react";
+import { IconButton, CardMedia } from "@mui/material";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import { getSignedImageUrl } from "../services/aws";
 
 interface ImageCarouselProps {
   images: { imagePath: string, coverImage?: boolean }[];
@@ -32,25 +32,26 @@ const ImageCarousel = ({ images, title }: ImageCarouselProps) => {
   const sortedImages = [...images].sort((a) => (a.coverImage ? -1 : 1));
 
   return (
-    <div style={{ position: 'relative', borderRadius: '5px', overflow: 'hidden' }}>
+    <div style={{ position: "relative", borderRadius: "5px", overflow: "hidden" }}>
       <CardMedia
         component="img"
-        style={{ height: '400px', objectFit: 'contain', width: '100%' }}
+        style={{ maxHeight: "400px", objectFit: "contain", width: "100%" }}
         image={getSignedImageUrl(sortedImages[currentImageIndex].imagePath)}
         title={title}
+        alt={title}
       />
       <IconButton
-        style={{ position: 'absolute', top: '50%', left: 0, transform: 'translateY(-50%)', background: 'rgba(255, 255, 255, 0.6)' }}
+        style={{ position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)", background: "rgba(255, 255, 255, 0.6)" }}
         onClick={handlePreviousImage}>
         <ArrowBackIosIcon />
       </IconButton>
       <IconButton
-        style={{ position: 'absolute', top: '50%', right: 0, transform: 'translateY(-50%)', background: 'rgba(255, 255, 255, 0.6)' }}
+        style={{ position: "absolute", top: "50%", right: 0, transform: "translateY(-50%)", background: "rgba(255, 255, 255, 0.6)" }}
         onClick={handleNextImage}>
         <ArrowForwardIosIcon />
       </IconButton>
     </div>
   );
-}
+};
 
 export default ImageCarousel;

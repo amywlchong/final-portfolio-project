@@ -83,7 +83,7 @@ export interface Tour {
   tourStartDates?: TourStartDate[];
 }
 
-export type TourRequest = Omit<Tour, 'id' | 'createdDate' | 'ratingsCount'>;
+export type TourRequest = Omit<Tour, "id" | "createdDate" | "ratingsCount">;
 
 export enum Difficulty {
   Easy = "easy",
@@ -229,6 +229,19 @@ export interface ScheduleResponse {
   tourRegion: string;
 
   // StartDate fields
+  startDateId: number;
+  startDateTime: string;
+}
+
+export interface GroupedSchedule {
+  ids: string;
+  userIds: string;
+  userIdsAndNames: string;
+  userRoles: string;
+  tourId: number;
+  tourName: string;
+  tourDuration: number;
+  tourRegion: string;
   startDateId: number;
   startDateTime: string;
 }

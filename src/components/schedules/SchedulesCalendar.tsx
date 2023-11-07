@@ -1,10 +1,10 @@
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { ScheduleResponse } from '../../types';
-import { addDays } from 'date-fns';
-import { useState } from 'react';
-import { Box, TextField, Tooltip } from '@mui/material';
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import { ScheduleResponse } from "../../types";
+import { addDays } from "date-fns";
+import { useState } from "react";
+import { Box, TextField, Tooltip } from "@mui/material";
 
 const localizer = momentLocalizer(moment);
 
@@ -14,14 +14,14 @@ interface SchedulesCalendarProps {
 
 const SchedulesCalendar = ({ schedules }: SchedulesCalendarProps) => {
 
-  const [filterGuideName, setFilterGuideName] = useState<string>('');
-  const [filterTourName, setFilterTourName] = useState<string>('');
+  const [filterGuideName, setFilterGuideName] = useState<string>("");
+  const [filterTourName, setFilterTourName] = useState<string>("");
 
   const getGuideNames = (schedulesGroup: ScheduleResponse[]) =>
     schedulesGroup
       .filter(schedule => schedule.userName)
       .map(schedule => schedule.userName)
-      .join(', ');
+      .join(", ");
 
   const filteredSchedules = schedules.filter(schedule => {
     return (
@@ -55,8 +55,8 @@ const SchedulesCalendar = ({ schedules }: SchedulesCalendarProps) => {
         end: addDays(new Date(firstSchedule.startDateTime), (firstSchedule.tourDuration - 1)),
         allDay: true,
         resource: firstSchedule
-      })
-    })
+      });
+    });
 
   const CustomEvent = (props: any) => {
     const { title } = props.event;
@@ -65,11 +65,11 @@ const SchedulesCalendar = ({ schedules }: SchedulesCalendarProps) => {
         <span>{title}</span>
       </Tooltip>
     );
-  }
+  };
 
   return (
-    <Box style={{ height: '500px' }}>
-      <Box style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+    <Box style={{ height: "500px" }}>
+      <Box style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
         <TextField
           variant="outlined"
           size="small"

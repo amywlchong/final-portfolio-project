@@ -15,6 +15,7 @@ import RatingBar from "../RatingBar";
 import reviewService from "../../services/reviewService";
 import { Typography } from "@mui/material";
 import { useAppSelector } from "../../app/reduxHooks";
+import { dateToDateString } from "../../utils/dataProcessing";
 
 interface ReviewModalProps {
   bookingId: number;
@@ -28,7 +29,7 @@ const ReviewModal = ({ bookingId }: ReviewModalProps) => {
 
   useEffect(() => {
     if (!currentUser) {
-      toast("Please log in or sign up to continue", { icon: '❗' });
+      toast("Please log in or sign up to continue", { icon: "❗" });
       return;
     }
 
@@ -43,11 +44,11 @@ const ReviewModal = ({ bookingId }: ReviewModalProps) => {
     };
 
     fetchReview();
-  }, [currentUser]);
+  }, [currentUser, bookingId]);
 
   const defaultFormValues = {
     rating: null,
-    review: ''
+    review: ""
   };
 
   const {
@@ -72,25 +73,25 @@ const ReviewModal = ({ bookingId }: ReviewModalProps) => {
   const onModalClose = () => {
     reset(defaultFormValues);
     reviewModal.onClose();
-  }
+  };
 
   const onSubmit = async () => {
     const createReviewHandler = createServiceHandler(reviewService.createReview, {
       startLoading: () => setIsLoading(true),
       endLoading: () => setIsLoading(false),
-    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please try again.")}});
+    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please try again.");}});
 
     const deleteReviewHandler = createServiceHandler(reviewService.deleteReview, {
       startLoading: () => setIsLoading(true),
       endLoading: () => setIsLoading(false),
-    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please try again.")}});
+    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please try again.");}});
 
     if (review === undefined) {
       const reviewRequest: ReviewRequest = {
         bookingId,
         rating: ratingValue,
         review: reviewValue
-      }
+      };
       const response = await createReviewHandler(reviewRequest);
       if (response.success && response.data) {
         toast.success("Review added");
@@ -113,8 +114,7 @@ const ReviewModal = ({ bookingId }: ReviewModalProps) => {
     bodyContent = (
       <div>
         <Heading
-          title="Rate Your Tour Experience"
-          subtitle="Share your thoughts and rate the tour you went on."
+          title="Rate your tour experience and share your thoughts."
         />
         <RatingBar
           id="rating"
@@ -137,7 +137,7 @@ const ReviewModal = ({ bookingId }: ReviewModalProps) => {
           errors={errors}
         />
       </div>
-    )
+    );
   } else {
     bodyContent = (
       <div>
@@ -146,10 +146,10 @@ const ReviewModal = ({ bookingId }: ReviewModalProps) => {
         <Typography variant="body1">{review.review}</Typography>
 
         <Typography variant="caption">
-          {`by ${review.userName} on ${new Date(review.createdDate).toLocaleDateString()}`}
+          {`${review.userName} on ${dateToDateString(new Date(review.createdDate))}`}
         </Typography>
       </div>
-    )
+    );
   }
 
   return (
@@ -163,6 +163,6 @@ const ReviewModal = ({ bookingId }: ReviewModalProps) => {
       body={bodyContent}
     />
   );
-}
+};
 
 export default ReviewModal;

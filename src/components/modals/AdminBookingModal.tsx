@@ -1,21 +1,22 @@
-import { useAppSelector } from '../../app/reduxHooks';
+import { useAppSelector } from "../../app/reduxHooks";
 import Modal from "./Modal";
-import BigNumber from 'bignumber.js';
-import { Box, Typography } from '@mui/material';
-import { useForm } from 'react-hook-form';
+import BigNumber from "bignumber.js";
+import { Box } from "@mui/material";
+import { useForm } from "react-hook-form";
 import { AdminBookingFormValues, BookingRequest, BookingResponse, FieldValues, Role, Tour, User } from "../../types";
-import Input from '../inputs/Input';
-import toast from 'react-hot-toast';
-import bookingService from '../../services/bookingService';
-import { formatDateAndTime } from '../../utils/dataProcessing';
-import { useEffect, useState } from 'react';
-import useAdminBookingModal from '../../hooks/useAdminBookingModal';
-import { createServiceHandler } from '../../utils/serviceHandler';
-import { ApiError } from '../../utils/ApiError';
-import userService from '../../services/userService';
-import tourService from '../../services/tourService';
-import _ from 'lodash-es';
-import AutocompleteController from '../inputs/AutocompleteController';
+import Input from "../inputs/Input";
+import toast from "react-hot-toast";
+import bookingService from "../../services/bookingService";
+import { formatDateAndTime } from "../../utils/dataProcessing";
+import { useEffect, useState } from "react";
+import useAdminBookingModal from "../../hooks/useAdminBookingModal";
+import { createServiceHandler } from "../../utils/serviceHandler";
+import { ApiError } from "../../utils/ApiError";
+import userService from "../../services/userService";
+import tourService from "../../services/tourService";
+import _ from "lodash-es";
+import AutocompleteController from "../inputs/AutocompleteController";
+import LabeledText from "../LabeledText";
 
 interface AdminBookingModalProps {
   setFutureBookings: React.Dispatch<React.SetStateAction<BookingResponse[]>>;
@@ -56,7 +57,7 @@ const AdminBookingModal = ({ setFutureBookings }: AdminBookingModalProps) => {
 
   useEffect(() => {
     if (!currentUser) {
-      toast("Please log in or sign up to continue", { icon: '❗' });
+      toast("Please log in or sign up to continue", { icon: "❗" });
       return;
     }
 
@@ -64,7 +65,7 @@ const AdminBookingModal = ({ setFutureBookings }: AdminBookingModalProps) => {
       const getAllUsersHandler = createServiceHandler(userService.getAllUsers, {
         startLoading: () => setIsFetchingUsers(true),
         endLoading: () => setIsFetchingUsers(false),
-      }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred while fetching users.")} });
+      }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred while fetching users.");} });
 
       const response = await getAllUsersHandler();
 
@@ -85,9 +86,9 @@ const AdminBookingModal = ({ setFutureBookings }: AdminBookingModalProps) => {
   }
 
   const getCustomerNameAndId = (customer?: User | null): string => {
-    if (!customer) return '';
+    if (!customer) return "";
     return `${customer.name} (ID: ${customer.id})`;
-  }
+  };
 
   const handleTourNameChange = async (newValue: string | null) => {
     setValue("tourStartDate", null);
@@ -101,26 +102,26 @@ const AdminBookingModal = ({ setFutureBookings }: AdminBookingModalProps) => {
     const getTourHandler = createServiceHandler(tourService.getOneTour, {
       startLoading: () => setIsFetchingTourDetails(true),
       endLoading: () => setIsFetchingTourDetails(false),
-    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred while fetching tour details.")} });
+    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred while fetching tour details.");} });
 
     const response = await getTourHandler(selectedTourId);
 
     if (response.success && response.data) {
       setSelectedTour(response.data);
     }
-  }
+  };
 
   const availableTourStartDates = selectedTour && selectedTour.tourStartDates
-  ? selectedTour.tourStartDates
-    .filter(tsd => new Date(tsd.startDate.startDateTime).getTime() >= new Date().getTime())
-    .filter(tsd => tsd.availableSpaces && tsd.availableSpaces > 0)
-  : [];
+    ? selectedTour.tourStartDates
+      .filter(tsd => new Date(tsd.startDate.startDateTime).getTime() >= new Date().getTime())
+      .filter(tsd => tsd.availableSpaces && tsd.availableSpaces > 0)
+    : [];
 
   const onModalClose = () => {
     reset(defaultBookingFormValues);
     setSelectedTour(null);
     adminBookingModal.onClose();
-  }
+  };
 
   const createBookingHandler = createServiceHandler(
     bookingService.createBooking,
@@ -131,7 +132,7 @@ const AdminBookingModal = ({ setFutureBookings }: AdminBookingModalProps) => {
     {
       handle: (error: ApiError) => {
         if (error.response?.data.includes("Duplicate entry")) {
-          toast.error("User has already booked this tour for the selected date.")
+          toast.error("User has already booked this tour for the selected date.");
         } else {
           toast.error("An error occurred. Please click CONFIRM to try again.");
         }
@@ -171,6 +172,7 @@ const AdminBookingModal = ({ setFutureBookings }: AdminBookingModalProps) => {
           rules={{ required: true }}
           defaultValue={null}
           label="User Name & ID"
+          boldLabel
           options={activeCustomers}
           getOptionLabel={getCustomerNameAndId}
           errors={errors}
@@ -186,6 +188,7 @@ const AdminBookingModal = ({ setFutureBookings }: AdminBookingModalProps) => {
           rules={{ required: true }}
           defaultValue={null}
           label="Tour Name"
+          boldLabel
           options={tours.map(tour => tour.name)}
           onChange={(newValue) => handleTourNameChange(newValue)}
           errors={errors}
@@ -201,6 +204,7 @@ const AdminBookingModal = ({ setFutureBookings }: AdminBookingModalProps) => {
             rules={{ required: true }}
             defaultValue={null}
             label="Start Date & Time"
+            boldLabel
             options={availableTourStartDates}
             getOptionLabel={(option) => formatDateAndTime(option.startDate.startDateTime)}
             errors={errors}
@@ -210,10 +214,11 @@ const AdminBookingModal = ({ setFutureBookings }: AdminBookingModalProps) => {
           />
         </Box>
       )}
-      <Typography variant="body1">Duration: {selectedTour?.duration ? `${selectedTour?.duration} ${selectedTour?.duration > 1 ? 'days' : 'day'}` : ''}</Typography>
+      <LabeledText label="Duration" value={selectedTour?.duration ? `${selectedTour?.duration} ${selectedTour?.duration > 1 ? "days" : "day"}` : ""} />
       <Input
         id="participants"
         label="Number of Participants: "
+        boldLabel
         type="number"
         disabled={isFetchingTourDetails || isCreatingBooking}
         min={1}
@@ -222,10 +227,10 @@ const AdminBookingModal = ({ setFutureBookings }: AdminBookingModalProps) => {
         errors={errors}
         required
       />
-      <Typography variant="body1">Price: ${selectedTour?.price} per person</Typography>
-      <Typography variant="body1">Total: ${selectedTour?.price ? (new BigNumber(selectedTour?.price)).times(watch("participants")).toString() : ''}</Typography>
+      <LabeledText label="Price" value={`$${selectedTour?.price || ""} per person`} />
+      <LabeledText label="Total" value={selectedTour?.price ? (new BigNumber(selectedTour?.price)).times(watch("participants")).toString() : ""} />
     </div>
-  )
+  );
 
   return (
     <Modal
@@ -238,6 +243,6 @@ const AdminBookingModal = ({ setFutureBookings }: AdminBookingModalProps) => {
       body={bodyContent}
     />
   );
-}
+};
 
 export default AdminBookingModal;

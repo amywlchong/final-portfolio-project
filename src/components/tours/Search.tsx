@@ -1,11 +1,11 @@
-import qs from 'query-string';
-import { useMemo } from 'react';
+import qs from "query-string";
+import { useMemo } from "react";
 
-import { BiSearch } from 'react-icons/bi';
-import useLocationSearchModal from '../../hooks/useLocationSearchModal';
-import useDateSearchModal from '../../hooks/useDateSearchModal';
-import Button from '../Button';
-import { Box } from '@mui/material';
+import { BiSearch } from "react-icons/bi";
+import useLocationSearchModal from "../../hooks/useLocationSearchModal";
+import useDateSearchModal from "../../hooks/useDateSearchModal";
+import Button from "../Button";
+import { Box } from "@mui/material";
 
 const Search = () => {
 
@@ -21,18 +21,18 @@ const Search = () => {
     const trimString = (str: string) => {
       const maxLength = 20;
       if (str.length > maxLength) {
-        return str.substring(0, maxLength - 3) + '...';
+        return str.substring(0, maxLength - 3) + "...";
       }
       return str;
     };
 
     if (Array.isArray(regions) && regions.length > 0) {
       return trimString(regions.join(", "));
-    } else if (typeof regions === 'string') {
+    } else if (typeof regions === "string") {
       return trimString(regions);
     }
 
-    return 'Anywhere';
+    return "Anywhere";
   }, [regions]);
 
   const durationLabel = useMemo(() => {
@@ -40,15 +40,15 @@ const Search = () => {
       return `${startDate} - ${endDate}`;
     }
 
-    return 'Any Week'
+    return "Any Week";
   }, [startDate, endDate]);
 
   return (
-    <Box display="flex" flexDirection="row" justifyContent="center" margin={'10px auto'}>
-      <Button label={locationLabel} onClick={locationSearch.onOpen} outline={true} icon={BiSearch} width={'230px'} />
-      <Button label={durationLabel} onClick={dateSearch.onOpen} outline={true} icon={BiSearch} width={'230px'} />
+    <Box display="flex" flexDirection="row" justifyContent="center" margin={"10px auto"}>
+      <Button label={locationLabel} onClick={locationSearch.onOpen} outline={true} icon={BiSearch} sx={{ width: "230px" }} />
+      <Button label={durationLabel} onClick={dateSearch.onOpen} outline={true} icon={BiSearch} sx={{ width: "230px" }} />
     </Box>
   );
-}
+};
 
 export default Search;

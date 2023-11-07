@@ -8,6 +8,6 @@ const EmptyState = () => {
       subtitle={"Try changing or removing some of your filters."}
     />
   );
-}
+};
 
 export default EmptyState;

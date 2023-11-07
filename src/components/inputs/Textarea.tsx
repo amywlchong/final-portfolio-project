@@ -3,7 +3,7 @@ import {
   UseFormRegister
 } from "react-hook-form";
 import { FieldValues, nestedFieldErrors } from "../../types";
-import { Typography } from "@mui/material";
+import { InputLabel, Typography } from "@mui/material";
 import { TextareaAutosize } from "@mui/base";
 import { getNestedError, isErrorStructureNested } from "../../utils/dataProcessing";
 
@@ -37,24 +37,19 @@ const Textarea = ({
 
   return (
     <div>
-      <label>
-        <Typography
-          variant="body1"
-          component="span"
-          style={{ color: errorForField ? 'red' : 'inherit' }}
-        >
-          {label}
-        </Typography>
-      </label>
+      <InputLabel htmlFor={id}>
+        <Typography variant="body1">{label}</Typography>
+      </InputLabel>
       <TextareaAutosize
         id={id}
         {...register(id, { required })}
         disabled={disabled}
         minRows={minRows}
-        style={{ width: '100%' }}
+        style={{ width: "100%", boxSizing: "border-box", borderColor: errorForField ? "#D32F2F" : "inherit" }}
       />
+      <Typography color="#D32F2F" variant="caption" marginLeft="12px">{errorForField ? `${label} is required` : ""}</Typography>
     </div>
   );
-}
+};
 
 export default Textarea;

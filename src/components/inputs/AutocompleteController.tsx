@@ -1,5 +1,5 @@
-import { Controller, FieldErrors } from 'react-hook-form';
-import { Autocomplete, Box, InputLabel, TextField, Typography } from '@mui/material';
+import { Controller, FieldErrors } from "react-hook-form";
+import { Autocomplete, Box, InputLabel, TextField, Typography, SxProps, Theme } from "@mui/material";
 
 interface AutocompleteControllerProps {
   id: string;
@@ -7,6 +7,7 @@ interface AutocompleteControllerProps {
   rules?: any;
   defaultValue: any;
   label: string;
+  boldLabel?: boolean;
   options: any[];
   getOptionLabel?: (option: any) => string;
   freeSolo?: boolean;
@@ -17,6 +18,7 @@ interface AutocompleteControllerProps {
   render?: (params: any) => JSX.Element;
   isOptionEqualToValue?: (option: any, value: any) => boolean;
   fullWidth?: boolean;
+  sx?: SxProps<Theme>;
 }
 
 const AutocompleteController = ({
@@ -25,6 +27,7 @@ const AutocompleteController = ({
   rules,
   defaultValue,
   label,
+  boldLabel,
   options,
   getOptionLabel,
   freeSolo,
@@ -34,13 +37,14 @@ const AutocompleteController = ({
   placeholder,
   render,
   isOptionEqualToValue,
-  fullWidth = true
+  fullWidth = true,
+  sx
 }: AutocompleteControllerProps) => {
 
   return (
     <Box mb={2}>
-      <InputLabel htmlFor={`autocomplete-${id}`} style={{ color: errors[id] ? 'red' : 'inherit' }}>
-        <Typography variant="body1">{label}</Typography>
+      <InputLabel htmlFor={`autocomplete-${id}`}>
+        <Typography variant="body1" fontWeight={boldLabel ? "bold" : "normal"}>{label}</Typography>
       </InputLabel>
       <Controller
         name={id}
@@ -67,6 +71,9 @@ const AutocompleteController = ({
                 size="small"
                 placeholder={placeholder}
                 fullWidth={fullWidth}
+                sx={sx}
+                error={!!errors[id]}
+                helperText={errors[id] ? `${label} is required` : ""}
               />
             ))}
             isOptionEqualToValue={isOptionEqualToValue}

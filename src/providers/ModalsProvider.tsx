@@ -11,7 +11,7 @@ const ModalsProvider = () => {
       <LocationSearchModal />
       <DateSearchModal />
     </>
-   );
-}
+  );
+};
 
 export default ModalsProvider;

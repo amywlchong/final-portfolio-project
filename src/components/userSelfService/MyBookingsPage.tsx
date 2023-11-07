@@ -1,24 +1,27 @@
-import { useEffect, useState } from 'react';
-import EditIcon from '@mui/icons-material/Edit';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, TableSortLabel, Box, Select, MenuItem } from '@mui/material';
-import { BookingRequest, BookingResponse } from '../../types';
-import { formatDateAndTime } from '../../utils/dataProcessing';
-import bookingService from '../../services/bookingService';
-import toast from 'react-hot-toast';
-import { useAppSelector } from '../../app/reduxHooks';
-import Button from '../Button';
-import { createServiceHandler } from '../../utils/serviceHandler';
-import { ApiError } from '../../utils/ApiError';
-import useReviewModal from '../../hooks/useReviewModal';
-import ReviewModal from '../modals/ReviewModal';
-import tourService from '../../services/tourService';
-import { BiSolidSave } from 'react-icons/bi';
+import { useEffect, useState } from "react";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+import EditIcon from "@mui/icons-material/Edit";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Typography, Box, Select, Card, CardContent, CardActions, IconButton, Collapse, MenuItem, Grid } from "@mui/material";
+import LabeledText from "../LabeledText";
+import useScreenSize from "../../hooks/useScreenSize";
+import { BookingRequest, BookingResponse } from "../../types";
+import { dateToDateString, formatDateAndTime, getEndDate } from "../../utils/dataProcessing";
+import bookingService from "../../services/bookingService";
+import toast from "react-hot-toast";
+import { useAppSelector } from "../../app/reduxHooks";
+import Button from "../Button";
+import { createServiceHandler } from "../../utils/serviceHandler";
+import { ApiError } from "../../utils/ApiError";
+import useReviewModal from "../../hooks/useReviewModal";
+import ReviewModal from "../modals/ReviewModal";
+import tourService from "../../services/tourService";
+import { BiSolidSave } from "react-icons/bi";
 import { Link } from "react-router-dom";
 
-type SortFields = 'startDateTime' | 'tourDuration' | 'numberOfParticipants' | 'totalPrice' | 'paid';
-type SortDirection = 'asc' | 'desc';
-
 const BookingsPage = () => {
+  const { isSmallAndUp } = useScreenSize();
   const [isLoadingBookings, setIsLoadingBookings] = useState(false);
   const [errorFetchingBookings, setErrorFetchingBookings] = useState<ApiError | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -28,15 +31,11 @@ const BookingsPage = () => {
   const [pastBookings, setPastBookings] = useState<BookingResponse[]>([]);
   const [futureBookings, setFutureBookings] = useState<BookingResponse[]>([]);
 
-  const [futureSortField, setFutureSortField] = useState<SortFields>('startDateTime');
-  const [futureSortDirection, setFutureSortDirection] = useState<SortDirection>('asc');
-
-  const [pastSortField, setPastSortField] = useState<SortFields>('startDateTime');
-  const [pastSortDirection, setPastSortDirection] = useState<SortDirection>('asc');
+  const [expandedBookings, setExpandedBookings] = useState<number[]>([]);
 
   const [editingBookingId, setEditingBookingId] = useState<number | null>(null);
   const [availableStartDates, setAvailableStartDates] = useState<string[]>([]);
-  const [newStartDate, setNewStartDate] = useState<string>('');
+  const [newStartDate, setNewStartDate] = useState<string>("");
 
   const [bookingIdOfReview, setBookingIdOfReview] = useState<number | null>(null);
   const reviewModal = useReviewModal();
@@ -53,7 +52,7 @@ const BookingsPage = () => {
       if (response.success && response.data) {
         const futureBookings = response.data.filter(booking => new Date(booking.startDateTime).getTime() >= new Date().getTime());
         const pastBookings = response.data.filter(booking => new Date(booking.startDateTime).getTime() < new Date().getTime());
-        setPastBookings(pastBookings.sort((a, b) => new Date(a.startDateTime).getTime() - new Date(b.startDateTime).getTime()));
+        setPastBookings(pastBookings.sort((a, b) => new Date(b.startDateTime).getTime() - new Date(a.startDateTime).getTime()));
         setFutureBookings(futureBookings.sort((a, b) => new Date(a.startDateTime).getTime() - new Date(b.startDateTime).getTime()));
         setErrorFetchingBookings(null);
       }
@@ -74,35 +73,23 @@ const BookingsPage = () => {
     return <div>Error: An error occurred while fetching bookings.</div>;
   }
 
-  const handleSort = (
-    field: SortFields,
-    setSortField: React.Dispatch<React.SetStateAction<SortFields>>,
-    bookings: BookingResponse[],
-    setBookings: React.Dispatch<React.SetStateAction<BookingResponse[]>>,
-    currentDirection: SortDirection,
-    setSortDirection: React.Dispatch<React.SetStateAction<SortDirection>>
-  ) => {
-    const direction = currentDirection === 'asc' ? 'desc' : 'asc';
+  const handleExpandClick = (bookingId: number): void => {
+    setExpandedBookings(prevState => {
+      const isCurrentlyExpanded = prevState.includes(bookingId);
 
-    const sortedBookings = [...bookings].sort((a, b) => {
-      if (field === 'startDateTime') {
-        const dateA = new Date(a[field]);
-        const dateB = new Date(b[field]);
-        return direction === 'asc' ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+      if (isCurrentlyExpanded) {
+        return prevState.filter(id => id !== bookingId);
+      } else {
+        return [...prevState, bookingId];
       }
-
-      let comparison = 0;
-      if (a[field] > b[field]) comparison = 1;
-      if (a[field] < b[field]) comparison = -1;
-      return direction === 'asc' ? comparison : -comparison;
     });
-
-    setBookings(sortedBookings);
-    setSortField(field);
-    setSortDirection(prevDirection => prevDirection === 'asc' ? 'desc' : 'asc');
   };
 
-  const handleEditClick = async (booking: BookingResponse) => {
+  const isExpanded = (bookingId: number): boolean => {
+    return expandedBookings.includes(bookingId);
+  };
+
+  const handleEditClick = async (booking: BookingResponse): Promise<void> => {
     try {
       const tourDetails = await tourService.getOneTour(booking.tourId);
       if (!tourDetails) {
@@ -131,9 +118,9 @@ const BookingsPage = () => {
   const updateBookingHandler = createServiceHandler(bookingService.updateBooking, {
     startLoading: () => setIsUpdating(true),
     endLoading: () => setIsUpdating(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred while updating the booking. Please try again.")}});
+  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred while updating the booking. Please try again.");}});
 
-  const handleSaveDateChange = async (bookingId: number, existingBooking: BookingResponse) => {
+  const handleSaveDateChange = async (bookingId: number, existingBooking: BookingResponse): Promise<void> => {
     const updatedBooking: BookingRequest = {
       userId: existingBooking.userId,
       tourId: existingBooking.tourId,
@@ -149,127 +136,117 @@ const BookingsPage = () => {
       );
       toast.success("Booking updated.");
       setEditingBookingId(null);
-      setNewStartDate('');
+      setNewStartDate("");
     }
   };
 
-  const renderTable = (
-    tableBookings: BookingResponse[],
-    sortField: SortFields,
-    sortDirection: SortDirection,
-    setBookings: React.Dispatch<React.SetStateAction<BookingResponse[]>>,
-    setSortField: React.Dispatch<React.SetStateAction<SortFields>>,
-    setSortDirection: React.Dispatch<React.SetStateAction<SortDirection>>,
+  const renderCards = (
+    bookings: BookingResponse[],
     enableEdit = false,
     enableReviewButton = false
   ) => (
-    <Table>
-      <TableHead>
-        <TableRow>
-          {enableEdit && <TableCell>Edit</TableCell>}
-          <TableCell>Booking ID</TableCell>
-          <TableCell>Tour Name</TableCell>
-          <TableCell>Region</TableCell>
-          <TableCell>
-            <TableSortLabel active={sortField === 'startDateTime'} direction={sortDirection} onClick={() => handleSort('startDateTime', setSortField, tableBookings, setBookings, sortDirection, setSortDirection)}>
-              Start Date & Time
-            </TableSortLabel>
-          </TableCell>
-          <TableCell>
-            <TableSortLabel active={sortField === 'tourDuration'} direction={sortDirection} onClick={() => handleSort('tourDuration', setSortField, tableBookings, setBookings, sortDirection, setSortDirection)}>
-              Duration
-            </TableSortLabel>
-          </TableCell>
-          <TableCell>
-            <TableSortLabel active={sortField === 'numberOfParticipants'} direction={sortDirection} onClick={() => handleSort('numberOfParticipants', setSortField, tableBookings, setBookings, sortDirection, setSortDirection)}>
-              Participants
-            </TableSortLabel>
-          </TableCell>
-          <TableCell>
-            <TableSortLabel active={sortField === 'totalPrice'} direction={sortDirection} onClick={() => handleSort('totalPrice', setSortField, tableBookings, setBookings, sortDirection, setSortDirection)}>
-              Total Price
-            </TableSortLabel>
-          </TableCell>
-          <TableCell>
-            <TableSortLabel active={sortField === 'paid'} direction={sortDirection} onClick={() => handleSort('paid', setSortField, tableBookings, setBookings, sortDirection, setSortDirection)}>
-              Paid
-            </TableSortLabel>
-          </TableCell>
-          <TableCell>Review</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {tableBookings.map((booking) => (
-          <TableRow key={booking.id}>
-            {enableEdit &&
-              <TableCell>
-                <EditIcon
-                  onClick={() => handleEditClick(booking)}
-                  style={{ cursor: 'pointer' }}
-                />
-              </TableCell>
-            }
-            <TableCell>{booking.id}</TableCell>
-            <TableCell>
-              <Link to={`/tours/${booking.tourId}`}>
-                {booking.tourName}
-              </Link>
-            </TableCell>
-            <TableCell>{booking.tourRegion}</TableCell>
-            {enableEdit && (
-              <>
-                <TableCell>
-                  {editingBookingId === booking.id ? (
-                    <>
-                      <Select
-                        value={newStartDate}
-                        onChange={(e) => setNewStartDate(e.target.value as string)}
-                      >
-                        {availableStartDates.map(date => (
-                          <MenuItem key={date} value={date}>
-                            {formatDateAndTime(date)}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      <Button
-                        label="Save"
-                        onClick={() => handleSaveDateChange(booking.id, booking)}
-                        icon={BiSolidSave}
-                        disabled={isUpdating}
-                      />
-                    </>
-                  ) : (
-                    formatDateAndTime(booking.startDateTime)
-                  )}
-                </TableCell>
-              </>
-            )}
-            {!enableEdit && (
-              <TableCell>{formatDateAndTime(booking.startDateTime)}</TableCell>
-            )}
-            <TableCell>{`${booking.tourDuration} ${booking.tourDuration > 1 ? 'days' : 'day'}`}</TableCell>
-            <TableCell>{`${booking.numberOfParticipants} ${booking.numberOfParticipants > 1 ? 'people' : 'person'}`}</TableCell>
-            <TableCell>${booking.totalPrice}</TableCell>
-            <TableCell>{booking.paid ? 'Yes' : 'No'}</TableCell>
-            <TableCell>
+    bookings.map((booking) => (
+      <Card key={booking.id} style={{ margin: "20px 0", padding: "0 30px" }}>
+        <CardContent>
+          <Box style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Typography variant="h3">
+              <Link to={`/tours/${booking.tourId}`}>{booking.tourName}</Link>
+            </Typography>
+            {isSmallAndUp && <Typography variant="body1">Booking ID: {booking.id}</Typography>}
+          </Box>
+          <Typography component='div' style={{ display: "flex", alignItems: "center" }}>
+            <LocationOnIcon style={{ marginRight: "8px" }} />
+            <Typography variant="body1">
+              {booking.tourRegion}
+            </Typography>
+          </Typography>
+          <Typography component='div' style={{ display: "flex", alignItems: "center" }}>
+            <HourglassEmptyIcon style={{ marginRight: "8px" }} />
+            <Typography variant="body1">
+              {`${dateToDateString(new Date(booking.startDateTime))} - ${dateToDateString(getEndDate(new Date(booking.startDateTime), booking.tourDuration))}`}
+            </Typography>
+          </Typography>
+          {!isSmallAndUp && <Typography variant="body1">Booking ID: {booking.id}</Typography>}
+        </CardContent>
+        <CardActions style={{ padding: "8px 16px 16px 16px", display: "flex", alignItems: "center"}}>
+          <Grid container spacing={2}>
+            <Grid item xs={10} sm={11} md={6}>
               <Button
                 label="Review"
-                disabled={!enableReviewButton}
                 onClick={() => {
                   setBookingIdOfReview(booking.id);
                   reviewModal.onOpen();
                 }}
+                disabled={!enableReviewButton}
               />
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  )
+            </Grid>
+            <Grid item xs={2} sm={1} md={6}>
+              <IconButton
+                onClick={() => {
+                  handleExpandClick(booking.id);
+                }}
+                aria-expanded={isExpanded(booking.id)}
+                aria-label="show more"
+              >
+                <ExpandMoreIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
+        </CardActions>
+        <Collapse in={isExpanded(booking.id)} timeout="auto" unmountOnExit>
+          <CardContent>
+            <Box style={{ display: "flex", alignItems: "center" }}>
+              <Typography variant="body1" component="span" style={{ whiteSpace: "pre-wrap", marginRight: "5px" }}>
+                <Box component="span" sx={{ fontWeight: "bold" }}>
+                  Start Date & Time:
+                </Box>
+              </Typography>
+              {editingBookingId === booking.id ? (
+                <>
+                  <Select
+                    value={newStartDate}
+                    onChange={(e) => setNewStartDate(e.target.value as string)}
+                  >
+                    {availableStartDates.map(date => (
+                      <MenuItem key={date} value={date}>
+                        {formatDateAndTime(date)}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <Button
+                    label="Save"
+                    onClick={() => handleSaveDateChange(booking.id, booking)}
+                    icon={BiSolidSave}
+                    disabled={isUpdating}
+                  />
+                </>
+              ) : (
+                <Box style={{ display: "flex", alignItems: "center" }}>
+                  <Typography>{formatDateAndTime(booking.startDateTime)}</Typography>
+                  {enableEdit &&
+                    <IconButton
+                      onClick={() => handleEditClick(booking)}
+                      style={{ margin: "0 10px", padding: 0 }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  }
+                </Box>
+              )}
+            </Box>
+            <LabeledText label="Participants" value={`${booking.numberOfParticipants} ${booking.numberOfParticipants > 1 ? "people" : "person"}`} />
+            <LabeledText label="Unit Price" value={`$${booking.unitPrice}`} />
+            <LabeledText label="Total Price" value={`$${booking.totalPrice}`} />
+            <LabeledText label="Paid" value={booking.paid ? "Yes" : "No"} />
+          </CardContent>
+        </Collapse>
+      </Card>
+    ))
+  );
 
   return (
-    <div>
-      <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Box>
+      <Box style={{ display: "flex", flexDirection: `${isSmallAndUp ? "row" : "column"}`, justifyContent: "space-between", alignItems: `${isSmallAndUp ? "center" : "flex-start"}` }}>
         <Typography variant="h1">My Bookings</Typography>
         <Button
           label={displayPastBookings ? "Future Bookings" : "Past Bookings"}
@@ -280,23 +257,19 @@ const BookingsPage = () => {
       {!displayPastBookings && (
         <Box mt={2}>
           <Typography variant="h2">Future Tours</Typography>
-          <TableContainer component={Paper}>
-            {renderTable(futureBookings, futureSortField, futureSortDirection, setFutureBookings, setFutureSortField, setFutureSortDirection, true, false)}
-          </TableContainer>
+          {renderCards(futureBookings, true, false)}
         </Box>
       )}
 
       {displayPastBookings && (
         <Box mt={2}>
           <Typography variant="h2">Past Tours</Typography>
-          <TableContainer component={Paper}>
-            {renderTable(pastBookings, pastSortField, pastSortDirection, setPastBookings, setPastSortField, setPastSortDirection, false, true)}
-          </TableContainer>
+          {renderCards(pastBookings, false, true)}
         </Box>
       )}
 
       {bookingIdOfReview && <ReviewModal bookingId={bookingIdOfReview} />}
-    </div>
+    </Box>
   );
 };
 

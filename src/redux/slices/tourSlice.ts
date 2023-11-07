@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Tour } from '../../types';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Tour } from "../../types";
 
 type TourState = {
   allTours: Tour[];
@@ -12,16 +12,16 @@ const initialState: TourState = {
   filteredTours: [],
   allRegions: [],
   currentTour: null,
-}
+};
 
 const tourSlice = createSlice({
-  name: 'tour',
+  name: "tour",
   initialState,
   reducers: {
     setAllTours: (state, action: PayloadAction<Tour[]>) => {
       state.allTours = action.payload;
       state.filteredTours = action.payload;
-      state.allRegions = Array.from(new Set(action.payload.map(tour => tour.region)))
+      state.allRegions = Array.from(new Set(action.payload.map(tour => tour.region)));
     },
     setFilteredTours: (state, action: PayloadAction<Tour[]>) => {
       state.filteredTours = action.payload;
@@ -30,7 +30,7 @@ const tourSlice = createSlice({
       state.currentTour = action.payload;
     },
   }
-})
+});
 
-export default tourSlice.reducer
-export const { setAllTours, setFilteredTours, setCurrentTour } = tourSlice.actions
+export default tourSlice.reducer;
+export const { setAllTours, setFilteredTours, setCurrentTour } = tourSlice.actions;

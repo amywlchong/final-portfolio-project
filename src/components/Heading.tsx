@@ -1,3 +1,5 @@
+import { Box, Typography } from "@mui/material";
+
 interface HeadingProps {
   title: string;
   subtitle?: string;
@@ -8,15 +10,15 @@ const Heading = ({
   subtitle
 }: HeadingProps) => {
   return (
-    <div>
-      <div>
+    <Box mt={1} mb={1}>
+      <Typography>
         {title}
-      </div>
-      <div>
+      </Typography>
+      <Typography>
         {subtitle}
-      </div>
-    </div>
-   );
-}
+      </Typography>
+    </Box>
+  );
+};
 
 export default Heading;

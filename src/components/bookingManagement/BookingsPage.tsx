@@ -1,66 +1,30 @@
-import { useEffect, useState } from 'react';
-import { Range } from 'react-date-range';
-import BigNumber from 'bignumber.js';
-import EditIcon from '@mui/icons-material/Edit';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, TextField, Box, Select, MenuItem, IconButton } from '@mui/material';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { BookingRequest, BookingResponse } from '../../types';
-import { formatDateAndTime } from '../../utils/dataProcessing';
-import bookingService from '../../services/bookingService';
-import toast from 'react-hot-toast';
-import { useAppSelector } from '../../app/reduxHooks';
-import Button from '../Button';
-import { createServiceHandler } from '../../utils/serviceHandler';
-import { ApiError } from '../../utils/ApiError';
-import tourService from '../../services/tourService';
-import { BiSolidSave } from 'react-icons/bi';
+import { useEffect, useMemo, useState } from "react";
+import { Range } from "react-date-range";
+import EditIcon from "@mui/icons-material/Edit";
+import { TableContainer, Paper, Typography, Box, IconButton, Tooltip, Select, MenuItem, TextField } from "@mui/material";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { BookingRequest, BookingResponse } from "../../types";
+import { formatDateAndTime, convertToISOlikeFormat } from "../../utils/dataProcessing";
+import bookingService from "../../services/bookingService";
+import toast from "react-hot-toast";
+import { useAppSelector } from "../../app/reduxHooks";
+import Button from "../Button";
+import { createServiceHandler } from "../../utils/serviceHandler";
+import { ApiError } from "../../utils/ApiError";
+import tourService from "../../services/tourService";
+import { addDays, subDays } from "date-fns";
+import useDateFilterModal from "../../hooks/useDateFilterModal";
+import DateFilterModal from "../modals/DateFilterModal";
+import useDeleteBookingModal from "../../hooks/useDeleteBookingModal";
+import DeleteBookingModal from "../modals/DeleteBookingModal";
+import useAdminBookingModal from "../../hooks/useAdminBookingModal";
+import AdminBookingModal from "../modals/AdminBookingModal";
+import { MRT_ColumnDef, MRT_Row, MRT_TableInstance, MRT_TableOptions, MaterialReactTable } from "material-react-table";
 import { Link } from "react-router-dom";
-import { addDays, subDays } from 'date-fns';
-import useDateFilterModal from '../../hooks/useDateFilterModal';
-import DateFilterModal from '../modals/DateFilterModal';
-import MultiSelect from '../inputs/MultiSelect';
-import useDeleteBookingModal from '../../hooks/useDeleteBookingModal';
-import DeleteBookingModal from '../modals/DeleteBookingModal';
-import useAdminBookingModal from '../../hooks/useAdminBookingModal';
-import AdminBookingModal from '../modals/AdminBookingModal';
-
-enum PriceRange {
-  VERY_LOW = "$0-5k",
-  LOW = "$5k-10k",
-  MEDIUM = "$10k-15k",
-  HIGH = "$15k-20k",
-  VERY_HIGH = "$20k+"
-}
-
-interface NumericRange {
-  min: number;
-  max?: number;
-}
-
-const convertToNumericRange = (priceRange: PriceRange): NumericRange => {
-  let minStr: string;
-  let maxStr: string | undefined;
-
-  const cleanedPriceRange = priceRange.replace('$', '');
-
-  if (cleanedPriceRange.includes('-')) {
-    [minStr, maxStr] = cleanedPriceRange.split('-');
-  } else {
-    minStr = cleanedPriceRange.replace('+', '');
-    maxStr = undefined;
-  }
-
-  const min = parseFloat(minStr.replace('k', '')) * 1000;
-  let max: number | undefined;
-
-  if (maxStr && maxStr !== '+') {
-    max = parseFloat(maxStr.replace('k', '')) * 1000;
-  }
-
-  return { min, max };
-}
+import useScreenSize from "../../hooks/useScreenSize";
 
 const BookingsPage = () => {
+  const { isSmallAndUp } = useScreenSize();
   const [isLoadingBookings, setIsLoadingBookings] = useState(false);
   const [errorFetchingBookings, setErrorFetchingBookings] = useState<ApiError | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -70,32 +34,144 @@ const BookingsPage = () => {
   const [pastBookings, setPastBookings] = useState<BookingResponse[]>([]);
   const [futureBookings, setFutureBookings] = useState<BookingResponse[]>([]);
 
-  const [showFilters, setShowFilters] = useState(false);
-  const [filterUserNameOrId, setFilterUserNameOrId] = useState<string>('');
-  const [filterBookingID, setFilterBookingID] = useState<string>('');
-  const [filterTourName, setFilterTourName] = useState<string>('');
-  const [filterRegion, setFilterRegion] = useState<string>('');
-  const [filterDuration, setFilterDuration] = useState<string>('');
-  const [filterParticipants, setFilterParticipants] = useState<string>('');
-  const [filterTotalPriceRanges, setFilterTotalPriceRanges] = useState<PriceRange[]>([]);
-  const [filterPaid, setFilterPaid] = useState<boolean | null>(null);
-
   const initialDateRange = {
     startDate: subDays(new Date(), 365),
     endDate: addDays(new Date(), 365),
-    key: 'selection'
+    key: "selection"
   };
   const [filterDateRange, setFilterDateRange] = useState<Range>(initialDateRange);
   const dateFilterModal = useDateFilterModal();
 
   const adminBookingModal = useAdminBookingModal();
 
-  const [editingBookingId, setEditingBookingId] = useState<number | null>(null);
   const [availableStartDates, setAvailableStartDates] = useState<string[]>([]);
-  const [newStartDate, setNewStartDate] = useState<string>('');
+  const [newStartDate, setNewStartDate] = useState<string>("");
 
   const [bookingToDelete, setBookingToDelete] = useState<BookingResponse | null>(null);
   const deleteBookingModal = useDeleteBookingModal();
+
+  const columns = useMemo<MRT_ColumnDef<BookingResponse>[]>(
+    () => [
+      {
+        header: "Booking ID",
+        accessorKey: "id",
+        size: 100,
+        enableEditing: false
+      },
+      {
+        header: "User ID",
+        accessorKey: "userId",
+        size: 100,
+        enableEditing: false
+      },
+      {
+        header: "User Name",
+        accessorKey: "userName",
+        size: 200,
+        enableEditing: false
+      },
+      {
+        header: "Tour Name",
+        accessorKey: "tourName",
+        size: 200,
+        Cell: ({ row }: { row: { original: BookingResponse } }) => (
+          <Link to={`/tours/${row.original.tourId}`}>
+            {row.original.tourName}
+          </Link>
+        ),
+        enableEditing: false
+      },
+      {
+        header: "Location",
+        accessorKey: "tourRegion",
+        size: 150,
+        enableEditing: false
+      },
+      {
+        accessorFn: (originalRow) => formatDateAndTime(originalRow.startDateTime),
+        id: "startDateTime",
+        header: "Start Date & Time",
+        size: 180,
+        Filter: () => {
+          return (
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Filter by Start Date"
+              value=""
+              onClick={dateFilterModal.onOpen}
+            />
+          );
+        },
+        Edit: () => {
+          return (
+            <Select
+              value={newStartDate}
+              onChange={(e) => setNewStartDate(e.target.value as string)}
+            >
+              {availableStartDates.map(date => (
+                <MenuItem key={date} value={date}>
+                  {formatDateAndTime(date)}
+                </MenuItem>
+              ))}
+            </Select>
+          );
+        },
+      },
+      {
+        header: "Duration (days)",
+        accessorKey: "tourDuration",
+        size: 100,
+        filterVariant: "range",
+        enableEditing: false
+      },
+      {
+        header: "Participant Count",
+        accessorKey: "numberOfParticipants",
+        size: 100,
+        filterVariant: "range",
+        enableEditing: false
+      },
+      {
+        header: "Total Price ($)",
+        accessorKey: "totalPrice",
+        size: 140,
+        filterVariant: "range",
+        enableEditing: false
+      },
+      {
+        accessorFn: (originalRow) => originalRow.paid ? "Yes" : "No",
+        id: "paid",
+        header: "Paid",
+        size: 60,
+        filterVariant: "select",
+        filterSelectOptions: ["Yes", "No"],
+        enableEditing: false,
+        Cell: ({ row }: { row: { original: BookingResponse } }) => (
+          <Box
+            component="span"
+            sx={() => ({
+              backgroundColor:
+                row.original.paid
+                  ? "rgba(165, 214, 167, 0.4)"
+                  : "rgba(239, 154, 154, 0.4)",
+              color:
+                row.original.paid
+                  ? "#1b5e20"
+                  : "#b71c1c",
+              borderRadius: "0.8rem",
+              mx: "auto",
+              textTransform: "uppercase",
+              p: "0.5rem",
+            })}
+          >
+            {row.original.paid ? "Yes" : "No"}
+          </Box>
+        ),
+      }
+    ],
+    [availableStartDates, newStartDate]
+  );
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -109,7 +185,7 @@ const BookingsPage = () => {
       if (response.success && response.data) {
         const futureBookings = response.data.filter(booking => new Date(booking.startDateTime).getTime() >= new Date().getTime());
         const pastBookings = response.data.filter(booking => new Date(booking.startDateTime).getTime() < new Date().getTime());
-        setPastBookings(pastBookings.sort((a, b) => new Date(a.startDateTime).getTime() - new Date(b.startDateTime).getTime()));
+        setPastBookings(pastBookings.sort((a, b) => new Date(b.startDateTime).getTime() - new Date(a.startDateTime).getTime()));
         setFutureBookings(futureBookings.sort((a, b) => new Date(a.startDateTime).getTime() - new Date(b.startDateTime).getTime()));
         setErrorFetchingBookings(null);
       }
@@ -147,40 +223,19 @@ const BookingsPage = () => {
       return false;
     }
     return true;
-  }
-
-  const isPriceWithinRange = (booking: BookingResponse): boolean => {
-    if (filterTotalPriceRanges.length === 0) return true;
-
-    return Object.values(PriceRange).some(priceRangeValue => {
-      if (!filterTotalPriceRanges.includes(priceRangeValue)) return false;
-
-      const range = convertToNumericRange(priceRangeValue);
-      if (range.max === undefined) {
-        return new BigNumber(booking.totalPrice).isGreaterThan(range.min);
-      }
-      return new BigNumber(booking.totalPrice).isGreaterThanOrEqualTo(range.min) && new BigNumber(booking.totalPrice).isLessThanOrEqualTo(range.max);
-    });
-  }
+  };
 
   const filterBookings = (bookings: BookingResponse[]): BookingResponse[] =>
     bookings.filter(booking => {
       return (
-        ((!filterUserNameOrId) ||
-        (booking.userName?.toLowerCase().includes(filterUserNameOrId.toLowerCase()) ||
-        booking.userId?.toString().includes(filterUserNameOrId))) &&
-        (booking.id?.toString().includes(filterBookingID)) &&
-        (booking.tourName.toLowerCase().includes(filterTourName.toLowerCase())) &&
-        (booking.tourRegion.toLowerCase().includes(filterRegion.toLowerCase())) &&
-        isBookingDateWithinRange(new Date(booking.startDateTime)) &&
-        (booking.tourDuration.toString().includes(filterDuration)) &&
-        (booking.numberOfParticipants.toString().includes(filterParticipants)) &&
-        isPriceWithinRange(booking) &&
-        (filterPaid === null || booking.paid === filterPaid)
+        isBookingDateWithinRange(new Date(booking.startDateTime))
       );
     });
 
-  const handleEditClick = async (booking: BookingResponse) => {
+  const handleEditClick = async (row: MRT_Row<BookingResponse>, table: MRT_TableInstance<BookingResponse>): Promise<void> => {
+    table.setEditingRow(row);
+    const booking = row.original;
+
     try {
       const tourDetails = await tourService.getOneTour(booking.tourId);
       if (!tourDetails) {
@@ -195,12 +250,11 @@ const BookingsPage = () => {
             tourStartDate.availableSpaces > 0 &&
             new Date(tourStartDate.startDate.startDateTime).getTime() > new Date().setHours(23, 59, 59, 999)
           )
-          .map(tourStartDate => tourStartDate.startDate.startDateTime)
+          .map(tourStartDate => formatDateAndTime(tourStartDate.startDate.startDateTime))
         : [];
 
-      setAvailableStartDates(filteredStartDates);
-      setEditingBookingId(booking.id);
-      setNewStartDate(booking.startDateTime);
+      setAvailableStartDates(Array.from(new Set([...filteredStartDates, formatDateAndTime(booking.startDateTime)])));
+      setNewStartDate(formatDateAndTime(booking.startDateTime));
     } catch (error: any) {
       console.error("Error fetching available start dates:", error.response?.data);
     }
@@ -209,38 +263,46 @@ const BookingsPage = () => {
   const updateBookingHandler = createServiceHandler(bookingService.updateBooking, {
     startLoading: () => setIsUpdating(true),
     endLoading: () => setIsUpdating(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred while updating the booking. Please try again.")}});
+  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred while updating the booking. Please try again.");}});
 
-  const handleSaveDateChange = async (bookingId: number, existingBooking: BookingResponse) => {
+  const handleSaveBooking: MRT_TableOptions<BookingResponse>["onEditingRowSave"] = async ({
+    row,
+    table,
+  }) => {
+
+    if (isUpdating) {
+      return;
+    }
+
     const updatedBooking: BookingRequest = {
-      userId: existingBooking.userId,
-      tourId: existingBooking.tourId,
-      startDateTime: newStartDate,
-      numberOfParticipants: existingBooking.numberOfParticipants
+      userId: row.original.userId,
+      tourId: row.original.tourId,
+      startDateTime: convertToISOlikeFormat(newStartDate),
+      numberOfParticipants: row.original.numberOfParticipants
     };
 
-    const response = await updateBookingHandler(bookingId, updatedBooking);
+    const response = await updateBookingHandler(row.original.id, updatedBooking);
 
     if (response.success && response.data) {
       setFutureBookings(prev =>
-        prev.map(b => b.id === bookingId ? { ...b, startDateTime: newStartDate } : b)
+        prev.map(b => b.id === row.original.id ? { ...b, startDateTime: convertToISOlikeFormat(newStartDate) } : b)
       );
       toast.success("Booking updated.");
-      setEditingBookingId(null);
-      setNewStartDate('');
+      table.setEditingRow(null);
+      setNewStartDate("");
     }
+  };
+
+  const handleDeleteClick = (booking: BookingResponse): void => {
+    setBookingToDelete(booking);
+    deleteBookingModal.onOpen();
   };
 
   const isBookingInFuture = (booking: BookingResponse): boolean => {
     return new Date(booking.startDateTime) >= new Date();
   };
 
-  const handleDeleteClick = (booking: BookingResponse) => {
-    setBookingToDelete(booking);
-    deleteBookingModal.onOpen();
-  };
-
-  const handleSuccessfulDelete = (bookingDeleted: BookingResponse) => {
+  const handleSuccessfulDelete = (bookingDeleted: BookingResponse): void => {
     const isFuture = isBookingInFuture(bookingDeleted);
     if (isFuture) {
       setFutureBookings(prevBookings => prevBookings.filter(booking => booking.id !== bookingDeleted.id));
@@ -249,219 +311,53 @@ const BookingsPage = () => {
     }
   };
 
-  const handleCloseDeleteModal = () => {
+  const handleCloseDeleteModal = (): void => {
     setBookingToDelete(null);
   };
-
-  const renderTableFilters = (enableEdit: boolean) => {
-    return (
-      <TableRow>
-        {enableEdit && <TableCell></TableCell>}
-        <TableCell></TableCell>
-        <TableCell style={{ padding: '10px' }}>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Filter by Booking ID"
-            value={filterBookingID}
-            onChange={e => setFilterBookingID(e.target.value)}
-          />
-        </TableCell>
-        <TableCell style={{ padding: '10px' }}>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Filter by User Name or ID"
-            value={filterUserNameOrId}
-            onChange={(e) => setFilterUserNameOrId(e.target.value)}
-          />
-        </TableCell>
-        <TableCell style={{ padding: '10px' }}>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Filter by Tour Name"
-            value={filterTourName}
-            onChange={e => setFilterTourName(e.target.value)}
-          />
-        </TableCell>
-        <TableCell style={{ padding: '10px' }}>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Filter by Location"
-            value={filterRegion}
-            onChange={e => setFilterRegion(e.target.value)}
-          />
-        </TableCell>
-        <TableCell style={{ padding: '10px' }}>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Filter by Start Date"
-            value=""
-            onClick={dateFilterModal.onOpen}
-          />
-        </TableCell>
-        <TableCell style={{ padding: '10px' }}>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Filter by Duration"
-            value={filterDuration}
-            onChange={e => setFilterDuration(e.target.value)}
-          />
-        </TableCell>
-        <TableCell style={{ padding: '10px' }}>
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Filter by Participant Count"
-            value={filterParticipants}
-            onChange={e => setFilterParticipants(e.target.value)}
-          />
-        </TableCell>
-        <TableCell style={{ padding: '10px' }}>
-          <MultiSelect
-            label="Filter by Price"
-            selectedOptions={filterTotalPriceRanges}
-            setSelectedOptions={setFilterTotalPriceRanges}
-            menuItems={Object.values(PriceRange).map(priceValue => (
-              <MenuItem key={priceValue} value={priceValue}>
-                {priceValue}
-              </MenuItem>
-            ))}
-            formControlSize="small"
-          />
-        </TableCell>
-        <TableCell style={{ padding: '10px' }}>
-          <Select
-            size="small"
-            placeholder="Filter by Payment Status"
-            value={filterPaid === null ? '' : filterPaid ? 'Yes' : 'No'}
-            onChange={(e) => {
-              if (e.target.value === 'Yes') {
-                setFilterPaid(true);
-              } else if (e.target.value === 'No') {
-                setFilterPaid(false);
-              } else {
-                setFilterPaid(null);
-              }
-            }}
-          >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="Yes">Yes</MenuItem>
-            <MenuItem value="No">No</MenuItem>
-          </Select>
-        </TableCell>
-      </TableRow>
-    )
-  }
-
-  const renderTableHeaders = (enableEdit: boolean) => {
-    return (
-      <TableRow>
-        {enableEdit && <TableCell>Edit</TableCell>}
-        <TableCell>Delete</TableCell>
-        <TableCell>Booking ID</TableCell>
-        <TableCell>User Name & ID</TableCell>
-        <TableCell>Tour Name</TableCell>
-        <TableCell>Region</TableCell>
-        <TableCell>Start Date & Time</TableCell>
-        <TableCell>Duration (days)</TableCell>
-        <TableCell>Participant Count</TableCell>
-        <TableCell>Total Price</TableCell>
-        <TableCell>Paid</TableCell>
-      </TableRow>
-    )
-  }
-
-  const renderTableRows = (tableBookings: BookingResponse[], enableEdit: boolean) => {
-    return (
-      <>
-        {tableBookings.map((booking) => (
-          <TableRow key={booking.id}>
-            {enableEdit &&
-              <TableCell>
-                <EditIcon
-                  onClick={() => handleEditClick(booking)}
-                  style={{ cursor: 'pointer' }}
-                />
-              </TableCell>
-            }
-            <TableCell>
-              <IconButton onClick={() => handleDeleteClick(booking)} color="warning">
-                <DeleteForeverIcon />
-              </IconButton>
-            </TableCell>
-            <TableCell>{booking.id}</TableCell>
-            <TableCell>{`${booking.userName} (ID: ${booking.userId})`}</TableCell>
-            <TableCell>
-              <Link to={`/tours/${booking.tourId}`}>
-                {booking.tourName}
-              </Link>
-            </TableCell>
-            <TableCell>{booking.tourRegion}</TableCell>
-            {enableEdit && (
-              <TableCell>
-                {editingBookingId === booking.id ? (
-                  <>
-                    <Select
-                      value={newStartDate}
-                      onChange={(e) => setNewStartDate(e.target.value as string)}
-                    >
-                      {availableStartDates.map(date => (
-                        <MenuItem key={date} value={date}>
-                          {formatDateAndTime(date)}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    <Button
-                      label="Save"
-                      onClick={() => handleSaveDateChange(booking.id, booking)}
-                      icon={BiSolidSave}
-                      disabled={isUpdating}
-                    />
-                  </>
-                ) : (
-                  formatDateAndTime(booking.startDateTime)
-                )}
-              </TableCell>
-            )}
-            {!enableEdit && (
-              <TableCell>{formatDateAndTime(booking.startDateTime)}</TableCell>
-            )}
-            <TableCell>{booking.tourDuration}</TableCell>
-            <TableCell>{booking.numberOfParticipants}</TableCell>
-            <TableCell>${booking.totalPrice}</TableCell>
-            <TableCell>{booking.paid ? 'Yes' : 'No'}</TableCell>
-          </TableRow>
-        ))}
-      </>
-    )
-  }
 
   const renderTable = (
     tableBookings: BookingResponse[],
     enableEdit = false
   ) => (
-    <Table>
-      <TableHead>
-        {showFilters && renderTableFilters(enableEdit)}
-        {renderTableHeaders(enableEdit)}
-      </TableHead>
-      <TableBody>
-        {renderTableRows(tableBookings, enableEdit)}
-      </TableBody>
-    </Table>
-  )
+    <MaterialReactTable
+      columns={columns}
+      data={tableBookings}
+      enableEditing={enableEdit}
+      editDisplayMode='row'
+      onEditingRowSave={handleSaveBooking}
+      enableRowActions
+      enablePinning
+      initialState={{ columnPinning: { right: ["mrt-row-actions"] } }}
+      positionActionsColumn="last"
+      displayColumnDefOptions={{
+        "mrt-row-actions": {
+          muiTableHeadCellProps: {
+            align: "center",
+          }
+        }
+      }}
+      renderRowActions={({ row, table }) => (
+        <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
+          {enableEdit &&
+            <Tooltip title="Edit start date & time">
+              <IconButton onClick={() => handleEditClick(row, table)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          }
+          <IconButton onClick={() => handleDeleteClick(row.original)} color="warning">
+            <DeleteForeverIcon />
+          </IconButton>
+        </Box>
+      )}
+    />
+  );
 
   return (
     <div>
-      <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box style={{ display: "flex", flexDirection: `${isSmallAndUp ? "row" : "column"}`, justifyContent: "space-between", alignItems: `${isSmallAndUp ? "center" : "flex-start"}` }}>
         <Typography variant="h1">Bookings</Typography>
-        <Box style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-          <Button label={showFilters ? "Hide Filters" : "Show Filters"} onClick={() => setShowFilters(prevState => !prevState)} outline sx={{marginRight: 2}} />
+        <Box style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
           <Button label={displayPastBookings ? "Future Bookings" : "Past Bookings"} onClick={() => setDisplayPastBookings(prev => !prev)} sx={{ marginRight: 2 }} />
           <Button label="New Booking" onClick={adminBookingModal.onOpen} />
         </Box>

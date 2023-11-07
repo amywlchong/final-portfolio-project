@@ -1,19 +1,20 @@
-import { useAppSelector } from '../../app/reduxHooks';
+import { useAppSelector } from "../../app/reduxHooks";
 import Modal from "./Modal";
-import BigNumber from 'bignumber.js';
-import { Box, Typography } from '@mui/material';
-import { useForm } from 'react-hook-form';
+import BigNumber from "bignumber.js";
+import { Box, Typography } from "@mui/material";
+import { useForm } from "react-hook-form";
 import { BookingRequest, BookingResponse, FieldValues } from "../../types";
-import Input from '../inputs/Input';
-import toast from 'react-hot-toast';
-import bookingService from '../../services/bookingService';
-import { convertToISOlikeFormat, formatDateAndTime } from '../../utils/dataProcessing';
-import { useCallback, useEffect, useState } from 'react';
-import paymentService from '../../services/paymentService';
-import { FUNDING, PayPalButtons } from '@paypal/react-paypal-js';
-import useBookingModal from '../../hooks/useBookingModal';
-import { createServiceHandler } from '../../utils/serviceHandler';
-import { ApiError } from '../../utils/ApiError';
+import Input from "../inputs/Input";
+import toast from "react-hot-toast";
+import bookingService from "../../services/bookingService";
+import { convertToISOlikeFormat, formatDateAndTime } from "../../utils/dataProcessing";
+import { useCallback, useEffect, useState } from "react";
+import paymentService from "../../services/paymentService";
+import { FUNDING, PayPalButtons } from "@paypal/react-paypal-js";
+import useBookingModal from "../../hooks/useBookingModal";
+import { createServiceHandler } from "../../utils/serviceHandler";
+import { ApiError } from "../../utils/ApiError";
+import LabeledText from "../LabeledText";
 
 interface BookingModalProps {
   startDateTime: string;
@@ -55,7 +56,7 @@ const BookingModal = ({ startDateTime, availableSpaces }: BookingModalProps) => 
 
   useEffect(() => {
     if (!currentUser) {
-      toast("Please log in or sign up to continue", { icon: '❗' });
+      toast("Please log in or sign up to continue", { icon: "❗" });
     }
   }, [currentUser]);
 
@@ -73,7 +74,7 @@ const BookingModal = ({ startDateTime, availableSpaces }: BookingModalProps) => 
     }
     reset(defaultBookingFormValues);
     bookingModal.onClose();
-  }
+  };
 
   const startLoading = () => setIsLoading(true);
   const endLoading = () => setIsLoading(false);
@@ -84,7 +85,7 @@ const BookingModal = ({ startDateTime, availableSpaces }: BookingModalProps) => 
     {
       handle: (error: ApiError) => {
         if (error.response?.data.includes("Duplicate entry")) {
-          toast.error("You've already booked this tour for the selected date.")
+          toast.error("You've already booked this tour for the selected date.");
         } else {
           toast.error("An error occurred. Please click CONFIRM to try again.");
         }
@@ -143,13 +144,14 @@ const BookingModal = ({ startDateTime, availableSpaces }: BookingModalProps) => 
     actionLabel="Confirm";
     bodyContent = (
       <div>
-        <Typography variant="body1">Tour: {tour.name}</Typography>
-        <Typography variant="body1">Location: {tour.region}</Typography>
-        <Typography variant="body1">Start Date & Time: {startDateTime}</Typography>
-        <Typography variant="body1">Duration: {`${tour.duration} ${tour.duration > 1 ? 'days' : 'day'}`}</Typography>
+        <LabeledText label="Tour" value={tour.name} />
+        <LabeledText label="Location" value={tour.region} />
+        <LabeledText label="Start Date & Time" value={startDateTime} />
+        <LabeledText label="Duration" value={`${tour.duration} ${tour.duration > 1 ? "days" : "day"}`} />
         <Input
           id="participants"
           label="Number of Participants: "
+          boldLabel
           type="number"
           disabled={isLoading}
           min={1}
@@ -158,30 +160,31 @@ const BookingModal = ({ startDateTime, availableSpaces }: BookingModalProps) => 
           errors={errors}
           required
         />
-        <Typography variant="body1">Price: ${tour.price} per person</Typography>
-        <Typography variant="body1">Total: ${(new BigNumber(tour.price)).times(watchedParticipants).toString()}</Typography>
+        <LabeledText label="Price" value={`$${tour.price} per person`} />
+        <LabeledText label="Total" value={`$${(new BigNumber(tour.price)).times(watchedParticipants).toString()}`} />
       </div>
-    )
+    );
   }
 
   if (step === STEPS.PAY) {
     if (!bookingResponse) {
-      return <div>An error occurred.</div>
+      toast.error("An error occurred.");
+      return <></>;
     }
     title="Complete Payment";
     bodyContent = (
       <div>
         <Typography variant="body1" fontWeight="bold">You will be redirected to PayPal to complete your payment securely.</Typography>
-        <Typography variant="body1">Tour: {bookingResponse.tourName}</Typography>
-        <Typography variant="body1">Price: ${bookingResponse.unitPrice} per person</Typography>
-        <Typography variant="body1">Total: ${bookingResponse.totalPrice}</Typography>
+        <LabeledText label="Tour" value={bookingResponse.tourName} />
+        <LabeledText label="Price" value={`$${bookingResponse.unitPrice} per person`} />
+        <LabeledText label="Total" value={`$${bookingResponse.totalPrice}`} />
         <Box mt={2}>
-          <Typography variant="body2">Booking & Payment Policy</Typography>
-          <Typography variant="body2" fontSize="0.8rem">Thank you for choosing to book a tour with us. Please note the following important guidelines regarding bookings and payments:</Typography>
-          <Typography variant="body2" fontSize="0.8rem">Immediate Payment: Please proceed to make an immediate payment via PayPal to complete the booking process.</Typography>
-          <Typography variant="body2" fontSize="0.8rem">No Reservations without Payment: We cannot reserve places on the tour without receiving full payment. Your spots are only confirmed once the payment is successfully made.</Typography>
-          <Typography variant="body2" fontSize="0.8rem">Non-cancellable & Non-refundable: Once paid for, all bookings are non-cancellable and non-refundable.</Typography>
-          <Typography variant="body2" fontSize="0.8rem">We appreciate your understanding and cooperation. This policy ensures fairness to all our guests and helps us maintain the quality of our tours.</Typography>
+          <Typography variant="body2" fontWeight="bold">Booking & Payment Policy</Typography>
+          <Typography variant="body2">Thank you for choosing to book a tour with us. Please note the following important guidelines regarding bookings and payments:</Typography>
+          <Typography variant="body2">Immediate Payment: Please proceed to make an immediate payment via PayPal to complete the booking process.</Typography>
+          <Typography variant="body2">No Reservations without Payment: We cannot reserve places on the tour without receiving full payment. Your spots are only confirmed once the payment is successfully made.</Typography>
+          <Typography variant="body2">Non-cancellable & Non-refundable: Once paid for, all bookings are non-cancellable and non-refundable.</Typography>
+          <Typography variant="body2">We appreciate your understanding and cooperation. This policy ensures fairness to all our guests and helps us maintain the quality of our tours.</Typography>
         </Box>
         <Box mt={2}>
           <PayPalButtons
@@ -209,12 +212,13 @@ const BookingModal = ({ startDateTime, availableSpaces }: BookingModalProps) => 
           />
         </Box>
       </div>
-    )
+    );
   }
 
   if (step === STEPS.PAID) {
     if (!bookingResponse) {
-      return <div>An error occurred.</div>
+      toast.error("An error occurred.");
+      return <></>;
     }
     title="🎉 Your Tour is Booked 🎉";
     actionLabel="OK";
@@ -222,16 +226,16 @@ const BookingModal = ({ startDateTime, availableSpaces }: BookingModalProps) => 
       <div>
         <Typography variant="body1">✅ Your payment has been successfully processed, and we&apos;re excited to have you join us on the tour.</Typography>
         <Box mt={2}>
-          <Typography variant="body1" fontWeight="bold">Booking Details:</Typography>
-          <Typography variant="body1">Tour: {bookingResponse.tourName}</Typography>
-          <Typography variant="body1">Location: {bookingResponse.tourRegion}</Typography>
-          <Typography variant="body1">Start Date & Time: {formatDateAndTime(bookingResponse.startDateTime)}</Typography>
-          <Typography variant="body1">Duration: {`${bookingResponse.tourDuration} ${bookingResponse.tourDuration > 1 ? 'days' : 'day'}`}</Typography>
-          <Typography variant="body1">Number of Participants: {bookingResponse.numberOfParticipants}</Typography>
-          <Typography variant="body1">Total: ${bookingResponse.totalPrice}</Typography>
+          <Typography variant="body1" fontWeight="bold">Booking Details</Typography>
+          <LabeledText label="Tour" value={bookingResponse.tourName} />
+          <LabeledText label="Location" value={bookingResponse.tourRegion} />
+          <LabeledText label="Start Date & Time" value={formatDateAndTime(bookingResponse.startDateTime)} />
+          <LabeledText label="Duration" value={`${bookingResponse.tourDuration} ${bookingResponse.tourDuration > 1 ? "days" : "day"}`} />
+          <LabeledText label="Number of Participants" value={bookingResponse.numberOfParticipants} />
+          <LabeledText label="Total" value={`$${bookingResponse.totalPrice}`} />
         </Box>
       </div>
-    )
+    );
   }
 
   return (
@@ -245,6 +249,6 @@ const BookingModal = ({ startDateTime, availableSpaces }: BookingModalProps) => 
       body={bodyContent}
     />
   );
-}
+};
 
 export default BookingModal;

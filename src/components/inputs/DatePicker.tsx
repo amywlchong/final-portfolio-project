@@ -1,11 +1,10 @@
 import {
-  DateRange,
   Range,
   RangeKeyDict
 } from "react-date-range";
-
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
+import { ResponsiveDateRange } from "../../styles";
 
 interface DatePickerProps {
   value: Range,
@@ -21,8 +20,8 @@ const DatePicker = ({
   minDate
 }: DatePickerProps) => {
   return (
-    <DateRange
-      rangeColors={['#262626']}
+    <ResponsiveDateRange
+      rangeColors={["#262626"]}
       ranges={[value]}
       date={new Date()}
       shownDate={new Date()}
@@ -32,7 +31,7 @@ const DatePicker = ({
       minDate={minDate || new Date()}
       disabledDates={disabledDates}
     />
-   );
-}
+  );
+};
 
 export default DatePicker;

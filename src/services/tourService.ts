@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axios from "axios";
 
-import { apiBaseUrl } from '../utils/constants';
-import { FieldValues, Tour, TourImage, TourRequest } from '../types';
-import { getAuthHeader } from './authHeader';
+import { apiBaseUrl } from "../utils/constants";
+import { FieldValues, Tour, TourImage, TourRequest } from "../types";
+import { getAuthHeader } from "./authHeader";
 
 const getAllTours = async () => {
   const { data } = await axios.get<Tour[]>(`${apiBaseUrl}/tours`);
@@ -14,7 +14,7 @@ const getAvailableToursWithinRange = async (formattedStartDate: string, formatte
   const { data } = await axios.get<Tour[]>(`${apiBaseUrl}/tours/available?startDate=${formattedStartDate}&endDate=${formattedEndDate}`);
 
   return data;
-}
+};
 
 const getOneTour = async (id: number) => {
   const { data } = await axios.get<Tour | undefined>(`${apiBaseUrl}/tours/${id}`);
@@ -27,7 +27,7 @@ const createTour = async (tourRequest: FieldValues<TourRequest>) => {
   const { data } = await axios.post<Tour>(`${apiBaseUrl}/tours`, tourRequest, authHeader);
 
   return data;
-}
+};
 
 const uploadTourImages = async (tourId: number, images: File[]) => {
   const formData = new FormData();
@@ -40,7 +40,7 @@ const uploadTourImages = async (tourId: number, images: File[]) => {
   const { data } = await axios.post<TourImage[]>(imageUrl, formData, authHeader);
 
   return data;
-}
+};
 
 const updateTour = async (id: number, tourRequest: FieldValues<TourRequest>) => {
   const authHeader = getAuthHeader();

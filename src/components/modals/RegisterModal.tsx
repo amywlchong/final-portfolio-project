@@ -15,6 +15,7 @@ import { authenticate } from "../../redux/slices/userSlice";
 import { useAppDispatch } from "../../app/reduxHooks";
 import { createServiceHandler } from "../../utils/serviceHandler";
 import { ApiError } from "../../utils/ApiError";
+import { Typography } from "@mui/material";
 
 const RegisterModal= () => {
   const registerModal = useRegisterModal();
@@ -23,9 +24,9 @@ const RegisterModal= () => {
   const dispatch = useAppDispatch();
 
   const defaultFormValues = {
-    name: '',
-    email: '',
-    password: ''
+    name: "",
+    email: "",
+    password: ""
   };
 
   const {
@@ -42,18 +43,18 @@ const RegisterModal= () => {
   const onModalClose = () => {
     reset(defaultFormValues);
     registerModal.onClose();
-  }
+  };
 
   const onSubmit = async (data: FieldValues<RegisterFormValues>) => {
     const registerHandler = createServiceHandler(authService.register, {
       startLoading: () => setIsLoading(true),
       endLoading: () => setIsLoading(false),
-    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please sign up again.")}});
+    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please sign up again.");}});
 
     const response = await registerHandler(data);
 
     if (response.success && response.data) {
-      toast.success('Registered!');
+      toast.success("Registered!");
       dispatch(authenticate(response.data));
       onModalClose();
     }
@@ -62,13 +63,12 @@ const RegisterModal= () => {
   const onToggle = useCallback(() => {
     onModalClose();
     loginModal.onOpen();
-  }, [registerModal, loginModal])
+  }, [registerModal, loginModal]);
 
   const bodyContent = (
     <div>
       <Heading
-        title="Welcome to ScenicSymphony Tours"
-        subtitle="Create an account!"
+        title="Welcome to Scenic Symphony Tours!"
       />
       <Input
         id="email"
@@ -96,26 +96,34 @@ const RegisterModal= () => {
         required
       />
     </div>
-  )
+  );
 
   const footerContent = (
     <div>
       <hr />
-      <div>
-        <p>Already have an account?
-          <span
-            onClick={onToggle}
-            > Log in</span>
-        </p>
-      </div>
+      <Typography variant="subtitle1" textAlign="center">
+        Already have an account?
+        <span
+          onClick={onToggle}
+          style={{
+            color: "blue",
+            textDecoration: "underline",
+            cursor: "pointer",
+            marginLeft: "5px",
+            fontWeight: "bold"
+          }}
+        >
+          Log in
+        </span>
+      </Typography>
     </div>
-  )
+  );
 
   return (
     <Modal
       disabled={isLoading}
       isOpen={registerModal.isOpen}
-      title="Register"
+      title="Create an account"
       actionLabel="Continue"
       onClose={onModalClose}
       onSubmit={handleSubmit(onSubmit)}
@@ -123,6 +131,6 @@ const RegisterModal= () => {
       footer={footerContent}
     />
   );
-}
+};
 
 export default RegisterModal;

@@ -1,9 +1,9 @@
-import { Range } from 'react-date-range';
+import { Range } from "react-date-range";
 
 import Modal from "./Modal";
 import DatePicker from "../inputs/DatePicker";
-import { sub } from 'date-fns';
-import useDateFilterModal from '../../hooks/useDateFilterModal';
+import { sub } from "date-fns";
+import useDateFilterModal from "../../hooks/useDateFilterModal";
 
 interface DateFilterModalProps {
   filterDateRange: Range;
@@ -15,14 +15,14 @@ const DateFilterModal = ({ filterDateRange, setFilterDateRange }: DateFilterModa
   const dateFilterModal = useDateFilterModal();
 
   const bodyContent = (
-    <div>
+    <div style={{ display: "flex", justifyContent: "center" }}>
       <DatePicker
         onChange={(value) => setFilterDateRange(value.selection)}
         value={filterDateRange}
         minDate={sub(new Date(), { days: 365 })}
       />
     </div>
-  )
+  );
 
   return (
     <Modal
@@ -34,6 +34,6 @@ const DateFilterModal = ({ filterDateRange, setFilterDateRange }: DateFilterModa
       body={bodyContent}
     />
   );
-}
+};
 
 export default DateFilterModal;

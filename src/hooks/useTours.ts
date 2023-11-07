@@ -35,7 +35,7 @@ const useTours = () => {
         dispatch(setAllTours(response.data));
         setAllToursError(null);
       }
-    }
+    };
 
     if (allTours.length == 0) {
       fetchAllTours();
@@ -73,9 +73,9 @@ const useTours = () => {
     } else {
       dispatch(setFilteredTours(toursInRange));
     }
-  }
+  };
 
-  return { getAllTours, loadingAllTours, allToursError, filterTours, loadingAvailableTours, availableToursError }
-}
+  return { getAllTours, loadingAllTours, allToursError, filterTours, loadingAvailableTours, availableToursError };
+};
 
 export default useTours;

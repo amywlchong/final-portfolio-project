@@ -8,7 +8,7 @@ interface ButtonProps {
   disabled?: boolean;
   outline?: boolean;
   icon?: IconType;
-  width?: string | number;
+  fullWidth?: boolean;
   sx?: SxProps<Theme>;
 }
 
@@ -19,7 +19,7 @@ const ButtonComponent = ({
   disabled,
   outline,
   icon: Icon,
-  width,
+  fullWidth,
   sx
 }: ButtonProps) => {
   return (
@@ -28,12 +28,12 @@ const ButtonComponent = ({
       variant={outline ? "outlined" : "contained"}
       disabled={disabled}
       onClick={onClick}
-      style={{ width }}
+      fullWidth={fullWidth}
       sx={sx}
     >
-      {label} {Icon && (<Icon style={{ marginLeft: '5px' }} />)}
+      {label} {Icon && (<Icon style={{ marginLeft: "5px" }} />)}
     </Button>
   );
-}
+};
 
 export default ButtonComponent;

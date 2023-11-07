@@ -1,20 +1,22 @@
-import { useState } from 'react';
-import { Range } from 'react-date-range';
-import { Typography, List, ListItem, ListItemText } from '@mui/material';
-import { addDays } from 'date-fns';
-import DatePicker from '../../inputs/DatePicker';
-import BookingModal from '../../modals/BookingModal';
-import Button from '../../Button';
-import { useAppSelector } from '../../../app/reduxHooks';
-import { formatDateAndTime } from '../../../utils/dataProcessing';
-import useBookingModal from '../../../hooks/useBookingModal';
+import { useState } from "react";
+import { Range } from "react-date-range";
+import { Typography, List, ListItem, ListItemText } from "@mui/material";
+import { addDays } from "date-fns";
+import DatePicker from "../../inputs/DatePicker";
+import BookingModal from "../../modals/BookingModal";
+import Button from "../../Button";
+import { useAppSelector } from "../../../app/reduxHooks";
+import { formatDateAndTime } from "../../../utils/dataProcessing";
+import useBookingModal from "../../../hooks/useBookingModal";
+import useScreenSize from "../../../hooks/useScreenSize";
 
 const TourDatesFilter = () => {
+  const { is400AndUp, is500AndUp } = useScreenSize();
   const tour = useAppSelector(state => state.tours.currentTour);
   const initialDateRange = {
     startDate: addDays(new Date(), 1),
     endDate: addDays(new Date(), 1),
-    key: 'selection'
+    key: "selection"
   };
   const [userAvailability, setUserAvailability] = useState<Range>(initialDateRange);
   const [selectedStartDateTime, setSelectedStartDateTime] = useState<string | null>(null);
@@ -67,7 +69,7 @@ const TourDatesFilter = () => {
           <ListItem
             key={date.id.startDateId}
             style={{
-              width: '360px'
+              width: `${is500AndUp ? "380px" : is400AndUp ? "360px" : "300px" }`
             }}
           >
             <ListItemText
@@ -94,6 +96,6 @@ const TourDatesFilter = () => {
       }
     </div>
   );
-}
+};
 
 export default TourDatesFilter;

@@ -14,7 +14,7 @@ const ToursPage = () => {
   if (loadingAllTours == true || loadingAvailableTours == true) {
     return (
       <div>Loading...</div>
-    )
+    );
   }
 
   const error = allToursError || availableToursError;
@@ -41,14 +41,11 @@ const ToursPage = () => {
       <Search />
       <StyledGrid>
         {sortedTours.map((tour) => (
-          <TourCard
-            key={tour.id}
-            tour={tour}
-          />
+          <TourCard key={tour.id} tour={tour} />
         ))}
       </StyledGrid>
     </>
-  )
-}
+  );
+};
 
 export default ToursPage;
