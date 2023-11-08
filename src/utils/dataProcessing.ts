@@ -2,6 +2,11 @@ import { addDays, format, parse } from "date-fns";
 import { Role, nestedFieldErrors } from "../types";
 import { FieldError } from "react-hook-form";
 
+export const getMonthFromDateString = (dateString: string): string => {
+  const dateObj = new Date(dateString);
+  return format(dateObj, "MMM");
+};
+
 export const dateToDateString = (date: Date): string => {
   return format(date, "yyyy-MMM-dd");
 };

@@ -55,6 +55,7 @@ export interface User {
   email?: string;
   active: boolean;
   role: Role;
+  signupDate?: string;
 }
 
 export enum Role {
@@ -157,6 +158,7 @@ export interface BookingResponse {
   // StartDate fields
   startDateId: number;
   startDateTime: string;
+  monthOfStartDate?: string;
 }
 
 export interface CapturePaymentRequest {

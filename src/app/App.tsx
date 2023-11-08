@@ -17,6 +17,7 @@ import SchedulesPage from "../components/schedules/SchedulesPage";
 import BookingManagementPage from "../components/bookingManagement/BookingsPage";
 import TourManagementPage from "../components/tourManagement/ToursPage";
 import { extractTokenAndUser } from "../services/authService";
+import DashboardPage from "../components/adminDashboard";
 
 const App = () => {
 
@@ -49,6 +50,7 @@ const App = () => {
 
         <Container>
           <Routes>
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/" element={<ToursPage />} />
             <Route path="/tours/:id" element={<TourPage />} />
             <Route path="/me/bookings" element={<MyBookingsPage />} />

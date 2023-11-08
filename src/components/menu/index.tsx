@@ -13,6 +13,7 @@ import useScreenSize from "../../hooks/useScreenSize";
 
 const links = [
   { text: "Home", url: "/" },
+  { text: "Dashboard", url: "/dashboard"},
   { text: "Tours", url: "/tours" },
   { text: "Bookings", url: "/bookings" },
   { text: "Schedules", url: "/tour-guide-schedules" },
