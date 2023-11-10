@@ -1,10 +1,10 @@
-import { Calendar, momentLocalizer } from "react-big-calendar";
-import moment from "moment";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import { ScheduleResponse } from "../../types";
-import { addDays } from "date-fns";
 import { useState } from "react";
 import { Box, TextField, Tooltip } from "@mui/material";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import moment from "moment";
+import { ScheduleResponse } from "../../types";
+import { addDays } from "date-fns";
 
 const localizer = momentLocalizer(moment);
 

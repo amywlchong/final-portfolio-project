@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAuthHeader } from "./authHeader";
 import { ScheduleRequest, ScheduleResponse } from "../types";
-import { apiBaseUrl } from "../utils/constants";
+import { apiBaseUrl } from "../config/constants";
 
 const getAllSchedules = async () => {
   const authHeader = getAuthHeader();

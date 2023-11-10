@@ -6,9 +6,9 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 
-import Button from "../Button";
+import Button from "../ui/Button";
 import { Box } from "@mui/material";
-import useScreenSize from "../../hooks/useScreenSize";
+import useScreenSize from "../../hooks/ui/useScreenSize";
 
 interface ModalProps {
   isOpen: boolean;

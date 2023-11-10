@@ -1,66 +1,70 @@
 import { useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Container } from "@mui/material";
+import { GlobalStyle } from "../styles";
+
+// Hooks
 import { useAppDispatch } from "./reduxHooks";
+import { useAuthVerification } from "../hooks/auth/useAuthVerification";
+
+// Redux
 import { setUserFromLocalStorage } from "../redux/slices/userSlice";
 
+// Providers
 import ModalsProvider from "../providers/ModalsProvider";
 import ToasterProvider from "../providers/ToasterProvider";
-import ToursPage from "../components/tours/ToursPage";
-import Menu from "../components/menu";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import TourPage from "../components/tours/[tourId]/page";
 
-import { Container } from "@mui/material";
-import MyBookingsPage from "../components/userSelfService/MyBookingsPage";
-import MyProfilePage from "../components/userSelfService/MyProfilePage";
+// Components
+import NavBar from "../components/layout/NavigationBar";
+import Footer from "../components/layout/Footer";
+import DashboardPage from "../components/adminDashboard";
+import ToursPage from "../components/tours/ToursPage";
+import TourPage from "../components/tours/[tourId]/TourPage";
+import MyBookingsPage from "../components/userSelfService/myBookings/MyBookingsPage";
+import MyProfilePage from "../components/userSelfService/myProfile/MyProfilePage";
 import UsersPage from "../components/userAdministration/UsersPage";
 import SchedulesPage from "../components/schedules/SchedulesPage";
 import BookingManagementPage from "../components/bookingManagement/BookingsPage";
 import TourManagementPage from "../components/tourManagement/ToursPage";
-import { extractTokenAndUser } from "../services/authService";
-import DashboardPage from "../components/adminDashboard";
 
 const App = () => {
-
   const dispatch = useAppDispatch();
+  const user = useAuthVerification();
 
   useEffect(() => {
-    const loggedInUserToken = localStorage.getItem("toursAppLoggedInUserToken");
-    const tokenExpiry = localStorage.getItem("toursAppTokenExpiry");
-
-    if (loggedInUserToken && tokenExpiry) {
-      const currentTime = Date.now();
-
-      if (currentTime < Number(tokenExpiry)) {
-        const { user } = extractTokenAndUser({ token: loggedInUserToken });
-        dispatch(setUserFromLocalStorage(user));
-      } else {
-        localStorage.removeItem("toursAppLoggedInUserToken");
-        localStorage.removeItem("toursAppTokenExpiry");
-      }
+    if (user) {
+      dispatch(setUserFromLocalStorage(user));
     }
-  }, []);
+  }, [user, dispatch]);
+
+  const routes = [
+    { path: "/dashboard", element: <DashboardPage /> },
+    { path: "/", element: <ToursPage /> },
+    { path: "/tours/:id", element: <TourPage /> },
+    { path: "/me/bookings", element: <MyBookingsPage /> },
+    { path: "/me/profile", element: <MyProfilePage /> },
+    { path: "/users", element: <UsersPage /> },
+    { path: "/tour-guide-schedules", element: <SchedulesPage /> },
+    { path: "/bookings", element: <BookingManagementPage /> },
+    { path: "/tours", element: <TourManagementPage /> }
+  ];
 
   return (
-    <div className="App">
+    <div>
+      <GlobalStyle />
       <ToasterProvider />
       <ModalsProvider />
 
       <Router>
-        <Menu />
-
+        <NavBar />
         <Container>
           <Routes>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/" element={<ToursPage />} />
-            <Route path="/tours/:id" element={<TourPage />} />
-            <Route path="/me/bookings" element={<MyBookingsPage />} />
-            <Route path="/me/profile" element={<MyProfilePage />} />
-            <Route path="/users" element={<UsersPage />} />
-            <Route path="/tour-guide-schedules" element={<SchedulesPage />} />
-            <Route path="/bookings" element={<BookingManagementPage />} />
-            <Route path="/tours" element={<TourManagementPage />} />
+            {routes.map(route => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
           </Routes>
         </Container>
+        <Footer />
       </Router>
     </div>
   );

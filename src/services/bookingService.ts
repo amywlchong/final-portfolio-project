@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { apiBaseUrl } from "../utils/constants";
+import { apiBaseUrl } from "../config/constants";
 import { BookingRequest, BookingResponse } from "../types";
 import { getAuthHeader } from "./authHeader";
 

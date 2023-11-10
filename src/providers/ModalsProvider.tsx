@@ -1,7 +1,7 @@
-import DateSearchModal from "../components/modals/DateSearchModal";
-import LocationSearchModal from "../components/modals/LocationSearchModal";
-import LoginModal from "../components/modals/LoginModal";
-import RegisterModal from "../components/modals/RegisterModal";
+import DateSearchModal from "../components/modals/searchFilters/DateSearchModal";
+import LocationSearchModal from "../components/modals/searchFilters/LocationSearchModal";
+import LoginModal from "../components/modals/auth/LoginModal";
+import RegisterModal from "../components/modals/auth/RegisterModal";
 
 const ModalsProvider = () => {
   return (

@@ -1,13 +1,15 @@
 import { addDays, format, parse } from "date-fns";
 import { Role, nestedFieldErrors } from "../types";
+import { Range } from "react-date-range";
 import { FieldError } from "react-hook-form";
+import _ from "lodash";
 
 export const getMonthFromDateString = (dateString: string): string => {
   const dateObj = new Date(dateString);
   return format(dateObj, "MMM");
 };
 
-export const dateToDateString = (date: Date): string => {
+export const formatDateToYMDString = (date: Date): string => {
   return format(date, "yyyy-MMM-dd");
 };
 
@@ -16,7 +18,7 @@ export const formatDateAndTime = (dateString: string): string => {
   return format(dateObj, "yyyy-MMM-dd(eee) HH:mm");
 };
 
-export const convertToISOlikeFormat = (formattedString: string): string => {
+export const formatDateTimeStringToISOString = (formattedString: string): string => {
   // Remove the day of the week from the formatted string
   const cleanedString = formattedString.replace(/\([a-zA-Z]{3}\)/, "");
 
@@ -25,8 +27,27 @@ export const convertToISOlikeFormat = (formattedString: string): string => {
   return format(parsedDate, "yyyy-MM-dd'T'HH:mm:ss");
 };
 
-export const getEndDate = (startDate: Date, duration: number): Date => {
+export const calculateEndDateFromDuration = (startDate: Date, duration: number): Date => {
   return addDays(startDate, (duration - 1));
+};
+
+export const isDateWithinRange = (date: Date, filterDateRange: Range): boolean => {
+  let filterStartDate: Date | undefined, filterEndDate: Date | undefined;
+  if (filterDateRange.startDate) {
+    filterStartDate = new Date(filterDateRange.startDate);
+  }
+  if (filterDateRange.endDate) {
+    filterEndDate = new Date(filterDateRange.endDate);
+    filterEndDate.setHours(23, 59, 59, 999);
+  }
+
+  if (filterStartDate && date < filterStartDate) {
+    return false;
+  }
+  if (filterEndDate && date > filterEndDate) {
+    return false;
+  }
+  return true;
 };
 
 export const roleToLabel = (role: Role): string => {
@@ -60,18 +81,22 @@ export const labelToRole = (label: string): Role => {
 };
 
 export const labelsToRoles = (labels: string): Role[] => {
+  if (_.isEmpty(labels)) {
+    return new Array<Role>();
+  }
+
   const labelArray = labels.split(", ");
 
   return labelArray.map(labelToRole);
 };
 
-export const isErrorStructureNested = (obj: any, index: number): boolean => {
-  if (typeof obj !== "object" || obj === null) return false;
-  for (const key in obj) {
+export const hasObjectAtArrayIndex = (dataStructure: any, index: number): boolean => {
+  if (typeof dataStructure !== "object" || dataStructure === null) return false;
+  for (const key in dataStructure) {
     if (
-      !Array.isArray(obj[key]) ||
-      typeof obj[key][index] !== "object" ||
-      obj[key][index] === null
+      !Array.isArray(dataStructure[key]) ||
+      typeof dataStructure[key][index] !== "object" ||
+      dataStructure[key][index] === null
     )
       return false;
   }

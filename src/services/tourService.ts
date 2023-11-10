@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { apiBaseUrl } from "../utils/constants";
+import { apiBaseUrl } from "../config/constants";
 import { FieldValues, Tour, TourImage, TourRequest } from "../types";
 import { getAuthHeader } from "./authHeader";
 

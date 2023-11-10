@@ -1,7 +1,7 @@
+import { Box, InputLabel, TextField, Typography } from "@mui/material";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { FieldValues, nestedFieldErrors } from "../../types";
-import { Box, InputLabel, TextField, Typography } from "@mui/material";
-import { getNestedError, isErrorStructureNested } from "../../utils/dataProcessing";
+import { getNestedError, hasObjectAtArrayIndex } from "../../utils/dataProcessing";
 
 interface InputProps {
   id: string;
@@ -17,6 +17,7 @@ interface InputProps {
   required?: boolean;
   register: UseFormRegister<FieldValues>;
   errors: FieldErrors | nestedFieldErrors;
+  helperText?: string;
 }
 
 const Input = ({
@@ -33,10 +34,11 @@ const Input = ({
   required,
   register,
   errors,
+  helperText,
 }: InputProps) => {
 
   const errorForField = arrayName && index !== undefined
-    ? isErrorStructureNested(errors, index) && getNestedError(errors as nestedFieldErrors, arrayName, index, id)
+    ? hasObjectAtArrayIndex(errors, index) && getNestedError(errors as nestedFieldErrors, arrayName, index, id)
     : errors[id];
 
   return (
@@ -44,6 +46,7 @@ const Input = ({
       <InputLabel htmlFor={id}>
         <Typography variant="body1" fontWeight={boldLabel ? "bold" : "normal"}>{label}</Typography>
       </InputLabel>
+      <Typography variant="body2">{helperText}</Typography>
       <TextField
         hiddenLabel
         id={id}

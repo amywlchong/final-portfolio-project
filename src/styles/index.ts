@@ -1,8 +1,15 @@
 import { Link as RouterLink } from "react-router-dom";
+import { createGlobalStyle } from "styled-components";
 import { Card } from "@mui/material";
 import { styled } from "@mui/system";
 import { keyframes } from "@emotion/react";
 import { DateRange } from "react-date-range";
+
+export const GlobalStyle = createGlobalStyle`
+  body {
+    margin: 0;
+  }
+`;
 
 export const StyledGrid = styled("div")(({ theme }) => ({
   display: "grid",

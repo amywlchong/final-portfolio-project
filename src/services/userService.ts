@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAuthHeader } from "./authHeader";
 import { Role, User } from "../types";
-import { apiBaseUrl } from "../utils/constants";
+import { apiBaseUrl } from "../config/constants";
 
 const getAllUsers = async () => {
   const authHeader = getAuthHeader();

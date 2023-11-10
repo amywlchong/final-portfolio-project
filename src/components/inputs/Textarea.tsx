@@ -1,11 +1,11 @@
+import { InputLabel, Typography } from "@mui/material";
+import { TextareaAutosize } from "@mui/base";
 import {
   FieldErrors,
   UseFormRegister
 } from "react-hook-form";
 import { FieldValues, nestedFieldErrors } from "../../types";
-import { InputLabel, Typography } from "@mui/material";
-import { TextareaAutosize } from "@mui/base";
-import { getNestedError, isErrorStructureNested } from "../../utils/dataProcessing";
+import { getNestedError, hasObjectAtArrayIndex } from "../../utils/dataProcessing";
 
 interface TextareaProps {
   id: string;
@@ -32,7 +32,7 @@ const Textarea = ({
 }: TextareaProps) => {
 
   const errorForField = arrayName && index !== undefined
-    ? isErrorStructureNested(errors, index) && getNestedError(errors as nestedFieldErrors, arrayName, index, id)
+    ? hasObjectAtArrayIndex(errors, index) && getNestedError(errors as nestedFieldErrors, arrayName, index, id)
     : errors[id];
 
   return (

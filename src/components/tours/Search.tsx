@@ -1,37 +1,35 @@
-import qs from "query-string";
 import { useMemo } from "react";
-
-import { BiSearch } from "react-icons/bi";
-import useLocationSearchModal from "../../hooks/useLocationSearchModal";
-import useDateSearchModal from "../../hooks/useDateSearchModal";
-import Button from "../Button";
+import { useLocationSearchModal } from "../../hooks/modals/useModals";
+import { useDateSearchModal } from "../../hooks/modals/useModals";
 import { Box } from "@mui/material";
+import { BiSearch } from "react-icons/bi";
+import Button from "../ui/Button";
 
 const Search = () => {
 
   const locationSearch = useLocationSearchModal();
   const dateSearch = useDateSearchModal();
-  const params = qs.parse(window.location.search);
+  const params = new URLSearchParams(window.location.search);
 
-  const regions = params.regions;
-  const startDate = params.startDate;
-  const endDate = params.endDate;
+  const regions = params.get("regions");
+  const startDate = params.get("startDate");
+  const endDate = params.get("endDate");
+
+  const MAX_LABEL_LENGTH = 20;
+
+  const trimString = (str: string) => {
+    if (str.length > MAX_LABEL_LENGTH) {
+      return str.substring(0, MAX_LABEL_LENGTH - 3) + "...";
+    }
+    return str;
+  };
 
   const locationLabel = useMemo(() => {
-    const trimString = (str: string) => {
-      const maxLength = 20;
-      if (str.length > maxLength) {
-        return str.substring(0, maxLength - 3) + "...";
-      }
-      return str;
-    };
-
     if (Array.isArray(regions) && regions.length > 0) {
       return trimString(regions.join(", "));
     } else if (typeof regions === "string") {
       return trimString(regions);
     }
-
     return "Anywhere";
   }, [regions]);
 
@@ -39,7 +37,6 @@ const Search = () => {
     if (startDate && endDate) {
       return `${startDate} - ${endDate}`;
     }
-
     return "Any Week";
   }, [startDate, endDate]);
 

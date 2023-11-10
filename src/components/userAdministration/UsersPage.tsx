@@ -1,27 +1,26 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useAppSelector } from "../../app/reduxHooks";
+import { useUsers } from "../../hooks/data/useUsers";
+import { useDeleteUserModal } from "../../hooks/modals/useModals";
 import { Typography, IconButton, Box, Tooltip } from "@mui/material";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { MRT_ColumnDef, MRT_TableOptions, MaterialReactTable } from "material-react-table";
 import { Role, User } from "../../types";
+import { labelToRole, roleToLabel } from "../../utils/dataProcessing";
 import { ApiError } from "../../utils/ApiError";
-import { useAppSelector } from "../../app/reduxHooks";
-import toast from "react-hot-toast";
 import { createServiceHandler } from "../../utils/serviceHandler";
 import userService from "../../services/userService";
-import { labelToRole, roleToLabel } from "../../utils/dataProcessing";
-import DeleteUserModal from "../modals/DeleteUserModal";
-import useDeleteUserModal from "../../hooks/useDeleteUserModal";
-import { MRT_ColumnDef, MRT_TableOptions, MaterialReactTable } from "material-react-table";
+import DeleteUserModal from "../modals/users/DeleteUserModal";
+import toast from "react-hot-toast";
 
 const UsersPage = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<ApiError | null>(null);
-  const [isUpdating, setIsUpdating] = useState(false);
   const currentUser = useAppSelector(state => state.user.loggedInUser);
 
-  const [users, setUsers] = useState<User[]>([]);
+  const { isLoadingUsers, errorFetchingUsers, users, setUsers } = useUsers();
 
+  const [isUpdating, setIsUpdating] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const deleteUserModal = useDeleteUserModal();
 
@@ -90,33 +89,15 @@ const UsersPage = () => {
     []
   );
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const getAllUsersHandler = createServiceHandler(userService.getAllUsers, {
-        startLoading: () => setIsLoading(true),
-        endLoading: () => setIsLoading(false),
-      }, { handle: (error: ApiError) => setError(error) });
-
-      const response = await getAllUsersHandler();
-
-      if (response.success && response.data) {
-        setUsers(response.data);
-        setError(null);
-      }
-    };
-
-    fetchUsers();
-  }, [currentUser]);
-
   if (!currentUser) {
     return <div>Please log in or sign up to continue.</div>;
   }
 
-  if (isLoading) {
+  if (isLoadingUsers) {
     return <div>Loading...</div>;
   }
 
-  if (error) {
+  if (errorFetchingUsers) {
     return <div>Error: An error occurred while fetching users.</div>;
   }
 

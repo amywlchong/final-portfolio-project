@@ -1,7 +1,7 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 
-import { apiBaseUrl } from "../utils/constants";
+import { apiBaseUrl } from "../config/constants";
 import { CustomJwtPayload, FieldValues, LoginFormValues, RegisterFormValues, UpdatePasswordValues, User } from "../types";
 import { getAuthHeader } from "./authHeader";
 

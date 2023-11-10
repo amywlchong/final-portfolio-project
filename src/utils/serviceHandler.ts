@@ -32,7 +32,11 @@ export const createServiceHandler = <T, Args extends any[]>(
       };
     } catch (error: any) {
       // Cast error to ApiError
-      const apiError: ApiError = error instanceof ApiError ? error : new ApiError("An error occurred.");
+      const apiError: ApiError = error instanceof ApiError
+        ? error
+        : error?.message
+          ? new ApiError(error.message)
+          : new ApiError("An unexpected error occurred.");
 
       if (error.response) {
         apiError.response = {
