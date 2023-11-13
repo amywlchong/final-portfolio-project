@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({UsernameNotFoundException.class, BadCredentialsException.class})
     public ResponseEntity<String> handleAuthenticationException(RuntimeException exc) {
-        return new ResponseEntity<>("Invalid credentials.", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("Wrong email or password.", HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(AuthenticatedUserNotFoundException.class)
@@ -132,4 +132,3 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exc.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
-

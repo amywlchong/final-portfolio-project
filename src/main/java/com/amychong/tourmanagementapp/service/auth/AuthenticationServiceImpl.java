@@ -51,7 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         String jwtToken = jwtService.generateToken(dbUser);
 
-        return new AuthenticationResponseDTO(jwtToken, dbUser.getId(), dbUser.getName(), dbUser.getActive(), dbUser.getRole());
+        return new AuthenticationResponseDTO(jwtToken);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         String jwtToken = jwtService.generateToken(dbUser);
 
-        return new AuthenticationResponseDTO(jwtToken, dbUser.getId(), dbUser.getName(), dbUser.getActive(), dbUser.getRole());
+        return new AuthenticationResponseDTO(jwtToken);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         String jwtToken = jwtService.generateToken(dbUser);
 
-        return new AuthenticationResponseDTO(jwtToken, dbUser.getId(), dbUser.getName(), dbUser.getActive(), dbUser.getRole());
+        return new AuthenticationResponseDTO(jwtToken);
     }
 
     @Override
