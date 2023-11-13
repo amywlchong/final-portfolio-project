@@ -57,8 +57,12 @@ public class TourController extends GenericController<Tour, TourResponseDTO> {
 
     @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
     @PutMapping("/{tourId}")
-    public ResponseEntity<TourResponseDTO> updateMainInfo(@Min(1) @PathVariable Integer tourId, @NotNull @Valid @RequestBody Tour tour) {
+    public ResponseEntity<TourResponseDTO> updateTour(@Min(1) @PathVariable Integer tourId, @NotNull @Valid @RequestBody Tour tour) {
         TourResponseDTO updatedTour = tourService.updateMainInfo(tourId, tour);
+        List<TourPointOfInterest> updatedTourPOIs = tourPointOfInterestService.updateTourPointsOfInterest(tourId, tour.getTourPointsOfInterest());
+        List<TourStartDate> updatedTourStartDates = tourStartDateService.updateTourStartDates(tourId, tour.getTourStartDates());
+        updatedTour.setTourPointsOfInterest(updatedTourPOIs);
+        updatedTour.setTourStartDates(updatedTourStartDates);
         return new ResponseEntity<>(updatedTour, HttpStatus.OK);
     }
 

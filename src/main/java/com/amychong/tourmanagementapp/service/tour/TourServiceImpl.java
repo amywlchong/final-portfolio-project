@@ -170,11 +170,13 @@ public class TourServiceImpl extends GenericServiceImpl<Tour, TourResponseDTO> i
         List<TourImage> tourImagesToDelete = tourImageRepository.findByTour_Id(inputTourId);
         super.deleteById(inputTourId);
 
-        List<String> keys = tourImagesToDelete.stream()
-                .map(image -> imagePath(inputTourId, image.getName()))
-                .collect(Collectors.toList());
+        if (tourImagesToDelete.size() > 0) {
+            List<String> keys = tourImagesToDelete.stream()
+                    .map(image -> imagePath(inputTourId, image.getName()))
+                    .collect(Collectors.toList());
 
-        s3Service.deleteObjects(keys);
+            s3Service.deleteObjects(keys);
+        }
     }
 
     private void setAvailableSpaces(TourResponseDTO tour) {
