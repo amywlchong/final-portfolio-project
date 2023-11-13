@@ -14,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 
@@ -55,18 +56,22 @@ public class User implements UserDetails, Identifiable<Integer>, Serializable, D
     @Column(name="role")
     private Role role;
 
+    @Column(name="signup_date")
+    private LocalDate signupDate = LocalDate.now();
+
     // define constructors
     public User() {
         super();
     }
 
-    public User(String name, String email, String password, Long passwordChangedDateInMillis, Boolean active, Role role) {
+    public User(String name, String email, String password, Long passwordChangedDateInMillis, Boolean active, Role role, LocalDate signupDate) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.passwordChangedDateInMillis = passwordChangedDateInMillis;
         this.active = active;
         this.role = role;
+        this.signupDate = signupDate;
     }
 
     // define getters and setters
@@ -162,13 +167,20 @@ public class User implements UserDetails, Identifiable<Integer>, Serializable, D
         this.role = role;
     }
 
+    public LocalDate getSignupDate() {
+        return signupDate;
+    }
+
+    public void setSignupDate(LocalDate signupDate) {
+        this.signupDate = signupDate;
+    }
+
     // deepCopy method
     public User deepCopy() {
         return SerializationUtils.clone(this);
     }
 
     // define toString method
-
     @Override
     public String toString() {
         return "User{" +
@@ -177,6 +189,7 @@ public class User implements UserDetails, Identifiable<Integer>, Serializable, D
                 ", email='" + email + '\'' +
                 ", active=" + active +
                 ", role=" + role +
+                ", signupDate=" + signupDate +
                 '}';
     }
 
@@ -267,7 +280,7 @@ public class User implements UserDetails, Identifiable<Integer>, Serializable, D
         public User build() {
             String encodedPassword = this.passwordEncoder.apply(this.password);
             Role role = Role.valueOf(this.authorities.get(0).getAuthority());
-            return new User(this.name, this.username, encodedPassword, this.passwordChangedDateInMillis, !this.disabled, role);
+            return new User(this.name, this.username, encodedPassword, this.passwordChangedDateInMillis, !this.disabled, role, LocalDate.now());
         }
     }
 }
