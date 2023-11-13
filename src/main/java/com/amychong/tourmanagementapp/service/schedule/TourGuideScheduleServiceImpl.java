@@ -3,6 +3,7 @@ package com.amychong.tourmanagementapp.service.schedule;
 import com.amychong.tourmanagementapp.dto.schedule.ScheduleRequestDTO;
 import com.amychong.tourmanagementapp.dto.schedule.ScheduleResponseDTO;
 import com.amychong.tourmanagementapp.entity.schedule.TourGuideSchedule;
+import com.amychong.tourmanagementapp.entity.tour.Tour;
 import com.amychong.tourmanagementapp.mapper.TourGuideScheduleMapper;
 import com.amychong.tourmanagementapp.repository.schedule.TourGuideScheduleRepository;
 import com.amychong.tourmanagementapp.service.EntityLookup;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TourGuideScheduleServiceImpl extends GenericServiceImpl<TourGuideSchedule, ScheduleResponseDTO> implements TourGuideScheduleService {
@@ -60,18 +62,40 @@ public class TourGuideScheduleServiceImpl extends GenericServiceImpl<TourGuideSc
     @Override
     @Transactional
     public ScheduleResponseDTO create(ScheduleRequestDTO inputTourGuideSchedule) {
-        Integer userId = inputTourGuideSchedule.getUserId();
-
-        if (!userService.verifyInputUserHasRole(userId, "ROLE_GUIDE", "ROLE_LEAD_GUIDE")) {
-            throw new IllegalArgumentException("User associated with schedule must be a guide or lead guide");
-        }
+        validateUser(inputTourGuideSchedule);
 
         Integer inputTourId = inputTourGuideSchedule.getTourId();
+        Tour dbTour = entityLookup.findTourByIdOrThrow(inputTourId);
         LocalDateTime inputStartDateTime = inputTourGuideSchedule.getStartDateTime();
+        LocalDateTime endDateTime = inputStartDateTime.plusDays(dbTour.getDuration() - 1);
+
         entityLookup.findTourStartDateByTourIdAndStartDateTimeOrThrow(inputTourId, inputStartDateTime);    // validate tour start date exists
+
+        validateGuideIsAvailable(inputTourGuideSchedule.getUserId(), inputStartDateTime, endDateTime);
 
         TourGuideSchedule scheduleToBeAdded = tourGuideScheduleMapper.toTourGuideSchedule(inputTourGuideSchedule, entityLookup);
 
         return super.create(scheduleToBeAdded);
+    }
+
+    private void validateUser(ScheduleRequestDTO inputTourGuideSchedule) {
+        Integer inputUserId = inputTourGuideSchedule.getUserId();
+
+        if (!userService.verifyInputUserIsActive(inputUserId)) {
+            throw new IllegalArgumentException("User associated with new schedule must be active");
+        }
+        if (!userService.verifyInputUserHasRole(inputUserId, "ROLE_GUIDE", "ROLE_LEAD_GUIDE")) {
+            throw new IllegalArgumentException("User associated with schedule must be a guide or lead guide");
+        }
+    }
+
+    private void validateGuideIsAvailable(Integer inputUserId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<Integer> availableGuideIds = userService.findAvailableGuidesWithinRange(startDateTime.toLocalDate(), endDateTime.toLocalDate())
+                .stream()
+                .map(guide -> guide.getId())
+                .collect(Collectors.toList());
+        if (!availableGuideIds.contains(inputUserId)) {
+            throw new IllegalArgumentException("Guide is not available for the date range.");
+        }
     }
 }

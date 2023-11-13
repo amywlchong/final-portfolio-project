@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Service
 public class UserServiceImpl extends GenericServiceImpl<User, UserResponseDTO> implements UserService {
 
@@ -26,6 +29,11 @@ public class UserServiceImpl extends GenericServiceImpl<User, UserResponseDTO> i
 
     private User findSensitiveUserByIdOrThrow(Integer theId) {
         return userRepository.findById(theId).orElseThrow(() -> new NotFoundException("Did not find user id - " + theId));
+    }
+
+    @Override
+    public List<UserResponseDTO> findAvailableGuidesWithinRange(LocalDate startDate, LocalDate endDate) {
+        return userMapper.toDTOList(userRepository.findAvailableGuidesWithinRange(startDate, endDate));
     }
 
     @Override
@@ -73,5 +81,11 @@ public class UserServiceImpl extends GenericServiceImpl<User, UserResponseDTO> i
         }
 
         return false;
+    }
+
+    @Override
+    public boolean verifyInputUserIsActive(Integer userId) {
+        UserResponseDTO existingUser = findByIdOrThrow(userId);
+        return existingUser.getActive();
     }
 }
