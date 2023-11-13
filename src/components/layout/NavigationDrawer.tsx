@@ -1,21 +1,12 @@
 import { Link } from "react-router-dom";
+import routeConfig from "../../config/routeConfig";
 import { Box, Divider, Drawer, IconButton, List, ListItem, ListItemText } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../../app/reduxHooks";
 import { useRegisterModal } from "../../hooks/modals/useModals";
 import { useLoginModal } from "../../hooks/modals/useModals";
 import { logout } from "../../redux/slices/userSlice";
-
-const links = [
-  { text: "Home", url: "/" },
-  { text: "Dashboard", url: "/dashboard"},
-  { text: "Tours", url: "/tours" },
-  { text: "Bookings", url: "/bookings" },
-  { text: "Schedules", url: "/tour-guide-schedules" },
-  { text: "Users", url: "/users" },
-  { text: "My bookings", url: "/me/bookings" },
-  { text: "My profile", url: "/me/profile" },
-];
+import { canAccess } from "../../utils/accessControl";
 
 interface NavigationDrawerProps {
   isDrawerOpen: boolean;
@@ -38,6 +29,10 @@ const NavigationDrawer = ({ isDrawerOpen, setIsDrawerOpen }: NavigationDrawerPro
       }
     }
   };
+
+  const allowedLinks = routeConfig.filter(({ requiredRoles, showInDrawer }) =>
+    showInDrawer && (requiredRoles.length === 0 || (currentUser?.role && canAccess(currentUser?.role, requiredRoles)))
+  ).map(({ path, text }) => ({ url: path, text }));
 
   return (
     <Drawer
@@ -78,7 +73,7 @@ const NavigationDrawer = ({ isDrawerOpen, setIsDrawerOpen }: NavigationDrawerPro
               </>
             ) : (
               <>
-                {links.map(({ text, url }, index) => (
+                {allowedLinks.map(({ text, url }, index) => (
                   <Link style={{ all: "unset" }} key={index} to={url}>
                     <ListItem sx={listItemStyle}>
                       <ListItemText>

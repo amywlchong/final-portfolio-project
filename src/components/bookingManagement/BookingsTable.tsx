@@ -6,8 +6,9 @@ import { Box, IconButton, MenuItem, Select, TextField, Tooltip } from "@mui/mate
 import { MRT_ColumnDef, MRT_Row, MRT_TableInstance, MRT_TableOptions, MaterialReactTable } from "material-react-table";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { BookingResponse, BookingRequest } from "../../types";
+import { BookingResponse, BookingRequest, Role, User } from "../../types";
 import { formatDateAndTime, formatDateTimeStringToISOString, isDateWithinRange } from "../../utils/dataProcessing";
+import { canAccess } from "../../utils/accessControl";
 import { ApiError } from "../../utils/ApiError";
 import { createServiceHandler } from "../../utils/serviceHandler";
 import tourService from "../../services/tourService";
@@ -17,13 +18,14 @@ import DeleteBookingModal from "../modals/bookings/DeleteBookingModal";
 import toast from "react-hot-toast";
 
 interface BookingsTableProps {
+  currentUser: User;
   bookings: BookingResponse[];
   setFutureBookings: React.Dispatch<React.SetStateAction<BookingResponse[]>>;
   setPastBookings: React.Dispatch<React.SetStateAction<BookingResponse[]>>;
   enableEdit: boolean;
 }
 
-const BookingsTable = ({ bookings, setFutureBookings, setPastBookings, enableEdit }: BookingsTableProps) => {
+const BookingsTable = ({ currentUser, bookings, setFutureBookings, setPastBookings, enableEdit }: BookingsTableProps) => {
 
   const {
     filterDateRange,
@@ -259,7 +261,7 @@ const BookingsTable = ({ bookings, setFutureBookings, setPastBookings, enableEdi
         enableEditing={enableEdit}
         editDisplayMode='row'
         onEditingRowSave={handleSaveBooking}
-        enableRowActions
+        enableRowActions={canAccess(currentUser.role, [Role.Admin])}
         enablePinning
         initialState={{ columnPinning: { right: ["mrt-row-actions"] } }}
         positionActionsColumn="last"
@@ -274,12 +276,14 @@ const BookingsTable = ({ bookings, setFutureBookings, setPastBookings, enableEdi
           <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
             {enableEdit &&
               <Tooltip title="Edit start date & time">
-                <IconButton onClick={() => handleEditClick(row, table)}>
-                  <EditIcon />
-                </IconButton>
+                <span>
+                  <IconButton onClick={() => handleEditClick(row, table)} disabled={!canAccess(currentUser.role, [Role.Admin])}>
+                    <EditIcon />
+                  </IconButton>
+                </span>
               </Tooltip>
             }
-            <IconButton onClick={() => handleDeleteClick(row.original)} color="warning">
+            <IconButton onClick={() => handleDeleteClick(row.original)} color="warning" disabled={!canAccess(currentUser.role, [Role.Admin])}>
               <DeleteForeverIcon />
             </IconButton>
           </Box>

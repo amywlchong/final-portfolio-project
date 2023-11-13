@@ -1,17 +1,21 @@
 import { useState } from "react";
+import { Range } from "react-date-range";
 import useScreenSize from "../../../hooks/ui/useScreenSize";
 import { useAppSelector } from "../../../app/reduxHooks";
-import { useBookingModal } from "../../../hooks/modals/useModals";
+import { useBookingModal, useLoginModal } from "../../../hooks/modals/useModals";
 import { Typography, List, ListItem, ListItemText } from "@mui/material";
-import { Range } from "react-date-range";
+import { Role } from "../../../types";
 import { addDays } from "date-fns";
 import { formatDateAndTime } from "../../../utils/dataProcessing";
+import { canAccess } from "../../../utils/accessControl";
 import DatePicker from "../../inputs/DatePicker";
 import BookingModal from "../../modals/bookings/BookingModal";
 import Button from "../../ui/Button";
+import toast from "react-hot-toast";
 
 const TourDatesSelector = () => {
   const { is400AndUp, is500AndUp } = useScreenSize();
+  const currentUser = useAppSelector(state => state.user.loggedInUser);
   const tour = useAppSelector(state => state.tours.currentTour);
   const initialDateRange = {
     startDate: addDays(new Date(), 1),
@@ -22,6 +26,7 @@ const TourDatesSelector = () => {
   const [selectedStartDateTime, setSelectedStartDateTime] = useState<string | null>(null);
   const [availableSpacesOfSelected, setAvailableSpacesOfSelected] = useState(0);
   const bookingModal = useBookingModal();
+  const loginModal = useLoginModal();
 
   if (!tour) {
     return <div>An error occurred.</div>;
@@ -46,6 +51,15 @@ const TourDatesSelector = () => {
       tourEndDate <= userEndDateEndOfDay
     );
   });
+
+  const openBookingModal = () => {
+    if (!currentUser) {
+      toast("Please log in or sign up to continue", { icon: "❗" });
+      loginModal.onOpen();
+    } else {
+      bookingModal.onOpen();
+    }
+  };
 
   return (
     <div>
@@ -79,10 +93,13 @@ const TourDatesSelector = () => {
             <Button
               label="Book Now"
               onClick={() => {
-                bookingModal.onOpen();
+                openBookingModal();
                 setSelectedStartDateTime(formatDateAndTime(date.startDate.startDateTime));
                 setAvailableSpacesOfSelected(date.availableSpaces || 0);
               }}
+              disabled={
+                (currentUser?.role && !canAccess(currentUser?.role, [Role.Customer])) || !date.availableSpaces
+              }
             />
           </ListItem>
         ))}

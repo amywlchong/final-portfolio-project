@@ -14,6 +14,8 @@ import { createServiceHandler } from "../../../utils/serviceHandler";
 import { ApiError } from "../../../utils/ApiError";
 import { logout } from "../../../redux/slices/userSlice";
 import { roleToLabel } from "../../../utils/dataProcessing";
+import { canAccess } from "../../../utils/accessControl";
+import { Role } from "../../../types";
 
 const ProfilePage = () => {
   const currentUser = useAppSelector(state => state.user.loggedInUser);
@@ -75,7 +77,7 @@ const ProfilePage = () => {
       </Box>
 
       <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
-        {!showDeactivationConfirmation &&
+        {!showDeactivationConfirmation && canAccess(currentUser.role, [Role.Customer]) &&
           <Button
             label="Deactivate Account"
             onClick={handleDeactivateAccount}

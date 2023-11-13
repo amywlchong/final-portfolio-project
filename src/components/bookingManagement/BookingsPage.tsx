@@ -5,7 +5,8 @@ import { useBookings } from "../../hooks/data/useBookings";
 import { useDateFilterModal } from "../../hooks/modals/useModals";
 import { useAdminBookingModal } from "../../hooks/modals/useModals";
 import { TableContainer, Paper, Typography, Box } from "@mui/material";
-import { BookingResponse } from "../../types";
+import { BookingResponse, Role } from "../../types";
+import { canAccess } from "../../utils/accessControl";
 import bookingService from "../../services/bookingService";
 import Button from "../ui/Button";
 import AdminBookingModal from "../modals/bookings/AdminBookingModal";
@@ -49,7 +50,7 @@ const BookingsPage = () => {
         <Typography variant="h1">Bookings</Typography>
         <Box style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
           <Button label={displayPastBookings ? "Future Bookings" : "Past Bookings"} onClick={handleToggleClick} sx={{ marginRight: 2 }} />
-          <Button label="New Booking" onClick={adminBookingModal.onOpen} />
+          {canAccess(currentUser.role, [Role.Admin]) && <Button label="New Booking" onClick={adminBookingModal.onOpen} />}
         </Box>
       </Box>
 
@@ -57,6 +58,7 @@ const BookingsPage = () => {
         <Typography variant="h2">{displayPastBookings ? "Past Tours" : "Future Tours"}</Typography>
         <TableContainer component={Paper}>
           <BookingsTable
+            currentUser={currentUser}
             bookings={bookingsToShow}
             setFutureBookings={setFutureBookings}
             setPastBookings={setPastBookings}
@@ -65,9 +67,11 @@ const BookingsPage = () => {
         </TableContainer>
       </Box>
 
-      <AdminBookingModal
-        setFutureBookings={setFutureBookings}
-      />
+      {canAccess(currentUser.role, [Role.Admin]) &&
+        <AdminBookingModal
+          setFutureBookings={setFutureBookings}
+        />
+      }
     </div>
   );
 };

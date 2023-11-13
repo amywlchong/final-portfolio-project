@@ -1,22 +1,24 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useAppSelector } from "../../../app/reduxHooks";
-import Modal from "../Modal";
+import { useBookingModal } from "../../../hooks/modals/useModals";
 import BigNumber from "bignumber.js";
 import { Box, Typography } from "@mui/material";
-import { useForm } from "react-hook-form";
 import {
   BookingRequest,
   BookingResponse,
   FieldValues,
+  Role
 } from "../../../types";
 import { formatDateTimeStringToISOString, formatDateAndTime } from "../../../utils/dataProcessing";
-import { useBookingModal } from "../../../hooks/modals/useModals";
+import { canAccess } from "../../../utils/accessControl";
 import { createServiceHandler } from "../../../utils/serviceHandler";
 import { ApiError } from "../../../utils/ApiError";
 import bookingService from "../../../services/bookingService";
 import paymentService from "../../../services/paymentService";
 import { FUNDING, PayPalButtons } from "@paypal/react-paypal-js";
 import toast from "react-hot-toast";
+import Modal from "../Modal";
 import Input from "../../inputs/Input";
 import LabeledText from "../../ui/LabeledText";
 
@@ -58,17 +60,11 @@ const BookingModal = ({ startDateTime, availableSpaces }: BookingModalProps) => 
     setStep((value) => value + 1);
   }, []);
 
-  useEffect(() => {
-    if (!currentUser) {
-      toast("Please log in or sign up to continue", { icon: "❗" });
-    }
-  }, [currentUser]);
-
   if (!tour) {
     return <div>An error occurred.</div>;
   }
 
-  if (!currentUser) {
+  if (!currentUser || !canAccess(currentUser.role, [Role.Customer])) {
     return <></>;
   }
 

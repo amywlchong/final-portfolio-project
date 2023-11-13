@@ -38,7 +38,7 @@ const SchedulesPage = () => {
 
       {!showCalendar && (
         <Box mt={2}>
-          <SchedulesTable schedules={schedules} setSchedules={setSchedules} />
+          <SchedulesTable currentUser={currentUser} schedules={schedules} setSchedules={setSchedules} />
         </Box>
       )}
 

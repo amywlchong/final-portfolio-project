@@ -7,6 +7,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { ScheduleResponse, ScheduleRequest, GroupedSchedule, User, Role } from "../../types";
 import { addDays, format } from "date-fns";
 import { formatDateAndTime, isDateWithinRange, labelToRole, labelsToRoles, roleToLabel } from "../../utils/dataProcessing";
+import { canAccess } from "../../utils/accessControl";
 import { groupSchedules } from "../../utils/schedulesUtils";
 import { ApiError } from "../../utils/ApiError";
 import { createServiceHandler } from "../../utils/serviceHandler";
@@ -16,11 +17,12 @@ import DateFilterModal from "../modals/searchFilters/DateFilterModal";
 import toast from "react-hot-toast";
 
 interface SchedulesTableProps {
+  currentUser: User;
   schedules: ScheduleResponse[];
   setSchedules: React.Dispatch<React.SetStateAction<ScheduleResponse[]>>;
 }
 
-const SchedulesTable = ({ schedules, setSchedules }: SchedulesTableProps) => {
+const SchedulesTable = ({ currentUser, schedules, setSchedules }: SchedulesTableProps) => {
 
   const {
     filterDateRange,
@@ -240,7 +242,7 @@ const SchedulesTable = ({ schedules, setSchedules }: SchedulesTableProps) => {
         enableEditing={true}
         editDisplayMode='row'
         onEditingRowSave={handleSaveSchedule}
-        enableRowActions
+        enableRowActions={canAccess(currentUser.role, [Role.LeadGuide, Role.Admin])}
         enablePinning
         initialState={{ columnPinning: { right: ["mrt-row-actions"] } }}
         positionActionsColumn="last"
@@ -254,9 +256,11 @@ const SchedulesTable = ({ schedules, setSchedules }: SchedulesTableProps) => {
         renderRowActions={({ row, table }) => (
           <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
             <Tooltip title="Edit guide">
-              <IconButton onClick={() => handleEditClick(row, table)}>
-                <EditIcon />
-              </IconButton>
+              <span>
+                <IconButton onClick={() => handleEditClick(row, table)} disabled={!canAccess(currentUser.role, [Role.LeadGuide, Role.Admin])}>
+                  <EditIcon />
+                </IconButton>
+              </span>
             </Tooltip>
           </Box>
         )}
