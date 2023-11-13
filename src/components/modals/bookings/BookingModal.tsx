@@ -85,7 +85,7 @@ const BookingModal = ({ startDateTime, availableSpaces }: BookingModalProps) => 
     {
       handle: (error: ApiError) => {
         if (error.response?.data.includes("Duplicate entry")) {
-          toast.error("You've already booked this tour for the selected date.");
+          toast.error("You've already booked a tour for the selected date.");
         } else {
           toast.error("An error occurred. Please click CONFIRM to try again.");
         }
