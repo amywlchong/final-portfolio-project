@@ -45,7 +45,7 @@ public class Booking implements Identifiable<Integer>, Serializable, DeepCopyabl
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
-            @JoinColumn(name="tour_start_date_id"),
+            @JoinColumn(name="start_date_id"),
             @JoinColumn(name="tour_id")
     })
     private TourStartDate tourStartDate;

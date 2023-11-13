@@ -77,9 +77,14 @@ public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingRespo
     public BookingResponseDTO update(Integer inputBookingId, BookingRequestDTO inputBooking) {
         validateUser(inputBooking);
         TourStartDate dbTourStartDate = validateTourStartDateAndFindFromDB(inputBooking);
-        validateAvailableSpacesConstraint(dbTourStartDate, inputBooking.getNumberOfParticipants());
 
         Booking existingBooking = entityLookup.findBookingByIdOrThrow(inputBookingId);
+        if (existingBooking.getTourStartDate().getStartDate().getStartDateTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Past bookings cannot be updated.");
+        }
+        if (!existingBooking.getTourStartDate().getStartDate().getStartDateTime().equals(inputBooking.getStartDateTime())) {
+            validateAvailableSpacesConstraint(dbTourStartDate, inputBooking.getNumberOfParticipants());
+        }
         validateUnchangedFields(existingBooking, inputBooking);
 
         Booking copyOfExistingBooking = existingBooking.deepCopy();
@@ -106,6 +111,9 @@ public class BookingServiceImpl extends GenericServiceImpl<Booking, BookingRespo
 
         if (authService.verifyAuthenticatedUserHasRole(Role.ROLE_CUSTOMER) && !authService.verifyAuthenticatedUserHasId(inputUserId)) {
             throw new PermissionDeniedException("Customer can only create or update bookings for themselves.");
+        }
+        if (!userService.verifyInputUserIsActive(inputUserId)) {
+            throw new IllegalArgumentException("User associated with new or to-be-updated booking must be active");
         }
         if (!userService.verifyInputUserHasRole(inputUserId, "ROLE_CUSTOMER")) {
             throw new IllegalArgumentException("User associated with booking must be a customer");
