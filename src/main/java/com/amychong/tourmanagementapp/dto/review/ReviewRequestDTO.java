@@ -1,11 +1,14 @@
 package com.amychong.tourmanagementapp.dto.review;
 
+import com.amychong.tourmanagementapp.util.StringTrimDeserializer;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.*;
 
 public class ReviewRequestDTO {
 
+    @JsonDeserialize(using = StringTrimDeserializer.class)
     @Size(min = 5, max = 2000, message = "Review must be between 5 and 2000 characters long")
     private final String review;
 
