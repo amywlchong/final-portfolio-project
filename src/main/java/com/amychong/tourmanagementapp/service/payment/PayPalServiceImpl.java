@@ -2,6 +2,7 @@ package com.amychong.tourmanagementapp.service.payment;
 
 import com.amychong.tourmanagementapp.entity.booking.Booking;
 import com.amychong.tourmanagementapp.exception.PaymentProcessingException;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,7 +11,9 @@ import org.json.JSONArray;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,17 +29,32 @@ public class PayPalServiceImpl implements PayPalService {
     private static final int HTTP_OK = HttpURLConnection.HTTP_OK;
     private static final int HTTP_CREATED = HttpURLConnection.HTTP_CREATED;
 
+    private final String clientId;
+    private final String clientSecret;
+    private final String tokenUrl;
+
     private final String paypalApiUrl;
-    private final String paypalAuthToken;
+    private String paypalAuthToken;
+    private long tokenExpiry = 0;
 
     @Autowired
-    public PayPalServiceImpl(@Value("${paypal.api.url}") String paypalApiUrl, @Value("${paypal.authorization.token}") String paypalAuthToken) {
+    public PayPalServiceImpl(@Value("${paypal.api.url}") String paypalApiUrl,
+                             @Value("${paypal.client.id}") String clientId,
+                             @Value("${paypal.client.secret}") String clientSecret,
+                             @Value("${paypal.api.token.url}") String tokenUrl) {
         this.paypalApiUrl = paypalApiUrl;
-        this.paypalAuthToken = paypalAuthToken;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.tokenUrl = tokenUrl;
+        refreshToken();
     }
 
     @Override
     public String createOrder(Integer inputBookingId, Booking dbBooking) {
+        if (System.currentTimeMillis() >= tokenExpiry) {
+            refreshToken();
+        }
+
         try {
             HttpURLConnection httpConn = setUpConnection(paypalApiUrl, "POST", inputBookingId);
 
@@ -61,6 +79,10 @@ public class PayPalServiceImpl implements PayPalService {
 
     @Override
     public JSONObject capturePaymentForOrder(Integer inputBookingId, String inputOrderId) {
+        if (System.currentTimeMillis() >= tokenExpiry) {
+            refreshToken();
+        }
+
         try {
             HttpURLConnection httpConn = setUpConnection(paypalApiUrl + inputOrderId + "/capture", "POST", inputBookingId);
 
@@ -174,5 +196,43 @@ public class PayPalServiceImpl implements PayPalService {
         }
 
         return minimalResponse;
+    }
+
+    private void refreshToken() {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.setBasicAuth(clientId, clientSecret);
+
+        HttpEntity<String> request = new HttpEntity<>("grant_type=client_credentials", headers);
+        ResponseEntity<TokenResponse> response = restTemplate.postForEntity(tokenUrl, request, TokenResponse.class);
+
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            TokenResponse tokenResponse = response.getBody();
+
+            this.paypalAuthToken = "Bearer " + tokenResponse.getAccessToken();
+            this.tokenExpiry = System.currentTimeMillis() + (tokenResponse.getExpiresIn() * 1000);
+
+            System.out.println("New PayPal Token: " + paypalAuthToken);
+            System.out.println("Token Expiry Time: " + tokenExpiry);
+        } else {
+            System.err.println("Failed to refresh PayPal token. Status code: " + response.getStatusCode());
+        }
+    }
+
+    private static class TokenResponse {
+        @JsonProperty("access_token")
+        private String access_token;
+
+        @JsonProperty("expires_in")
+        private long expires_in;
+
+        public String getAccessToken() {
+            return access_token;
+        }
+
+        public long getExpiresIn() {
+            return expires_in;
+        }
     }
 }
