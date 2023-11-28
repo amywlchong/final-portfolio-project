@@ -7,15 +7,15 @@ import com.amychong.tourmanagementapp.entity.user.Role;
 import com.amychong.tourmanagementapp.entity.user.User;
 
 public interface AuthenticationService {
-    AuthenticationResponseDTO register(RegisterRequestDTO request);
+  AuthenticationResponseDTO register(RegisterRequestDTO request);
 
-    AuthenticationResponseDTO authenticate(AuthenticationRequestDTO request);
+  AuthenticationResponseDTO authenticate(AuthenticationRequestDTO request);
 
-    AuthenticationResponseDTO updatePassword(String oldPassword, String newPassword);
+  AuthenticationResponseDTO updatePassword(String oldPassword, String newPassword);
 
-    boolean verifyAuthenticatedUserHasRole(Role expectedRole);
+  boolean verifyAuthenticatedUserHasRole(Role expectedRole);
 
-    boolean verifyAuthenticatedUserHasId(Integer expectedUserId);
+  boolean verifyAuthenticatedUserHasId(Integer expectedUserId);
 
-    User getAuthenticatedUser();
+  User getAuthenticatedUser();
 }

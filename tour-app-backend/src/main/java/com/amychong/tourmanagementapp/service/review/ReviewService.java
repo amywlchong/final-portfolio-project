@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface ReviewService extends GenericService<Review, ReviewResponseDTO> {
 
-    List<ReviewResponseDTO> findByUserId(Integer theUserId);
+  List<ReviewResponseDTO> findByUserId(Integer theUserId);
 
-    List<ReviewResponseDTO> findByTourId(Integer theTourId);
+  List<ReviewResponseDTO> findByTourId(Integer theTourId);
 
-    ReviewResponseDTO create(ReviewRequestDTO inputReview);
+  ReviewResponseDTO create(ReviewRequestDTO inputReview);
 }

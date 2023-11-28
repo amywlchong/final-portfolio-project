@@ -15,77 +15,83 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-public class UserServiceImpl extends GenericServiceImpl<User, UserResponseDTO> implements UserService {
+public class UserServiceImpl extends GenericServiceImpl<User, UserResponseDTO>
+    implements UserService {
 
-    private final UserRepository userRepository;
-    private final UserMapper userMapper;
+  private final UserRepository userRepository;
+  private final UserMapper userMapper;
 
-    @Autowired
-    public UserServiceImpl(UserRepository theUserRepository, UserMapper theUserMapper) {
-        super(theUserRepository, User.class, UserResponseDTO.class, theUserMapper);
-        userRepository = theUserRepository;
-        userMapper = theUserMapper;
+  @Autowired
+  public UserServiceImpl(UserRepository theUserRepository, UserMapper theUserMapper) {
+    super(theUserRepository, User.class, UserResponseDTO.class, theUserMapper);
+    userRepository = theUserRepository;
+    userMapper = theUserMapper;
+  }
+
+  private User findSensitiveUserByIdOrThrow(Integer theId) {
+    return userRepository
+        .findById(theId)
+        .orElseThrow(() -> new NotFoundException("Did not find user id - " + theId));
+  }
+
+  @Override
+  public List<UserResponseDTO> findAvailableGuidesWithinRange(
+      LocalDate startDate, LocalDate endDate) {
+    return userMapper.toDTOList(userRepository.findAvailableGuidesWithinRange(startDate, endDate));
+  }
+
+  @Override
+  @Transactional
+  public UserResponseDTO create(User theUser) {
+    throw new UnsupportedOperationException(
+        "The user creation operation is not supported. Please use the register method provided by AuthenticationService.");
+  }
+
+  @Override
+  public UserResponseDTO update(Integer theId, User theUser) {
+    throw new UnsupportedOperationException(
+        "The generic update operation is not supported. Please use the specific update methods provided.");
+  }
+
+  @Override
+  @Transactional
+  public UserResponseDTO updateActiveStatus(Integer theId, Boolean isActive) {
+    User existingUser = findSensitiveUserByIdOrThrow(theId);
+    User copyOfExistingUser = existingUser.deepCopy();
+    copyOfExistingUser.setActive(isActive);
+    return super.save(copyOfExistingUser);
+  }
+
+  @Override
+  @Transactional
+  public UserResponseDTO updateRole(Integer theId, Role newRole) {
+    User existingUser = findSensitiveUserByIdOrThrow(theId);
+    User copyOfExistingUser = existingUser.deepCopy();
+    copyOfExistingUser.setRole(newRole);
+    return super.save(copyOfExistingUser);
+  }
+
+  @Override
+  public boolean verifyInputUserHasRole(Integer userId, String... validRoles) {
+    UserResponseDTO existingUser = findByIdOrThrow(userId);
+
+    Role userRole = existingUser.getRole();
+
+    for (String validRole : validRoles) {
+      Role validRoleEnum = Role.valueOf(validRole);
+
+      // If a matching role is found, exit early
+      if (userRole == validRoleEnum) {
+        return true;
+      }
     }
 
-    private User findSensitiveUserByIdOrThrow(Integer theId) {
-        return userRepository.findById(theId).orElseThrow(() -> new NotFoundException("Did not find user id - " + theId));
-    }
+    return false;
+  }
 
-    @Override
-    public List<UserResponseDTO> findAvailableGuidesWithinRange(LocalDate startDate, LocalDate endDate) {
-        return userMapper.toDTOList(userRepository.findAvailableGuidesWithinRange(startDate, endDate));
-    }
-
-    @Override
-    @Transactional
-    public UserResponseDTO create(User theUser) {
-        throw new UnsupportedOperationException("The user creation operation is not supported. Please use the register method provided by AuthenticationService.");
-    }
-
-    @Override
-    public UserResponseDTO update(Integer theId, User theUser) {
-        throw new UnsupportedOperationException("The generic update operation is not supported. Please use the specific update methods provided.");
-    }
-
-    @Override
-    @Transactional
-    public UserResponseDTO updateActiveStatus(Integer theId, Boolean isActive) {
-        User existingUser = findSensitiveUserByIdOrThrow(theId);
-        User copyOfExistingUser = existingUser.deepCopy();
-        copyOfExistingUser.setActive(isActive);
-        return super.save(copyOfExistingUser);
-    }
-
-    @Override
-    @Transactional
-    public UserResponseDTO updateRole(Integer theId, Role newRole) {
-        User existingUser = findSensitiveUserByIdOrThrow(theId);
-        User copyOfExistingUser = existingUser.deepCopy();
-        copyOfExistingUser.setRole(newRole);
-        return super.save(copyOfExistingUser);
-    }
-
-    @Override
-    public boolean verifyInputUserHasRole(Integer userId, String... validRoles) {
-        UserResponseDTO existingUser = findByIdOrThrow(userId);
-
-        Role userRole = existingUser.getRole();
-
-        for (String validRole : validRoles) {
-            Role validRoleEnum = Role.valueOf(validRole);
-
-            // If a matching role is found, exit early
-            if (userRole == validRoleEnum) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean verifyInputUserIsActive(Integer userId) {
-        UserResponseDTO existingUser = findByIdOrThrow(userId);
-        return existingUser.getActive();
-    }
+  @Override
+  public boolean verifyInputUserIsActive(Integer userId) {
+    UserResponseDTO existingUser = findByIdOrThrow(userId);
+    return existingUser.getActive();
+  }
 }

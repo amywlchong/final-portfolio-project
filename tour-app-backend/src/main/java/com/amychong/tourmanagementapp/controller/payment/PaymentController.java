@@ -20,27 +20,29 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/payments")
 public class PaymentController {
 
-    private final PaymentService paymentService;
+  private final PaymentService paymentService;
 
-    @Autowired
-    public PaymentController(PayPalServiceImpl thePayPalService, PaymentService thePaymentService) {
-        paymentService = thePaymentService;
-    }
+  @Autowired
+  public PaymentController(PayPalServiceImpl thePayPalService, PaymentService thePaymentService) {
+    paymentService = thePaymentService;
+  }
 
-    @PreAuthorize("hasRole('CUSTOMER')")
-    @PostMapping("/initiate")
-    public ResponseEntity<String> initiatePayment(@NotNull @Valid @RequestBody PaymentInitiationRequestDTO requestBody) {
-        Integer bookingId = requestBody.getBookingId();
-        String response = paymentService.initiatePayment(bookingId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+  @PreAuthorize("hasRole('CUSTOMER')")
+  @PostMapping("/initiate")
+  public ResponseEntity<String> initiatePayment(
+      @NotNull @Valid @RequestBody PaymentInitiationRequestDTO requestBody) {
+    Integer bookingId = requestBody.getBookingId();
+    String response = paymentService.initiatePayment(bookingId);
+    return new ResponseEntity<>(response, HttpStatus.OK);
+  }
 
-    @PreAuthorize("hasRole('CUSTOMER')")
-    @PostMapping("/execute")
-    public ResponseEntity<String> executePayment(@NotNull @Valid @RequestBody PaymentExecutionRequestDTO requestBody) {
-        Integer bookingId = requestBody.getBookingId();
-        String orderId = requestBody.getOrderId();
-        String response = paymentService.processPaymentAndBooking(bookingId, orderId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+  @PreAuthorize("hasRole('CUSTOMER')")
+  @PostMapping("/execute")
+  public ResponseEntity<String> executePayment(
+      @NotNull @Valid @RequestBody PaymentExecutionRequestDTO requestBody) {
+    Integer bookingId = requestBody.getBookingId();
+    String orderId = requestBody.getOrderId();
+    String response = paymentService.processPaymentAndBooking(bookingId, orderId);
+    return new ResponseEntity<>(response, HttpStatus.OK);
+  }
 }

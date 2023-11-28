@@ -18,25 +18,26 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/reviews")
 public class ReviewController extends GenericController<Review, ReviewResponseDTO> {
 
-    private final ReviewService reviewService;
+  private final ReviewService reviewService;
 
-    @Autowired
-    public ReviewController(ReviewService theReviewService) {
-        super(theReviewService);
-        reviewService = theReviewService;
-    }
+  @Autowired
+  public ReviewController(ReviewService theReviewService) {
+    super(theReviewService);
+    reviewService = theReviewService;
+  }
 
-    @PreAuthorize("hasRole('CUSTOMER')")
-    @PostMapping
-    public ResponseEntity<ReviewResponseDTO> add(@NotNull @Valid @RequestBody ReviewRequestDTO reviewRequest) {
-        ReviewResponseDTO newReview = reviewService.create(reviewRequest);
-        return new ResponseEntity<>(newReview, HttpStatus.CREATED);
-    }
+  @PreAuthorize("hasRole('CUSTOMER')")
+  @PostMapping
+  public ResponseEntity<ReviewResponseDTO> add(
+      @NotNull @Valid @RequestBody ReviewRequestDTO reviewRequest) {
+    ReviewResponseDTO newReview = reviewService.create(reviewRequest);
+    return new ResponseEntity<>(newReview, HttpStatus.CREATED);
+  }
 
-    @Override
-    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
-    @DeleteMapping("/{reviewId}")
-    public ResponseEntity<String> delete(@Min(1) @PathVariable Integer reviewId) {
-        return super.delete(reviewId);
-    }
+  @Override
+  @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
+  @DeleteMapping("/{reviewId}")
+  public ResponseEntity<String> delete(@Min(1) @PathVariable Integer reviewId) {
+    return super.delete(reviewId);
+  }
 }

@@ -9,13 +9,14 @@ import java.util.List;
 
 public interface BookingService extends GenericService<Booking, BookingResponseDTO> {
 
-    List<BookingResponseDTO> findByUserId(Integer theUserId);
+  List<BookingResponseDTO> findByUserId(Integer theUserId);
 
-    List<BookingResponseDTO> findByTourId(Integer theTourId);
+  List<BookingResponseDTO> findByTourId(Integer theTourId);
 
-    BookingResponseDTO create(BookingRequestDTO inputBooking);
+  BookingResponseDTO create(BookingRequestDTO inputBooking);
 
-    BookingResponseDTO update(Integer inputBookingId, BookingRequestDTO inputBooking);
+  BookingResponseDTO update(Integer inputBookingId, BookingRequestDTO inputBooking);
 
-    void updateOrDeleteBookingAfterPaymentProcessing(Booking dbBooking, String transactionId, String status);
+  void updateOrDeleteBookingAfterPaymentProcessing(
+      Booking dbBooking, String transactionId, String status);
 }

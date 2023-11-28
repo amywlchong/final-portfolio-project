@@ -4,10 +4,9 @@ import java.util.List;
 
 public interface GenericService<T, Response> {
 
-    List<Response> findAll();
+  List<Response> findAll();
 
-    Response findByIdOrThrow(Integer theId);
+  Response findByIdOrThrow(Integer theId);
 
-    void deleteById(Integer theId);
+  void deleteById(Integer theId);
 }
-

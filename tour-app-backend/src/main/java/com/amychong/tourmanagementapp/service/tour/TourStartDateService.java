@@ -6,7 +6,8 @@ import java.util.List;
 
 public interface TourStartDateService {
 
-    List<TourStartDate> updateTourStartDates(Integer inputTourId, List<TourStartDate> inputTourStartDates);
+  List<TourStartDate> updateTourStartDates(
+      Integer inputTourId, List<TourStartDate> inputTourStartDates);
 
-    void deleteTourStartDates(List<TourStartDate> existingDates, List<TourStartDate> updatedDates);
+  void deleteTourStartDates(List<TourStartDate> existingDates, List<TourStartDate> updatedDates);
 }

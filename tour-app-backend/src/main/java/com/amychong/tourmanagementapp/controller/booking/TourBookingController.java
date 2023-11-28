@@ -18,17 +18,18 @@ import java.util.List;
 @RequestMapping("/api/tours/{tourId}/bookings")
 public class TourBookingController {
 
-    private final BookingService bookingService;
+  private final BookingService bookingService;
 
-    @Autowired
-    public TourBookingController(BookingService theBookingService) {
-        bookingService = theBookingService;
-    }
+  @Autowired
+  public TourBookingController(BookingService theBookingService) {
+    bookingService = theBookingService;
+  }
 
-    @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
-    @GetMapping
-    public ResponseEntity<List<BookingResponseDTO>> getByTourId(@Min(1) @PathVariable Integer tourId) {
-        List<BookingResponseDTO> bookingDTOs = bookingService.findByTourId(tourId);
-        return new ResponseEntity<>(bookingDTOs, HttpStatus.OK);
-    }
+  @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
+  @GetMapping
+  public ResponseEntity<List<BookingResponseDTO>> getByTourId(
+      @Min(1) @PathVariable Integer tourId) {
+    List<BookingResponseDTO> bookingDTOs = bookingService.findByTourId(tourId);
+    return new ResponseEntity<>(bookingDTOs, HttpStatus.OK);
+  }
 }

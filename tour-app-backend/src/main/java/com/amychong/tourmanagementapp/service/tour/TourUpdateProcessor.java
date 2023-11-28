@@ -18,111 +18,120 @@ import java.util.stream.Collectors;
 // V = type of unique field of associated entities
 public class TourUpdateProcessor<T extends Identifiable, U extends Identifiable, V> {
 
-    // Tour
-    protected Integer inputTourId;
+  // Tour
+  protected Integer inputTourId;
 
-    protected Function<Integer, Tour> findTourFunction;
+  protected Function<Integer, Tour> findTourFunction;
 
-    // Tour-related entities (incl. TourImage, TourPointOfInterest, TourStartDate)
-    protected List<T> inputTourRelatedEntities;
+  // Tour-related entities (incl. TourImage, TourPointOfInterest, TourStartDate)
+  protected List<T> inputTourRelatedEntities;
 
-    protected BiFunction<Integer, V, Optional<T>> findTourRelatedEntityFromDB;
+  protected BiFunction<Integer, V, Optional<T>> findTourRelatedEntityFromDB;
 
-    protected Function<Tour, List<T>> getEntitiesFromTourFunction;
+  protected Function<Tour, List<T>> getEntitiesFromTourFunction;
 
-    protected BiConsumer<Tour, T> addEntityToTourFunction;
+  protected BiConsumer<Tour, T> addEntityToTourFunction;
 
-    // Associated entities (incl. TourImage, PointOfInterest, StartDate)
-    protected Function<T, U> getAssociatedEntityFunction;
+  // Associated entities (incl. TourImage, PointOfInterest, StartDate)
+  protected Function<T, U> getAssociatedEntityFunction;
 
-    protected Function<U, V> getUniqueFieldOfAssociatedEntityFunction;
+  protected Function<U, V> getUniqueFieldOfAssociatedEntityFunction;
 
-    protected Function<List<V>, List<U>> findExistingAssociatedEntitiesFunction;
+  protected Function<List<V>, List<U>> findExistingAssociatedEntitiesFunction;
 
-    // prepare tour and entities for update
-    protected Tour processTourForUpdate() {
-        Tour existingTour = findTourFunction.apply(inputTourId);
-        Tour copyOfExistingTour = existingTour.deepCopy();
+  // prepare tour and entities for update
+  protected Tour processTourForUpdate() {
+    Tour existingTour = findTourFunction.apply(inputTourId);
+    Tour copyOfExistingTour = existingTour.deepCopy();
 
-        List<T> entitiesOfExistingTour = getEntitiesFromTourFunction.apply(copyOfExistingTour);
-        entitiesOfExistingTour.clear();
+    List<T> entitiesOfExistingTour = getEntitiesFromTourFunction.apply(copyOfExistingTour);
+    entitiesOfExistingTour.clear();
 
-        List<U> existingAssociatedEntities = findExistingAssociatedEntitiesFromUniqueField();
+    List<U> existingAssociatedEntities = findExistingAssociatedEntitiesFromUniqueField();
 
-        for (T inputEntity : inputTourRelatedEntities) {
-            U inputAssociatedEntity = getAssociatedEntityFunction.apply(inputEntity);
-            V valueOfUniqueField = getUniqueFieldOfAssociatedEntityFunction.apply(inputAssociatedEntity);
-            Optional<T> dbTourRelatedEntity = findTourRelatedEntityFromDB.apply(inputTourId, valueOfUniqueField);
+    for (T inputEntity : inputTourRelatedEntities) {
+      U inputAssociatedEntity = getAssociatedEntityFunction.apply(inputEntity);
+      V valueOfUniqueField = getUniqueFieldOfAssociatedEntityFunction.apply(inputAssociatedEntity);
+      Optional<T> dbTourRelatedEntity =
+          findTourRelatedEntityFromDB.apply(inputTourId, valueOfUniqueField);
 
-            TourUpdateProcessor.setIdsOfInputEntityAndAssociatedEntity(dbTourRelatedEntity, inputEntity, getAssociatedEntityFunction, existingAssociatedEntities);
+      TourUpdateProcessor.setIdsOfInputEntityAndAssociatedEntity(
+          dbTourRelatedEntity,
+          inputEntity,
+          getAssociatedEntityFunction,
+          existingAssociatedEntities);
 
-            addEntityToTourFunction.accept(copyOfExistingTour, inputEntity);
-        }
-        return copyOfExistingTour;
+      addEntityToTourFunction.accept(copyOfExistingTour, inputEntity);
+    }
+    return copyOfExistingTour;
+  }
+
+  protected List<U> findExistingAssociatedEntitiesFromUniqueField() {
+
+    List<V> uniqueFields =
+        inputTourRelatedEntities.stream()
+            .map(getAssociatedEntityFunction)
+            .filter(Objects::nonNull)
+            .map(getUniqueFieldOfAssociatedEntityFunction)
+            .collect(Collectors.toList());
+
+    return findExistingAssociatedEntitiesFunction.apply(uniqueFields);
+  }
+
+  protected static <T, U, V> List<U> findExistingAssociatedEntitiesFromUniqueField(
+      List<T> inputTourRelatedEntities,
+      Function<T, U> getAssociatedEntityFunction,
+      Function<U, V> getUniqueFieldFunction,
+      Function<List<V>, List<U>> findExistingAssociatedEntitiesFunction) {
+
+    List<V> uniqueFields =
+        inputTourRelatedEntities.stream()
+            .map(getAssociatedEntityFunction)
+            .filter(Objects::nonNull)
+            .map(getUniqueFieldFunction)
+            .collect(Collectors.toList());
+
+    return findExistingAssociatedEntitiesFunction.apply(uniqueFields);
+  }
+
+  protected static <T extends Identifiable, U extends Identifiable>
+      void setIdsOfInputEntityAndAssociatedEntity(
+          Optional<T> dbEntity,
+          T inputEntity,
+          Function<T, U> getAssociatedEntityFunction,
+          List<U> existingAssociatedEntities) {
+
+    U inputAssociatedEntity = getAssociatedEntityFunction.apply(inputEntity);
+
+    if (dbEntity.isPresent()) {
+      inputEntity.setId(dbEntity.get().getId());
+      inputAssociatedEntity.setId(getAssociatedEntityFunction.apply(dbEntity.get()).getId());
+    } else {
+      TourUpdateProcessor.resetId(inputEntity);
+      TourUpdateProcessor.setEntityId(inputAssociatedEntity, existingAssociatedEntities);
+    }
+  }
+
+  protected static <T extends Identifiable> void resetId(T inputEntity) {
+    if (inputEntity instanceof TourStartDate) {
+      inputEntity.setId(new TourStartDateKey(0, 0));
+    } else {
+      inputEntity.setId(0);
+    }
+  }
+
+  protected static <T extends Identifiable> void setEntityId(
+      T inputEntity, List<T> existingEntities) {
+
+    if (inputEntity == null) {
+      return;
     }
 
-    protected List<U> findExistingAssociatedEntitiesFromUniqueField() {
-
-        List<V> uniqueFields = inputTourRelatedEntities.stream()
-                .map(getAssociatedEntityFunction)
-                .filter(Objects::nonNull)
-                .map(getUniqueFieldOfAssociatedEntityFunction)
-                .collect(Collectors.toList());
-
-        return findExistingAssociatedEntitiesFunction.apply(uniqueFields);
+    if (existingEntities != null && existingEntities.contains(inputEntity)) {
+      int index = existingEntities.indexOf(inputEntity);
+      inputEntity.setId(existingEntities.get(index).getId());
+    } else {
+      TourUpdateProcessor.resetId(inputEntity);
     }
-
-    protected static <T, U, V> List<U> findExistingAssociatedEntitiesFromUniqueField(
-            List<T> inputTourRelatedEntities,
-            Function<T, U> getAssociatedEntityFunction,
-            Function<U, V> getUniqueFieldFunction,
-            Function<List<V>, List<U>> findExistingAssociatedEntitiesFunction) {
-
-        List<V> uniqueFields = inputTourRelatedEntities.stream()
-                .map(getAssociatedEntityFunction)
-                .filter(Objects::nonNull)
-                .map(getUniqueFieldFunction)
-                .collect(Collectors.toList());
-
-        return findExistingAssociatedEntitiesFunction.apply(uniqueFields);
-    }
-
-    protected static <T extends Identifiable, U extends Identifiable> void setIdsOfInputEntityAndAssociatedEntity(
-            Optional<T> dbEntity,
-            T inputEntity,
-            Function<T, U> getAssociatedEntityFunction,
-            List<U> existingAssociatedEntities) {
-
-        U inputAssociatedEntity = getAssociatedEntityFunction.apply(inputEntity);
-
-        if (dbEntity.isPresent()) {
-            inputEntity.setId(dbEntity.get().getId());
-            inputAssociatedEntity.setId(getAssociatedEntityFunction.apply(dbEntity.get()).getId());
-        } else {
-            TourUpdateProcessor.resetId(inputEntity);
-            TourUpdateProcessor.setEntityId(inputAssociatedEntity, existingAssociatedEntities);
-        }
-    }
-
-    protected static<T extends Identifiable> void resetId(T inputEntity) {
-        if (inputEntity instanceof TourStartDate) {
-            inputEntity.setId(new TourStartDateKey(0, 0));
-        } else {
-            inputEntity.setId(0);
-        }
-    }
-
-    protected static <T extends Identifiable> void setEntityId(T inputEntity, List<T> existingEntities) {
-
-        if (inputEntity == null) {
-            return;
-        }
-
-        if (existingEntities != null && existingEntities.contains(inputEntity)) {
-            int index = existingEntities.indexOf(inputEntity);
-            inputEntity.setId(existingEntities.get(index).getId());
-        } else {
-            TourUpdateProcessor.resetId(inputEntity);
-        }
-    }
+  }
 }

@@ -26,55 +26,67 @@ import java.util.Map;
 @RequestMapping("/api/me")
 public class UserSelfServiceController {
 
-    private final UserService userService;
-    private final AuthenticationService authService;
-    private final TourGuideScheduleService tourGuideScheduleService;
-    private final BookingService bookingService;
-    private final ReviewService reviewService;
-    private final UserMapper userMapper;
+  private final UserService userService;
+  private final AuthenticationService authService;
+  private final TourGuideScheduleService tourGuideScheduleService;
+  private final BookingService bookingService;
+  private final ReviewService reviewService;
+  private final UserMapper userMapper;
 
-    @Autowired
-    public UserSelfServiceController(UserService userService, AuthenticationService authService, TourGuideScheduleService tourGuideScheduleService, BookingService bookingService, ReviewService reviewService, UserMapper userMapper) {
-        this.userService = userService;
-        this.authService = authService;
-        this.tourGuideScheduleService = tourGuideScheduleService;
-        this.bookingService = bookingService;
-        this.reviewService = reviewService;
-        this.userMapper = userMapper;
-    }
+  @Autowired
+  public UserSelfServiceController(
+      UserService userService,
+      AuthenticationService authService,
+      TourGuideScheduleService tourGuideScheduleService,
+      BookingService bookingService,
+      ReviewService reviewService,
+      UserMapper userMapper) {
+    this.userService = userService;
+    this.authService = authService;
+    this.tourGuideScheduleService = tourGuideScheduleService;
+    this.bookingService = bookingService;
+    this.reviewService = reviewService;
+    this.userMapper = userMapper;
+  }
 
-    @GetMapping("/profile-details")
-    public ResponseEntity<UserResponseDTO> getMyProfile() {
-        User authenticatedUser = authService.getAuthenticatedUser();
-        return new ResponseEntity<>(userService.findByIdOrThrow(authenticatedUser.getId()), HttpStatus.OK);
-    }
+  @GetMapping("/profile-details")
+  public ResponseEntity<UserResponseDTO> getMyProfile() {
+    User authenticatedUser = authService.getAuthenticatedUser();
+    return new ResponseEntity<>(
+        userService.findByIdOrThrow(authenticatedUser.getId()), HttpStatus.OK);
+  }
 
-    @PreAuthorize("hasAnyRole('GUIDE', 'LEAD_GUIDE')")
-    @GetMapping("/schedules")
-    public ResponseEntity<List<ScheduleResponseDTO>> getMySchedules() {
-        User authenticatedUser = authService.getAuthenticatedUser();
-        return new ResponseEntity<>(tourGuideScheduleService.findByUserId(authenticatedUser.getId()), HttpStatus.OK);
-    }
+  @PreAuthorize("hasAnyRole('GUIDE', 'LEAD_GUIDE')")
+  @GetMapping("/schedules")
+  public ResponseEntity<List<ScheduleResponseDTO>> getMySchedules() {
+    User authenticatedUser = authService.getAuthenticatedUser();
+    return new ResponseEntity<>(
+        tourGuideScheduleService.findByUserId(authenticatedUser.getId()), HttpStatus.OK);
+  }
 
-    @PreAuthorize("hasRole('CUSTOMER')")
-    @GetMapping("/bookings")
-    public ResponseEntity<List<BookingResponseDTO>> getMyBookings() {
-        User authenticatedUser = authService.getAuthenticatedUser();
-        return new ResponseEntity<>(bookingService.findByUserId(authenticatedUser.getId()), HttpStatus.OK);
-    }
+  @PreAuthorize("hasRole('CUSTOMER')")
+  @GetMapping("/bookings")
+  public ResponseEntity<List<BookingResponseDTO>> getMyBookings() {
+    User authenticatedUser = authService.getAuthenticatedUser();
+    return new ResponseEntity<>(
+        bookingService.findByUserId(authenticatedUser.getId()), HttpStatus.OK);
+  }
 
-    @PreAuthorize("hasRole('CUSTOMER')")
-    @GetMapping("/reviews")
-    public ResponseEntity<List<ReviewResponseDTO>> getMyReviews() {
-        User authenticatedUser = authService.getAuthenticatedUser();
-        return new ResponseEntity<>(reviewService.findByUserId(authenticatedUser.getId()), HttpStatus.OK);
-    }
+  @PreAuthorize("hasRole('CUSTOMER')")
+  @GetMapping("/reviews")
+  public ResponseEntity<List<ReviewResponseDTO>> getMyReviews() {
+    User authenticatedUser = authService.getAuthenticatedUser();
+    return new ResponseEntity<>(
+        reviewService.findByUserId(authenticatedUser.getId()), HttpStatus.OK);
+  }
 
-    @PreAuthorize("hasRole('CUSTOMER')")
-    @PutMapping("/active")
-    public ResponseEntity<UserResponseDTO> updateActiveStatus(@NotNull @Valid @RequestBody Map<String, Boolean> requestBody) {
-        User authenticatedUser = authService.getAuthenticatedUser();
-        UserResponseDTO updatedUser = userService.updateActiveStatus(authenticatedUser.getId(), requestBody.get("active"));
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-    }
+  @PreAuthorize("hasRole('CUSTOMER')")
+  @PutMapping("/active")
+  public ResponseEntity<UserResponseDTO> updateActiveStatus(
+      @NotNull @Valid @RequestBody Map<String, Boolean> requestBody) {
+    User authenticatedUser = authService.getAuthenticatedUser();
+    UserResponseDTO updatedUser =
+        userService.updateActiveStatus(authenticatedUser.getId(), requestBody.get("active"));
+    return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+  }
 }

@@ -10,15 +10,15 @@ import java.util.List;
 
 public interface UserService extends GenericService<User, UserResponseDTO> {
 
-    List<UserResponseDTO> findAvailableGuidesWithinRange(LocalDate startDate, LocalDate endDate);
+  List<UserResponseDTO> findAvailableGuidesWithinRange(LocalDate startDate, LocalDate endDate);
 
-    UserResponseDTO update(Integer theId, User theUser);
+  UserResponseDTO update(Integer theId, User theUser);
 
-    UserResponseDTO updateActiveStatus(Integer theId, Boolean isActive);
+  UserResponseDTO updateActiveStatus(Integer theId, Boolean isActive);
 
-    UserResponseDTO updateRole(Integer theId, Role newRole);
+  UserResponseDTO updateRole(Integer theId, Role newRole);
 
-    boolean verifyInputUserHasRole(Integer userId, String... validRoles);
+  boolean verifyInputUserHasRole(Integer userId, String... validRoles);
 
-    boolean verifyInputUserIsActive(Integer userId);
+  boolean verifyInputUserIsActive(Integer userId);
 }

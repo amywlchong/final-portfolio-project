@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface TourPointOfInterestService {
 
-    List<TourPointOfInterest> updateTourPointsOfInterest(Integer inputTourId, List<TourPointOfInterest> inputTourPointsOfInterest);
+  List<TourPointOfInterest> updateTourPointsOfInterest(
+      Integer inputTourId, List<TourPointOfInterest> inputTourPointsOfInterest);
 }

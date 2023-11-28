@@ -10,97 +10,101 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
-@Table(name="reviews")
+@Table(name = "reviews")
 public class Review implements Identifiable<Integer>, Serializable, DeepCopyable {
 
-    // define fields
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
-    private Integer id;
+  // define fields
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Integer id;
 
-    @Column(name="review")
-    private String review;
+  @Column(name = "review")
+  private String review;
 
-    @Column(name="rating")
-    private Integer rating;
+  @Column(name = "rating")
+  private Integer rating;
 
-    @Column(name="created_date")
-    private LocalDate createdDate = LocalDate.now();
+  @Column(name = "created_date")
+  private LocalDate createdDate = LocalDate.now();
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="booking_id")
-    private Booking booking;
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "booking_id")
+  private Booking booking;
 
-    // define constructors
-    public Review() {
+  // define constructors
+  public Review() {}
 
-    }
+  public Review(String review, Integer rating, LocalDate createdDate, Booking booking) {
+    this.review = review;
+    this.rating = rating;
+    this.createdDate = createdDate;
+    this.booking = booking;
+  }
 
-    public Review(String review, Integer rating, LocalDate createdDate, Booking booking) {
-        this.review = review;
-        this.rating = rating;
-        this.createdDate = createdDate;
-        this.booking = booking;
-    }
+  // define getters and setters
+  @Override
+  public Integer getId() {
+    return id;
+  }
 
-    // define getters and setters
-    @Override
-    public Integer getId() {
-        return id;
-    }
+  @Override
+  public void setId(Integer id) {
+    this.id = id;
+  }
 
-    @Override
-    public void setId(Integer id) {
-        this.id = id;
-    }
+  public String getReview() {
+    return review;
+  }
 
-    public String getReview() {
-        return review;
-    }
+  public void setReview(String review) {
+    this.review = review;
+  }
 
-    public void setReview(String review) {
-        this.review = review;
-    }
+  public Integer getRating() {
+    return rating;
+  }
 
-    public Integer getRating() {
-        return rating;
-    }
+  public void setRating(Integer rating) {
+    this.rating = rating;
+  }
 
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
+  public LocalDate getCreatedDate() {
+    return createdDate;
+  }
 
-    public LocalDate getCreatedDate() {
-        return createdDate;
-    }
+  public void setCreatedDate(LocalDate createdDate) {
+    this.createdDate = createdDate;
+  }
 
-    public void setCreatedDate(LocalDate createdDate) {
-        this.createdDate = createdDate;
-    }
+  public Booking getBooking() {
+    return booking;
+  }
 
-    public Booking getBooking() {
-        return booking;
-    }
+  public void setBooking(Booking booking) {
+    this.booking = booking;
+  }
 
-    public void setBooking(Booking booking) {
-        this.booking = booking;
-    }
+  // deepCopy method
+  public Review deepCopy() {
+    return SerializationUtils.clone(this);
+  }
 
-    // deepCopy method
-    public Review deepCopy() {
-        return SerializationUtils.clone(this);
-    }
-
-    // define toString method
-    @Override
-    public String toString() {
-        return "Review{" +
-                "id=" + id +
-                ", review='" + review + '\'' +
-                ", rating=" + rating +
-                ", createdDate=" + createdDate +
-                ", booking=" + booking +
-                '}';
-    }
+  // define toString method
+  @Override
+  public String toString() {
+    return "Review{"
+        + "id="
+        + id
+        + ", review='"
+        + review
+        + '\''
+        + ", rating="
+        + rating
+        + ", createdDate="
+        + createdDate
+        + ", booking="
+        + booking
+        + '}';
+  }
 }

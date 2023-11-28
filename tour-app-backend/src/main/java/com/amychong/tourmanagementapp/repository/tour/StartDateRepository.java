@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface StartDateRepository extends JpaRepository<StartDate, Integer> {
 
-    List<StartDate> findAllByStartDateTimeIn(Iterable<LocalDateTime> startDateTimes);
+  List<StartDate> findAllByStartDateTimeIn(Iterable<LocalDateTime> startDateTimes);
 }

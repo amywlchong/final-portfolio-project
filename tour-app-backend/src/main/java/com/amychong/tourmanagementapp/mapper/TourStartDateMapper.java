@@ -6,10 +6,11 @@ import org.mapstruct.Mapper;
 
 import java.time.LocalDateTime;
 
-@Mapper(componentModel="spring")
+@Mapper(componentModel = "spring")
 public interface TourStartDateMapper {
 
-    static TourStartDate mapToTourStartDate(Integer tourId, LocalDateTime startDateTime, EntityLookup entityLookup) {
-        return entityLookup.findTourStartDateByTourIdAndStartDateTimeOrThrow(tourId, startDateTime);
-    }
+  static TourStartDate mapToTourStartDate(
+      Integer tourId, LocalDateTime startDateTime, EntityLookup entityLookup) {
+    return entityLookup.findTourStartDateByTourIdAndStartDateTimeOrThrow(tourId, startDateTime);
+  }
 }

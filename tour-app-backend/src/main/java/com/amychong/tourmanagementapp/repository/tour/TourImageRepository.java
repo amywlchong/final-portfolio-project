@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface TourImageRepository extends JpaRepository<TourImage, Integer> {
 
-    Optional<TourImage> findByTour_IdAndName(Integer tourId, String imageName);
+  Optional<TourImage> findByTour_IdAndName(Integer tourId, String imageName);
 
-    List<TourImage> findByTour_Id(Integer tourId);
+  List<TourImage> findByTour_Id(Integer tourId);
 }

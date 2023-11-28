@@ -10,76 +10,74 @@ import org.apache.commons.lang3.SerializationUtils;
 import java.io.Serializable;
 
 @Entity
-@Table(name="tour_guide_schedules")
+@Table(name = "tour_guide_schedules")
 public class TourGuideSchedule implements Identifiable<Integer>, Serializable, DeepCopyable {
 
-    // define fields
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
-    private Integer id;
+  // define fields
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
-    private User user;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name="start_date_id"),
-            @JoinColumn(name="tour_id")
-    })
-    private TourStartDate tourStartDate;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumns({@JoinColumn(name = "start_date_id"), @JoinColumn(name = "tour_id")})
+  private TourStartDate tourStartDate;
 
-    // define constructors
-    public TourGuideSchedule() {
+  // define constructors
+  public TourGuideSchedule() {}
 
-    }
+  public TourGuideSchedule(User user, TourStartDate tourStartDate) {
+    this.user = user;
+    this.tourStartDate = tourStartDate;
+  }
 
-    public TourGuideSchedule(User user, TourStartDate tourStartDate) {
-        this.user = user;
-        this.tourStartDate = tourStartDate;
-    }
+  // define getters and setters
 
-    // define getters and setters
+  @Override
+  public Integer getId() {
+    return id;
+  }
 
-    @Override
-    public Integer getId() {
-        return id;
-    }
+  @Override
+  public void setId(Integer id) {
+    this.id = id;
+  }
 
-    @Override
-    public void setId(Integer id) {
-        this.id = id;
-    }
+  public User getUser() {
+    return user;
+  }
 
-    public User getUser() {
-        return user;
-    }
+  public void setUser(User user) {
+    this.user = user;
+  }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+  public TourStartDate getTourStartDate() {
+    return tourStartDate;
+  }
 
-    public TourStartDate getTourStartDate() {
-        return tourStartDate;
-    }
+  public void setTourStartDate(TourStartDate tourStartDate) {
+    this.tourStartDate = tourStartDate;
+  }
 
-    public void setTourStartDate(TourStartDate tourStartDate) {
-        this.tourStartDate = tourStartDate;
-    }
+  // deepCopy method
+  public TourGuideSchedule deepCopy() {
+    return SerializationUtils.clone(this);
+  }
 
-    // deepCopy method
-    public TourGuideSchedule deepCopy() {
-        return SerializationUtils.clone(this);
-    }
-
-    // define toString method
-    @Override
-    public String toString() {
-        return "TourGuideSchedule{" +
-                "id=" + id +
-                ", user=" + user +
-                ", tourStartDate=" + tourStartDate +
-                '}';
-    }
+  // define toString method
+  @Override
+  public String toString() {
+    return "TourGuideSchedule{"
+        + "id="
+        + id
+        + ", user="
+        + user
+        + ", tourStartDate="
+        + tourStartDate
+        + '}';
+  }
 }

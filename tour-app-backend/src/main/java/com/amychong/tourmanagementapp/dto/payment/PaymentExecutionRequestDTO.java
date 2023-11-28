@@ -9,36 +9,40 @@ import jakarta.validation.constraints.Size;
 
 public class PaymentExecutionRequestDTO {
 
-    @NotNull(message = "Booking ID is required")
-    @Positive(message = "Booking ID must be positive")
-    private final Integer bookingId;
+  @NotNull(message = "Booking ID is required")
+  @Positive(message = "Booking ID must be positive")
+  private final Integer bookingId;
 
-    @NotBlank(message = "Order ID is required")
-    @Size(max = 19, message = "Order ID should have at most 19 characters")
-    private final String orderId;
+  @NotBlank(message = "Order ID is required")
+  @Size(max = 19, message = "Order ID should have at most 19 characters")
+  private final String orderId;
 
-    // constructor
-    @JsonCreator
-    public PaymentExecutionRequestDTO(@JsonProperty("bookingId") Integer bookingId, @JsonProperty("orderId") String orderId) {
-        this.bookingId = bookingId;
-        this.orderId = orderId;
-    }
+  // constructor
+  @JsonCreator
+  public PaymentExecutionRequestDTO(
+      @JsonProperty("bookingId") Integer bookingId, @JsonProperty("orderId") String orderId) {
+    this.bookingId = bookingId;
+    this.orderId = orderId;
+  }
 
-    // getters
-    public Integer getBookingId() {
-        return bookingId;
-    }
+  // getters
+  public Integer getBookingId() {
+    return bookingId;
+  }
 
-    public String getOrderId() {
-        return orderId;
-    }
+  public String getOrderId() {
+    return orderId;
+  }
 
-    // toString method
-    @Override
-    public String toString() {
-        return "PaymentExecutionRequestDTO{" +
-                "bookingId=" + bookingId +
-                ", orderId='" + orderId + '\'' +
-                '}';
-    }
+  // toString method
+  @Override
+  public String toString() {
+    return "PaymentExecutionRequestDTO{"
+        + "bookingId="
+        + bookingId
+        + ", orderId='"
+        + orderId
+        + '\''
+        + '}';
+  }
 }

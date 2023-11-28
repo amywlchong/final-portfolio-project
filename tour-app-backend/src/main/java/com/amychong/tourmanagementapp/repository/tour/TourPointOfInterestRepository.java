@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface TourPointOfInterestRepository extends JpaRepository<TourPointOfInterest, Integer> {
 
-    Optional<TourPointOfInterest> findByTour_IdAndPointOfInterest_Name(Integer tourId, String pointOfInterestName);
+  Optional<TourPointOfInterest> findByTour_IdAndPointOfInterest_Name(
+      Integer tourId, String pointOfInterestName);
 }

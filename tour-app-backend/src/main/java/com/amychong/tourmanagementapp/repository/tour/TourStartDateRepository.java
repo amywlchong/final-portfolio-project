@@ -8,5 +8,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface TourStartDateRepository extends JpaRepository<TourStartDate, TourStartDateKey> {
-    Optional<TourStartDate> findByTour_IdAndStartDate_StartDateTime(Integer tourId, LocalDateTime startDateTime);
+  Optional<TourStartDate> findByTour_IdAndStartDate_StartDateTime(
+      Integer tourId, LocalDateTime startDateTime);
 }

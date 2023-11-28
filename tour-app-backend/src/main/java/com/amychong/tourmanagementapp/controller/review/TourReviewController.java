@@ -17,16 +17,16 @@ import java.util.List;
 @RequestMapping("/api/tours/{tourId}/reviews")
 public class TourReviewController {
 
-    private final ReviewService reviewService;
+  private final ReviewService reviewService;
 
-    @Autowired
-    public TourReviewController(ReviewService theReviewService) {
-        reviewService = theReviewService;
-    }
+  @Autowired
+  public TourReviewController(ReviewService theReviewService) {
+    reviewService = theReviewService;
+  }
 
-    @GetMapping
-    public ResponseEntity<List<ReviewResponseDTO>> getByTourId(@Min(1) @PathVariable Integer tourId) {
-        List<ReviewResponseDTO> reviewDTOs = reviewService.findByTourId(tourId);
-        return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
-    }
+  @GetMapping
+  public ResponseEntity<List<ReviewResponseDTO>> getByTourId(@Min(1) @PathVariable Integer tourId) {
+    List<ReviewResponseDTO> reviewDTOs = reviewService.findByTourId(tourId);
+    return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
+  }
 }

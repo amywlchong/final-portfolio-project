@@ -16,34 +16,30 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthenticationController {
 
-    private final AuthenticationServiceImpl authService;
+  private final AuthenticationServiceImpl authService;
 
-    @Autowired
-    public AuthenticationController(AuthenticationServiceImpl authService) {
-        this.authService = authService;
-    }
+  @Autowired
+  public AuthenticationController(AuthenticationServiceImpl authService) {
+    this.authService = authService;
+  }
 
-    @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponseDTO> register(
-            @NotNull @Valid @RequestBody RegisterRequestDTO requestBody
-    ) {
-        return new ResponseEntity<>(authService.register(requestBody), HttpStatus.OK);
-    }
+  @PostMapping("/register")
+  public ResponseEntity<AuthenticationResponseDTO> register(
+      @NotNull @Valid @RequestBody RegisterRequestDTO requestBody) {
+    return new ResponseEntity<>(authService.register(requestBody), HttpStatus.OK);
+  }
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponseDTO> authenticate(
-            @NotNull @Valid @RequestBody AuthenticationRequestDTO requestBody
-    ) {
-        return new ResponseEntity<>(authService.authenticate(requestBody), HttpStatus.OK);
-    }
+  @PostMapping("/authenticate")
+  public ResponseEntity<AuthenticationResponseDTO> authenticate(
+      @NotNull @Valid @RequestBody AuthenticationRequestDTO requestBody) {
+    return new ResponseEntity<>(authService.authenticate(requestBody), HttpStatus.OK);
+  }
 
-    @PutMapping("/update-my-password")
-    public ResponseEntity<AuthenticationResponseDTO> updatePassword(
-            @NotNull @Valid @RequestBody UpdatePasswordRequestDTO requestBody
-    ) {
-        return new ResponseEntity<>(
-                authService.updatePassword(requestBody.getOldPassword(), requestBody.getNewPassword()),
-                HttpStatus.OK
-        );
-    }
+  @PutMapping("/update-my-password")
+  public ResponseEntity<AuthenticationResponseDTO> updatePassword(
+      @NotNull @Valid @RequestBody UpdatePasswordRequestDTO requestBody) {
+    return new ResponseEntity<>(
+        authService.updatePassword(requestBody.getOldPassword(), requestBody.getNewPassword()),
+        HttpStatus.OK);
+  }
 }

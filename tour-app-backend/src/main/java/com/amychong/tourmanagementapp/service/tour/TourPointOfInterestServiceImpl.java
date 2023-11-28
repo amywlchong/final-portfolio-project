@@ -14,38 +14,46 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class TourPointOfInterestServiceImpl implements TourPointOfInterestService{
+public class TourPointOfInterestServiceImpl implements TourPointOfInterestService {
 
-    private final PointOfInterestRepository pointOfInterestRepository;
-    private final TourPointOfInterestRepository tourPointOfInterestRepository;
-    private final TourRepository tourRepository;
-    private final EntityLookup entityLookup;
+  private final PointOfInterestRepository pointOfInterestRepository;
+  private final TourPointOfInterestRepository tourPointOfInterestRepository;
+  private final TourRepository tourRepository;
+  private final EntityLookup entityLookup;
 
-    @Autowired
-    public TourPointOfInterestServiceImpl(PointOfInterestRepository thePointOfInterestRepository, TourPointOfInterestRepository theTourPointOfInterestRepository, TourRepository theTourRepository, EntityLookup theEntityLookup) {
-        pointOfInterestRepository = thePointOfInterestRepository;
-        tourPointOfInterestRepository = theTourPointOfInterestRepository;
-        tourRepository = theTourRepository;
-        entityLookup = theEntityLookup;
-    }
+  @Autowired
+  public TourPointOfInterestServiceImpl(
+      PointOfInterestRepository thePointOfInterestRepository,
+      TourPointOfInterestRepository theTourPointOfInterestRepository,
+      TourRepository theTourRepository,
+      EntityLookup theEntityLookup) {
+    pointOfInterestRepository = thePointOfInterestRepository;
+    tourPointOfInterestRepository = theTourPointOfInterestRepository;
+    tourRepository = theTourRepository;
+    entityLookup = theEntityLookup;
+  }
 
-    @Override
-    @Transactional
-    public List<TourPointOfInterest> updateTourPointsOfInterest(Integer inputTourId, List<TourPointOfInterest> inputTourPointsOfInterest) {
+  @Override
+  @Transactional
+  public List<TourPointOfInterest> updateTourPointsOfInterest(
+      Integer inputTourId, List<TourPointOfInterest> inputTourPointsOfInterest) {
 
-        TourUpdateProcessor<TourPointOfInterest, PointOfInterest, String> helper = new TourUpdateProcessor<>();
-        helper.inputTourId = inputTourId;
-        helper.findTourFunction = entityLookup::findTourByIdWithDetailsOrThrow;
-        helper.inputTourRelatedEntities = inputTourPointsOfInterest;
-        helper.findTourRelatedEntityFromDB = tourPointOfInterestRepository::findByTour_IdAndPointOfInterest_Name;
-        helper.getEntitiesFromTourFunction = Tour::getTourPointsOfInterest;
-        helper.addEntityToTourFunction = Tour::addTourPointOfInterest;
-        helper.getAssociatedEntityFunction = TourPointOfInterest::getPointOfInterest;
-        helper.getUniqueFieldOfAssociatedEntityFunction = PointOfInterest::getName;
-        helper.findExistingAssociatedEntitiesFunction = names -> pointOfInterestRepository.findAllByNameIn(names);
+    TourUpdateProcessor<TourPointOfInterest, PointOfInterest, String> helper =
+        new TourUpdateProcessor<>();
+    helper.inputTourId = inputTourId;
+    helper.findTourFunction = entityLookup::findTourByIdWithDetailsOrThrow;
+    helper.inputTourRelatedEntities = inputTourPointsOfInterest;
+    helper.findTourRelatedEntityFromDB =
+        tourPointOfInterestRepository::findByTour_IdAndPointOfInterest_Name;
+    helper.getEntitiesFromTourFunction = Tour::getTourPointsOfInterest;
+    helper.addEntityToTourFunction = Tour::addTourPointOfInterest;
+    helper.getAssociatedEntityFunction = TourPointOfInterest::getPointOfInterest;
+    helper.getUniqueFieldOfAssociatedEntityFunction = PointOfInterest::getName;
+    helper.findExistingAssociatedEntitiesFunction =
+        names -> pointOfInterestRepository.findAllByNameIn(names);
 
-        Tour processedTour = helper.processTourForUpdate();
+    Tour processedTour = helper.processTourForUpdate();
 
-        return tourRepository.save(processedTour).getTourPointsOfInterest();
-    }
+    return tourRepository.save(processedTour).getTourPointsOfInterest();
+  }
 }

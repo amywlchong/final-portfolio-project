@@ -10,17 +10,15 @@ import software.amazon.awssdk.services.s3.S3Client;
 @Configuration
 public class S3Config {
 
-    private final String awsRegion;
+  private final String awsRegion;
 
-    @Autowired
-    public S3Config(@Value("${aws.region}") String awsRegion) {
-        this.awsRegion = awsRegion;
-    }
+  @Autowired
+  public S3Config(@Value("${aws.region}") String awsRegion) {
+    this.awsRegion = awsRegion;
+  }
 
-    @Bean
-    public S3Client s3Client() {
-        return S3Client.builder()
-                .region(Region.of(awsRegion))
-                .build();
-    }
+  @Bean
+  public S3Client s3Client() {
+    return S3Client.builder().region(Region.of(awsRegion)).build();
+  }
 }

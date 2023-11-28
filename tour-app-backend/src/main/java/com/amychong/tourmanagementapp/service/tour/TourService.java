@@ -9,15 +9,15 @@ import java.util.List;
 
 public interface TourService extends GenericService<Tour, TourResponseDTO> {
 
-    List<TourResponseDTO> findAvailableToursWithinRange(LocalDate startDate, LocalDate endDate);
+  List<TourResponseDTO> findAvailableToursWithinRange(LocalDate startDate, LocalDate endDate);
 
-    TourResponseDTO create(Tour inputTour);
+  TourResponseDTO create(Tour inputTour);
 
-    TourResponseDTO update(Integer theTourId, Tour theTour);
+  TourResponseDTO update(Integer theTourId, Tour theTour);
 
-    TourResponseDTO updateMainInfo(Integer theTourId, Tour theTour);
+  TourResponseDTO updateMainInfo(Integer theTourId, Tour theTour);
 
-    void updateTourRatingsAfterAddingReview(Tour associatedTour, Integer newRating);
+  void updateTourRatingsAfterAddingReview(Tour associatedTour, Integer newRating);
 
-    void updateTourRatingsAfterDeletingReview(Tour associatedTour, Integer deletedRating);
+  void updateTourRatingsAfterDeletingReview(Tour associatedTour, Integer deletedRating);
 }

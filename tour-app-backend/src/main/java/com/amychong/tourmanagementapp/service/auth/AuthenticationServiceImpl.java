@@ -22,94 +22,100 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
-    private final AuthenticationFacade authenticationFacade;
+  private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final JwtService jwtService;
+  private final AuthenticationManager authenticationManager;
+  private final AuthenticationFacade authenticationFacade;
 
-    @Autowired
-    public AuthenticationServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, AuthenticationFacade authenticationFacade) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
-        this.authenticationFacade = authenticationFacade;
+  @Autowired
+  public AuthenticationServiceImpl(
+      UserRepository userRepository,
+      PasswordEncoder passwordEncoder,
+      JwtService jwtService,
+      AuthenticationManager authenticationManager,
+      AuthenticationFacade authenticationFacade) {
+    this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
+    this.jwtService = jwtService;
+    this.authenticationManager = authenticationManager;
+    this.authenticationFacade = authenticationFacade;
+  }
+
+  @Override
+  @Transactional
+  public AuthenticationResponseDTO register(RegisterRequestDTO request) {
+    User user =
+        User.builder()
+            .name(request.getName())
+            .username(request.getEmail())
+            .password(passwordEncoder.encode(request.getPassword()))
+            .passwordChangedDate(System.currentTimeMillis())
+            .authorities(Role.ROLE_CUSTOMER.toString())
+            .build();
+    User dbUser = userRepository.save(user);
+
+    String jwtToken = jwtService.generateToken(dbUser);
+
+    return new AuthenticationResponseDTO(jwtToken);
+  }
+
+  @Override
+  public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO request) {
+    authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+
+    User dbUser =
+        userRepository
+            .findByEmail(request.getEmail())
+            .orElseThrow(() -> new UsernameNotFoundException("Did not find user"));
+
+    String jwtToken = jwtService.generateToken(dbUser);
+
+    return new AuthenticationResponseDTO(jwtToken);
+  }
+
+  @Override
+  @Transactional
+  public AuthenticationResponseDTO updatePassword(String oldPassword, String newPassword) {
+
+    User authenticatedUser = getAuthenticatedUser();
+
+    if (!passwordEncoder.matches(oldPassword, authenticatedUser.getPassword())) {
+      throw new BadCredentialsException("Invalid credentials.");
     }
 
-    @Override
-    @Transactional
-    public AuthenticationResponseDTO register(RegisterRequestDTO request) {
-        User user = User.builder()
-                .name(request.getName())
-                .username(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .passwordChangedDate(System.currentTimeMillis())
-                .authorities(Role.ROLE_CUSTOMER.toString())
-                .build();
-        User dbUser = userRepository.save(user);
+    User copyOfUser = authenticatedUser.deepCopy();
+    copyOfUser.setPassword(passwordEncoder.encode(newPassword));
+    copyOfUser.setPasswordChangedDate(System.currentTimeMillis());
 
-        String jwtToken = jwtService.generateToken(dbUser);
+    User dbUser = userRepository.save(copyOfUser);
 
-        return new AuthenticationResponseDTO(jwtToken);
+    String jwtToken = jwtService.generateToken(dbUser);
+
+    return new AuthenticationResponseDTO(jwtToken);
+  }
+
+  @Override
+  public boolean verifyAuthenticatedUserHasRole(Role expectedRole) {
+    return expectedRole.equals(getAuthenticatedUser().getRole());
+  }
+
+  @Override
+  public boolean verifyAuthenticatedUserHasId(Integer expectedUserId) {
+    return expectedUserId.equals(getAuthenticatedUser().getId());
+  }
+
+  @Override
+  public User getAuthenticatedUser() {
+    Authentication authentication = authenticationFacade.getAuthentication();
+
+    if (authentication == null
+        || !authentication.isAuthenticated()
+        || !(authentication.getPrincipal() instanceof User)) {
+      throw new AuthenticatedUserNotFoundException();
     }
 
-    @Override
-    public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-
-        User dbUser = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("Did not find user"));
-
-        String jwtToken = jwtService.generateToken(dbUser);
-
-        return new AuthenticationResponseDTO(jwtToken);
-    }
-
-    @Override
-    @Transactional
-    public AuthenticationResponseDTO updatePassword(String oldPassword, String newPassword) {
-
-        User authenticatedUser = getAuthenticatedUser();
-
-        if (!passwordEncoder.matches(oldPassword, authenticatedUser.getPassword())) {
-            throw new BadCredentialsException("Invalid credentials.");
-        }
-
-        User copyOfUser = authenticatedUser.deepCopy();
-        copyOfUser.setPassword(passwordEncoder.encode(newPassword));
-        copyOfUser.setPasswordChangedDate(System.currentTimeMillis());
-
-        User dbUser = userRepository.save(copyOfUser);
-
-        String jwtToken = jwtService.generateToken(dbUser);
-
-        return new AuthenticationResponseDTO(jwtToken);
-    }
-
-    @Override
-    public boolean verifyAuthenticatedUserHasRole(Role expectedRole) {
-        return expectedRole.equals(getAuthenticatedUser().getRole());
-    }
-
-    @Override
-    public boolean verifyAuthenticatedUserHasId(Integer expectedUserId) {
-        return expectedUserId.equals(getAuthenticatedUser().getId());
-    }
-
-    @Override
-    public User getAuthenticatedUser() {
-        Authentication authentication = authenticationFacade.getAuthentication();
-
-        if(authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof User)) {
-            throw new AuthenticatedUserNotFoundException();
-        }
-
-        return (User) authentication.getPrincipal();
-    }
+    return (User) authentication.getPrincipal();
+  }
 }

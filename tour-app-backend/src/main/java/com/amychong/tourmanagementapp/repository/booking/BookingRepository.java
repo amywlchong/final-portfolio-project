@@ -10,10 +10,10 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
-    @Query("SELECT SUM(b.numberOfParticipants) FROM Booking b WHERE b.tourStartDate = :tourStartDate")
-    Integer sumParticipantsByTourStartDate(@Param("tourStartDate") TourStartDate tourStartDate);
+  @Query("SELECT SUM(b.numberOfParticipants) FROM Booking b WHERE b.tourStartDate = :tourStartDate")
+  Integer sumParticipantsByTourStartDate(@Param("tourStartDate") TourStartDate tourStartDate);
 
-    List<Booking> findByUser_Id(Integer userId);
+  List<Booking> findByUser_Id(Integer userId);
 
-    List<Booking> findByTourStartDate_Tour_Id(Integer tourId);
+  List<Booking> findByTourStartDate_Tour_Id(Integer tourId);
 }

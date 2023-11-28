@@ -2,11 +2,11 @@ package com.amychong.tourmanagementapp.entity.user;
 
 public interface UserDetails extends org.springframework.security.core.userdetails.UserDetails {
 
-    Integer getId();
+  Integer getId();
 
-    String getName();
+  String getName();
 
-    Role getRole();
+  Role getRole();
 
-    Long getPasswordChangedDate();
+  Long getPasswordChangedDate();
 }

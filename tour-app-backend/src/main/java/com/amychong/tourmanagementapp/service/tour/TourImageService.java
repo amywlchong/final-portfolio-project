@@ -7,9 +7,10 @@ import java.util.List;
 
 public interface TourImageService {
 
-    byte[] getTourImageBytes(Integer tourId, Integer imageId);
+  byte[] getTourImageBytes(Integer tourId, Integer imageId);
 
-    List<TourImageResponseDTO> uploadTourImages(Integer tourId, List<MultipartFile> files, String coverImageName);
+  List<TourImageResponseDTO> uploadTourImages(
+      Integer tourId, List<MultipartFile> files, String coverImageName);
 
-    void deleteTourImageById(Integer inputTourId, Integer imageId);
+  void deleteTourImageById(Integer inputTourId, Integer imageId);
 }

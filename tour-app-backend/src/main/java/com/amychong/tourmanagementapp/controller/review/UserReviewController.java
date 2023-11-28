@@ -17,16 +17,16 @@ import java.util.List;
 @RequestMapping("/api/users/{userId}/reviews")
 public class UserReviewController {
 
-    private final ReviewService reviewService;
+  private final ReviewService reviewService;
 
-    @Autowired
-    public UserReviewController(ReviewService theReviewService) {
-        reviewService = theReviewService;
-    }
+  @Autowired
+  public UserReviewController(ReviewService theReviewService) {
+    reviewService = theReviewService;
+  }
 
-    @GetMapping
-    public ResponseEntity<List<ReviewResponseDTO>> getByUserId(@Min(1) @PathVariable Integer userId) {
-        List<ReviewResponseDTO> reviewDTOs = reviewService.findByUserId(userId);
-        return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
-    }
+  @GetMapping
+  public ResponseEntity<List<ReviewResponseDTO>> getByUserId(@Min(1) @PathVariable Integer userId) {
+    List<ReviewResponseDTO> reviewDTOs = reviewService.findByUserId(userId);
+    return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
+  }
 }

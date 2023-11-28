@@ -19,53 +19,55 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tour-guide-schedules")
-public class TourGuideScheduleController extends GenericController<TourGuideSchedule, ScheduleResponseDTO> {
+public class TourGuideScheduleController
+    extends GenericController<TourGuideSchedule, ScheduleResponseDTO> {
 
-    private final TourGuideScheduleService tourGuideScheduleService;
+  private final TourGuideScheduleService tourGuideScheduleService;
 
-    @Autowired
-    public TourGuideScheduleController(TourGuideScheduleService theTourGuideScheduleService) {
-        super(theTourGuideScheduleService);
-        tourGuideScheduleService = theTourGuideScheduleService;
-    }
+  @Autowired
+  public TourGuideScheduleController(TourGuideScheduleService theTourGuideScheduleService) {
+    super(theTourGuideScheduleService);
+    tourGuideScheduleService = theTourGuideScheduleService;
+  }
 
-    @Override
-    @PreAuthorize("hasAnyRole('GUIDE', 'LEAD_GUIDE','ADMIN')")
-    @GetMapping
-    public ResponseEntity<List<ScheduleResponseDTO>> getAll() {
-        return super.getAll();
-    }
+  @Override
+  @PreAuthorize("hasAnyRole('GUIDE', 'LEAD_GUIDE','ADMIN')")
+  @GetMapping
+  public ResponseEntity<List<ScheduleResponseDTO>> getAll() {
+    return super.getAll();
+  }
 
-    @Override
-    @PreAuthorize("hasAnyRole('GUIDE', 'LEAD_GUIDE','ADMIN')")
-    @GetMapping("/{scheduleId}")
-    public ResponseEntity<ScheduleResponseDTO> getById(@Min(1) @PathVariable Integer scheduleId) {
-        return super.getById(scheduleId);
-    }
+  @Override
+  @PreAuthorize("hasAnyRole('GUIDE', 'LEAD_GUIDE','ADMIN')")
+  @GetMapping("/{scheduleId}")
+  public ResponseEntity<ScheduleResponseDTO> getById(@Min(1) @PathVariable Integer scheduleId) {
+    return super.getById(scheduleId);
+  }
 
-    @PreAuthorize("hasAnyRole('GUIDE', 'LEAD_GUIDE','ADMIN')")
-    @GetMapping("/range")
-    public ResponseEntity<List<ScheduleResponseDTO>> getSchedulesWithinRange(
-            @NotNull @RequestParam("startDate") LocalDate startDate,
-            @NotNull @RequestParam("endDate") LocalDate endDate) {
+  @PreAuthorize("hasAnyRole('GUIDE', 'LEAD_GUIDE','ADMIN')")
+  @GetMapping("/range")
+  public ResponseEntity<List<ScheduleResponseDTO>> getSchedulesWithinRange(
+      @NotNull @RequestParam("startDate") LocalDate startDate,
+      @NotNull @RequestParam("endDate") LocalDate endDate) {
 
-        List<ScheduleResponseDTO> tourGuideScheduleDTOS = tourGuideScheduleService.findSchedulesWithinRange(startDate, endDate);
+    List<ScheduleResponseDTO> tourGuideScheduleDTOS =
+        tourGuideScheduleService.findSchedulesWithinRange(startDate, endDate);
 
-        return new ResponseEntity<>(tourGuideScheduleDTOS, HttpStatus.OK);
-    }
+    return new ResponseEntity<>(tourGuideScheduleDTOS, HttpStatus.OK);
+  }
 
-    @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
-    @PostMapping
-    public ResponseEntity<ScheduleResponseDTO> add(@NotNull @Valid @RequestBody ScheduleRequestDTO scheduleRequest) {
-        ScheduleResponseDTO newSchedule = tourGuideScheduleService.create(scheduleRequest);
-        return new ResponseEntity<>(newSchedule, HttpStatus.CREATED);
-    }
+  @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
+  @PostMapping
+  public ResponseEntity<ScheduleResponseDTO> add(
+      @NotNull @Valid @RequestBody ScheduleRequestDTO scheduleRequest) {
+    ScheduleResponseDTO newSchedule = tourGuideScheduleService.create(scheduleRequest);
+    return new ResponseEntity<>(newSchedule, HttpStatus.CREATED);
+  }
 
-    @Override
-    @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
-    @DeleteMapping("/{scheduleId}")
-    public ResponseEntity<String> delete(@Min(1) @PathVariable Integer scheduleId) {
-        return super.delete(scheduleId);
-    }
-
+  @Override
+  @PreAuthorize("hasAnyRole('LEAD_GUIDE','ADMIN')")
+  @DeleteMapping("/{scheduleId}")
+  public ResponseEntity<String> delete(@Min(1) @PathVariable Integer scheduleId) {
+    return super.delete(scheduleId);
+  }
 }

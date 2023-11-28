@@ -18,18 +18,18 @@ import java.util.List;
 @RequestMapping("/api/tours/{tourId}/schedules")
 public class TourScheduleController {
 
-    private final TourGuideScheduleService tourGuideScheduleService;
+  private final TourGuideScheduleService tourGuideScheduleService;
 
-    @Autowired
-    public TourScheduleController(TourGuideScheduleService theTourGuideScheduleService) {
-        tourGuideScheduleService = theTourGuideScheduleService;
-    }
+  @Autowired
+  public TourScheduleController(TourGuideScheduleService theTourGuideScheduleService) {
+    tourGuideScheduleService = theTourGuideScheduleService;
+  }
 
-    @PreAuthorize("hasAnyRole('GUIDE', 'LEAD_GUIDE','ADMIN')")
-    @GetMapping
-    public ResponseEntity<List<ScheduleResponseDTO>> getByTourId(@Min(1) @PathVariable Integer tourId) {
-        List<ScheduleResponseDTO> TourGuideScheduleDTOs = tourGuideScheduleService.findByTourId(tourId);
-        return new ResponseEntity<>(TourGuideScheduleDTOs, HttpStatus.OK);
-    }
+  @PreAuthorize("hasAnyRole('GUIDE', 'LEAD_GUIDE','ADMIN')")
+  @GetMapping
+  public ResponseEntity<List<ScheduleResponseDTO>> getByTourId(
+      @Min(1) @PathVariable Integer tourId) {
+    List<ScheduleResponseDTO> TourGuideScheduleDTOs = tourGuideScheduleService.findByTourId(tourId);
+    return new ResponseEntity<>(TourGuideScheduleDTOs, HttpStatus.OK);
+  }
 }
-

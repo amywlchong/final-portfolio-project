@@ -17,67 +17,54 @@ import java.util.stream.Collectors;
 @Service
 public class S3ServiceImpl implements S3Service {
 
-    private final S3Client s3;
-    private final String bucketName;
+  private final S3Client s3;
+  private final String bucketName;
 
-    @Autowired
-    public S3ServiceImpl(S3Client s3, @Value("${aws.s3.bucketName}") String bucketName) {
-        this.s3 = s3;
-        this.bucketName = bucketName;
+  @Autowired
+  public S3ServiceImpl(S3Client s3, @Value("${aws.s3.bucketName}") String bucketName) {
+    this.s3 = s3;
+    this.bucketName = bucketName;
+  }
+
+  @Override
+  public byte[] getObject(String key) {
+    GetObjectRequest getObjectRequest =
+        GetObjectRequest.builder().bucket(bucketName).key(key).build();
+
+    ResponseInputStream<GetObjectResponse> res = s3.getObject(getObjectRequest);
+
+    try {
+      return res.readAllBytes();
+    } catch (IOException e) {
+      throw new S3OperationException("Failed to read the object bytes from S3", e);
     }
+  }
 
-    @Override
-    public byte[] getObject(String key) {
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .build();
+  @Override
+  public void putObject(String key, byte[] file) {
+    PutObjectRequest objectRequest = PutObjectRequest.builder().bucket(bucketName).key(key).build();
+    s3.putObject(objectRequest, RequestBody.fromBytes(file));
+  }
 
-        ResponseInputStream<GetObjectResponse> res = s3.getObject(getObjectRequest);
+  @Override
+  public void deleteObject(String key) {
+    DeleteObjectRequest objectRequest =
+        DeleteObjectRequest.builder().bucket(bucketName).key(key).build();
+    s3.deleteObject(objectRequest);
+  }
 
-        try {
-            return res.readAllBytes();
-        } catch (IOException e) {
-            throw new S3OperationException("Failed to read the object bytes from S3", e);
-        }
+  @Override
+  public void deleteObjects(List<String> keys) {
+    List<ObjectIdentifier> objectIds =
+        keys.stream()
+            .map(key -> ObjectIdentifier.builder().key(key).build())
+            .collect(Collectors.toList());
 
-    }
+    Delete del = Delete.builder().objects(objectIds).build();
 
-    @Override
-    public void putObject(String key, byte[] file) {
-        PutObjectRequest objectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .build();
-        s3.putObject(objectRequest, RequestBody.fromBytes(file));
-    }
+    DeleteObjectsRequest multiObjectDeleteRequest =
+        DeleteObjectsRequest.builder().bucket(bucketName).delete(del).build();
 
-    @Override
-    public void deleteObject(String key) {
-        DeleteObjectRequest objectRequest = DeleteObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .build();
-        s3.deleteObject(objectRequest);
-    }
-
-    @Override
-    public void deleteObjects(List<String> keys) {
-        List<ObjectIdentifier> objectIds = keys.stream()
-                .map(key -> ObjectIdentifier.builder()
-                    .key(key)
-                    .build())
-                .collect(Collectors.toList());
-
-        Delete del = Delete.builder()
-                .objects(objectIds)
-                .build();
-
-        DeleteObjectsRequest multiObjectDeleteRequest = DeleteObjectsRequest.builder()
-                .bucket(bucketName)
-                .delete(del)
-                .build();
-
-        s3.deleteObjects(multiObjectDeleteRequest);
-    }
+    s3.deleteObjects(multiObjectDeleteRequest);
+  }
 }

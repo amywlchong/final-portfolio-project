@@ -7,23 +7,21 @@ import jakarta.validation.constraints.Positive;
 
 public class PaymentInitiationRequestDTO {
 
-    @NotNull(message = "Booking ID is required")
-    @Positive(message = "Booking ID must be positive")
-    private final Integer bookingId;
+  @NotNull(message = "Booking ID is required")
+  @Positive(message = "Booking ID must be positive")
+  private final Integer bookingId;
 
-    @JsonCreator
-    public PaymentInitiationRequestDTO(@JsonProperty("bookingId") Integer bookingId) {
-        this.bookingId = bookingId;
-    }
+  @JsonCreator
+  public PaymentInitiationRequestDTO(@JsonProperty("bookingId") Integer bookingId) {
+    this.bookingId = bookingId;
+  }
 
-    public Integer getBookingId() {
-        return bookingId;
-    }
+  public Integer getBookingId() {
+    return bookingId;
+  }
 
-    @Override
-    public String toString() {
-        return "PaymentInitiationRequestDTO{" +
-                "bookingId=" + bookingId +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "PaymentInitiationRequestDTO{" + "bookingId=" + bookingId + '}';
+  }
 }
