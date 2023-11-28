@@ -1,0 +1,38 @@
+# Port
+server.port=${PORT:8080}
+#
+# JDBC properties
+#
+spring.datasource.url=
+spring.datasource.username=
+spring.datasource.password=
+#
+# Enable Hibernate logging of SQL statements
+#
+spring.jpa.show-sql=true
+#
+# Format the SQL statements for better readability
+#
+spring.jpa.properties.hibernate.format_sql=true
+#
+# paypal properties
+#
+paypal.mode=sandbox
+paypal.client.id=
+paypal.client.secret=
+paypal.api.token.url=https://api-m.sandbox.paypal.com/v1/oauth2/token
+paypal.api.url=https://api-m.sandbox.paypal.com/v2/checkout/orders/
+#
+# secret key for jwt authentication
+#
+jwt.secret=
+#
+# AWS
+#
+aws.region=
+aws.s3.bucketName=
+#
+# CORS
+#
+web.cors.allowed-origins=
+web.cors.allowed-methods=GET,POST,PUT,DELETE
