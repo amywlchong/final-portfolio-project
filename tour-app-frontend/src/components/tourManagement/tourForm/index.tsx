@@ -22,10 +22,12 @@ interface TourFormProps {
 
 const TourForm = ({ tour }: TourFormProps) => {
   const dispatch = useAppDispatch();
-  const existingTours = useAppSelector(state => state.tours.allTours);
-  const currentUser = useAppSelector(state => state.user.loggedInUser);
+  const existingTours = useAppSelector((state) => state.tours.allTours);
+  const currentUser = useAppSelector((state) => state.user.loggedInUser);
 
-  const [currentTourImages, setCurrentTourImages] = useState<TourImage[]>(tour?.tourImages || []);
+  const [currentTourImages, setCurrentTourImages] = useState<TourImage[]>(
+    tour?.tourImages || []
+  );
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imagesToDelete, setImagesToDelete] = useState<TourImage[]>([]);
 
@@ -36,20 +38,26 @@ const TourForm = ({ tour }: TourFormProps) => {
     register,
     control,
     watch,
-    formState: {
-      errors
-    }
+    formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: tour || {},
   });
 
-  const { fields: poiFields, append: appendPOI, remove: removePOI } = useFieldArray({
+  const {
+    fields: poiFields,
+    append: appendPOI,
+    remove: removePOI,
+  } = useFieldArray({
     control,
-    name: "tourPointsOfInterest"
+    name: "tourPointsOfInterest",
   });
-  const { fields: startDateFields, append: appendStartDate, remove: removeStartDate } = useFieldArray({
+  const {
+    fields: startDateFields,
+    append: appendStartDate,
+    remove: removeStartDate,
+  } = useFieldArray({
     control,
-    name: "tourStartDates"
+    name: "tourStartDates",
   });
 
   if (!currentUser) {
@@ -57,7 +65,7 @@ const TourForm = ({ tour }: TourFormProps) => {
   }
 
   const handleDeleteUploadedImage = (index: number): void => {
-    setUploadedImages(prevImages => {
+    setUploadedImages((prevImages) => {
       const newImages = [...prevImages];
       newImages.splice(index, 1);
       return newImages;
@@ -67,35 +75,68 @@ const TourForm = ({ tour }: TourFormProps) => {
   const handleDeleteSavedImage = (index: number): void => {
     const imageToDelete = currentTourImages[index];
     if (imageToDelete) {
-      setImagesToDelete(prevImages => prevImages.concat(imageToDelete));
+      setImagesToDelete((prevImages) => prevImages.concat(imageToDelete));
       const updatedTourImages = [...currentTourImages];
       updatedTourImages.splice(index, 1);
       setCurrentTourImages(updatedTourImages);
     }
   };
 
-  const createTourHandler = createServiceHandler(tourService.createTour, {
-    startLoading: () => setIsOperationInProgress(true),
-    endLoading: () => setIsOperationInProgress(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "Error creating the tour.");}});
+  const createTourHandler = createServiceHandler(
+    tourService.createTour,
+    {
+      startLoading: () => setIsOperationInProgress(true),
+      endLoading: () => setIsOperationInProgress(false),
+    },
+    {
+      handle: (error: ApiError) => {
+        toast.error(error.response?.data || "Error creating the tour.");
+      },
+    }
+  );
 
-  const uploadImagesHandler = createServiceHandler(tourService.uploadTourImages, {
-    startLoading: () => setIsOperationInProgress(true),
-    endLoading: () => setIsOperationInProgress(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "Error uploading tour images.");}});
+  const uploadImagesHandler = createServiceHandler(
+    tourService.uploadTourImages,
+    {
+      startLoading: () => setIsOperationInProgress(true),
+      endLoading: () => setIsOperationInProgress(false),
+    },
+    {
+      handle: (error: ApiError) => {
+        toast.error(error.response?.data || "Error uploading tour images.");
+      },
+    }
+  );
 
-  const deleteImageHandler = createServiceHandler(tourService.deleteTourImage, {
-    startLoading: () => setIsOperationInProgress(true),
-    endLoading: () => setIsOperationInProgress(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "Error deleting tour image.");}});
+  const deleteImageHandler = createServiceHandler(
+    tourService.deleteTourImage,
+    {
+      startLoading: () => setIsOperationInProgress(true),
+      endLoading: () => setIsOperationInProgress(false),
+    },
+    {
+      handle: (error: ApiError) => {
+        toast.error(error.response?.data || "Error deleting tour image.");
+      },
+    }
+  );
 
-  const updateTourHandler = createServiceHandler(tourService.updateTour, {
-    startLoading: () => setIsOperationInProgress(true),
-    endLoading: () => setIsOperationInProgress(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "Error updating the tour.");}});
+  const updateTourHandler = createServiceHandler(
+    tourService.updateTour,
+    {
+      startLoading: () => setIsOperationInProgress(true),
+      endLoading: () => setIsOperationInProgress(false),
+    },
+    {
+      handle: (error: ApiError) => {
+        toast.error(error.response?.data || "Error updating the tour.");
+      },
+    }
+  );
 
-  const createTourAndUploadImages = async (data: FieldValues<TourRequest>): Promise<void> => {
-
+  const createTourAndUploadImages = async (
+    data: FieldValues<TourRequest>
+  ): Promise<void> => {
     const createTourResponse = await createTourHandler(data);
 
     if (createTourResponse.success && createTourResponse.data) {
@@ -104,7 +145,10 @@ const TourForm = ({ tour }: TourFormProps) => {
       const createdTour = createTourResponse.data;
 
       if (uploadedImages.length > 0) {
-        const uploadImagesResponse = await uploadImagesHandler(createTourResponse.data.id, uploadedImages);
+        const uploadImagesResponse = await uploadImagesHandler(
+          createTourResponse.data.id,
+          uploadedImages
+        );
 
         if (uploadImagesResponse.success && uploadImagesResponse.data) {
           createdTour.tourImages = uploadImagesResponse.data;
@@ -115,7 +159,9 @@ const TourForm = ({ tour }: TourFormProps) => {
     }
   };
 
-  const updateTourAndImages = async (data: FieldValues<TourRequest>): Promise<void> => {
+  const updateTourAndImages = async (
+    data: FieldValues<TourRequest>
+  ): Promise<void> => {
     if (!tour) {
       toast.error("Error updating tour - tour not provided.");
       return;
@@ -124,23 +170,32 @@ const TourForm = ({ tour }: TourFormProps) => {
     const updateTourResponse = await updateTourHandler(tour.id, data);
 
     if (updateTourResponse.success && updateTourResponse.data) {
-
       const updatedTour = updateTourResponse.data;
 
       if (uploadedImages.length > 0) {
-        const uploadImagesResponse = await uploadImagesHandler(tour.id, uploadedImages);
+        const uploadImagesResponse = await uploadImagesHandler(
+          tour.id,
+          uploadedImages
+        );
 
         if (uploadImagesResponse.success && uploadImagesResponse.data) {
-          updatedTour.tourImages = (updatedTour.tourImages || []).concat(uploadImagesResponse.data);
+          updatedTour.tourImages = (updatedTour.tourImages || []).concat(
+            uploadImagesResponse.data
+          );
         }
       }
 
       let hasShownErrorToast = false;
       for (const imageToDelete of imagesToDelete) {
-        const deleteImageResponse = await deleteImageHandler(tour.id, imageToDelete.imageId);
+        const deleteImageResponse = await deleteImageHandler(
+          tour.id,
+          imageToDelete.imageId
+        );
 
         if (deleteImageResponse.success && deleteImageResponse.data) {
-          updatedTour.tourImages = updatedTour.tourImages?.filter(image => image.imageId !== imageToDelete.imageId);
+          updatedTour.tourImages = updatedTour.tourImages?.filter(
+            (image) => image.imageId !== imageToDelete.imageId
+          );
         }
 
         if (!deleteImageResponse.success && !hasShownErrorToast) {
@@ -151,7 +206,9 @@ const TourForm = ({ tour }: TourFormProps) => {
 
       toast.success("Tour updated successfully");
 
-      const updatedTours = existingTours.map(tour => (tour.id === updatedTour.id ? updatedTour : tour));
+      const updatedTours = existingTours.map((tour) =>
+        tour.id === updatedTour.id ? updatedTour : tour
+      );
       dispatch(setAllTours(updatedTours));
 
       setCurrentTourImages(updatedTour.tourImages || []);
@@ -204,7 +261,9 @@ const TourForm = ({ tour }: TourFormProps) => {
         <Grid item xs={12} md={4} xl={3}>
           <Button
             label="Add Point of Interest"
-            onClick={() => appendPOI({ pointOfInterest: { name: "", description: "" } })}
+            onClick={() =>
+              appendPOI({ pointOfInterest: { name: "", description: "" } })
+            }
             outline
             icon={MdTour}
             sx={{ marginRight: "10px", width: "100%" }}
@@ -213,7 +272,9 @@ const TourForm = ({ tour }: TourFormProps) => {
         <Grid item xs={12} md={4} xl={3}>
           <Button
             label="Add Start Date"
-            onClick={() => appendStartDate({ startDate: { startDateTime: "" } })}
+            onClick={() =>
+              appendStartDate({ startDate: { startDateTime: "" } })
+            }
             outline
             icon={BsFillCalendar2EventFill}
             sx={{ marginRight: "10px", width: "100%" }}

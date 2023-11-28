@@ -10,7 +10,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ requiredRoles, children }: ProtectedRouteProps) => {
-  const currentUser = useAppSelector(state => state.user.loggedInUser);
+  const currentUser = useAppSelector((state) => state.user.loggedInUser);
 
   if (currentUser && !canAccess(currentUser.role, requiredRoles)) {
     return <Unauthorized />;

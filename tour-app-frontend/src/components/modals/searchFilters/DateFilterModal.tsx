@@ -9,8 +9,10 @@ interface DateFilterModalProps {
   setFilterDateRange: (newRange: Range) => void;
 }
 
-const DateFilterModal = ({ filterDateRange, setFilterDateRange }: DateFilterModalProps) => {
-
+const DateFilterModal = ({
+  filterDateRange,
+  setFilterDateRange,
+}: DateFilterModalProps) => {
   const dateFilterModal = useDateFilterModal();
 
   const bodyContent = (

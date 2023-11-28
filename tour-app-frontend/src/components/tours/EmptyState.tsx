@@ -1,7 +1,6 @@
 import Heading from "../ui/Heading";
 
 const EmptyState = () => {
-
   return (
     <Heading
       title={"No exact matches"}

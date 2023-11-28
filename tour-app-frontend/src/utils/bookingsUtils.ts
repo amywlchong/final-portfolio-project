@@ -15,28 +15,30 @@ export const getNumOfBookingsByProperty = <T extends string | number | Date>(
   bookings: BookingResponse[],
   groupByKey: (booking: BookingResponse) => T
 ): numOfBookingsByProperty<T>[] => {
-  return bookings.reduce<numOfBookingsByProperty<T>[]>(
-    (prev, current) => {
-      const keyValue = groupByKey(current);
-      const existingEntryIndex = prev.findIndex(entry => entry.property === keyValue);
+  return bookings.reduce<numOfBookingsByProperty<T>[]>((prev, current) => {
+    const keyValue = groupByKey(current);
+    const existingEntryIndex = prev.findIndex(
+      (entry) => entry.property === keyValue
+    );
 
-      if (existingEntryIndex !== -1) {
-        prev[existingEntryIndex].numberOfBookings += 1;
-      } else {
-        keyValue != null && prev.push({ property: keyValue, numberOfBookings: 1 });
-      }
+    if (existingEntryIndex !== -1) {
+      prev[existingEntryIndex].numberOfBookings += 1;
+    } else {
+      keyValue != null &&
+        prev.push({ property: keyValue, numberOfBookings: 1 });
+    }
 
-      return prev;
-    },
-    []
-  );
+    return prev;
+  }, []);
 };
 
-export const getLastSixMonthsBookings = (bookings: BookingResponse[]): BookingResponse[] => {
+export const getLastSixMonthsBookings = (
+  bookings: BookingResponse[]
+): BookingResponse[] => {
   const sixMonthsAgo = subMonths(new Date(), 6);
 
   return bookings
-    .filter(booking => {
+    .filter((booking) => {
       const bookingDate = new Date(booking.startDateTime);
       const bookingMonth = bookingDate.getMonth();
       const bookingYear = bookingDate.getFullYear();
@@ -45,15 +47,27 @@ export const getLastSixMonthsBookings = (bookings: BookingResponse[]): BookingRe
         (bookingDate >= sixMonthsAgo && bookingDate < new Date()) // Last six months bookings
       );
     })
-    .map(booking => {
-      return { ...booking, monthOfStartDate: getMonthFromDateString(booking.startDateTime) };
+    .map((booking) => {
+      return {
+        ...booking,
+        monthOfStartDate: getMonthFromDateString(booking.startDateTime),
+      };
     })
-    .sort((a, b) => new Date(a.startDateTime).getTime() - new Date(b.startDateTime).getTime());
+    .sort(
+      (a, b) =>
+        new Date(a.startDateTime).getTime() -
+        new Date(b.startDateTime).getTime()
+    );
 };
 
-export const getBookingsThisMonth = (bookings: BookingResponse[]): BookingResponse[] => {
-  return bookings.filter(booking => {
+export const getBookingsThisMonth = (
+  bookings: BookingResponse[]
+): BookingResponse[] => {
+  return bookings.filter((booking) => {
     const bookingDate = new Date(booking.startDateTime);
-    return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
+    return (
+      bookingDate.getMonth() === currentMonth &&
+      bookingDate.getFullYear() === currentYear
+    );
   });
 };

@@ -18,7 +18,11 @@ interface DeleteBookingModalProps {
   onClose: () => void;
 }
 
-const DeleteBookingModal = ({ bookingToDelete, handleSuccessfulDelete, onClose }: DeleteBookingModalProps) => {
+const DeleteBookingModal = ({
+  bookingToDelete,
+  handleSuccessfulDelete,
+  onClose,
+}: DeleteBookingModalProps) => {
   const deleteBookingModal = useDeleteBookingModal();
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -28,10 +32,21 @@ const DeleteBookingModal = ({ bookingToDelete, handleSuccessfulDelete, onClose }
   };
 
   const onSubmit = async () => {
-    const deleteBookingHandler = createServiceHandler(bookingService.deleteBooking, {
-      startLoading: () => setIsDeleting(true),
-      endLoading: () => setIsDeleting(false),
-    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred while deleting the booking. Please try again.");}});
+    const deleteBookingHandler = createServiceHandler(
+      bookingService.deleteBooking,
+      {
+        startLoading: () => setIsDeleting(true),
+        endLoading: () => setIsDeleting(false),
+      },
+      {
+        handle: (error: ApiError) => {
+          toast.error(
+            error.response?.data ||
+              "An unexpected error occurred while deleting the booking. Please try again."
+          );
+        },
+      }
+    );
 
     const response = await deleteBookingHandler(bookingToDelete.id);
 
@@ -45,17 +60,35 @@ const DeleteBookingModal = ({ bookingToDelete, handleSuccessfulDelete, onClose }
   const bodyContent = (
     <div>
       <Typography variant="body1" color="#D32F2F">
-        Are you sure you want to permanently delete this booking? This action is NOT reversible.
+        Are you sure you want to permanently delete this booking? This action is
+        NOT reversible.
       </Typography>
       <Box mt={2}>
-        <Typography variant="body1" fontWeight="bold">Booking Details</Typography>
+        <Typography variant="body1" fontWeight="bold">
+          Booking Details
+        </Typography>
         <LabeledText label="Booking ID" value={bookingToDelete.id} />
-        <LabeledText label="User" value={`${bookingToDelete.userName} (ID: ${bookingToDelete.userId})`} />
+        <LabeledText
+          label="User"
+          value={`${bookingToDelete.userName} (ID: ${bookingToDelete.userId})`}
+        />
         <LabeledText label="Tour" value={bookingToDelete.tourName} />
-        <LabeledText label="Start Date & Time" value={formatDateAndTime(bookingToDelete.startDateTime)} />
-        <LabeledText label="Number of Participants" value={bookingToDelete.numberOfParticipants} />
-        <LabeledText label="Total Price" value={`$${bookingToDelete.totalPrice}`} />
-        <LabeledText label="Paid?" value={bookingToDelete.paid ? "Yes" : "No"} />
+        <LabeledText
+          label="Start Date & Time"
+          value={formatDateAndTime(bookingToDelete.startDateTime)}
+        />
+        <LabeledText
+          label="Number of Participants"
+          value={bookingToDelete.numberOfParticipants}
+        />
+        <LabeledText
+          label="Total Price"
+          value={`$${bookingToDelete.totalPrice}`}
+        />
+        <LabeledText
+          label="Paid?"
+          value={bookingToDelete.paid ? "Yes" : "No"}
+        />
       </Box>
     </div>
   );

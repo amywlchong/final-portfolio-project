@@ -6,8 +6,9 @@ interface ModalState {
   onClose: () => void;
 }
 
-export const createGenericModal = () => create<ModalState>(set => ({
-  isOpen: false,
-  onOpen: () => set({ isOpen: true }),
-  onClose: () => set({ isOpen: false }),
-}));
+export const createGenericModal = () =>
+  create<ModalState>((set) => ({
+    isOpen: false,
+    onOpen: () => set({ isOpen: true }),
+    onClose: () => set({ isOpen: false }),
+  }));

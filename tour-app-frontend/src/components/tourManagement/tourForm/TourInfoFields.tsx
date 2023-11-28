@@ -13,9 +13,13 @@ interface TourInfoFieldsProps {
   isOperationInProgress: boolean;
 }
 
-const TourInfoFields = ({ register, control, errors, isOperationInProgress }: TourInfoFieldsProps) => {
-
-  const allRegions = useAppSelector(state => state.tours.allRegions);
+const TourInfoFields = ({
+  register,
+  control,
+  errors,
+  isOperationInProgress,
+}: TourInfoFieldsProps) => {
+  const allRegions = useAppSelector((state) => state.tours.allRegions);
 
   return (
     <Box>

@@ -3,6 +3,6 @@ export const getAuthHeader = () => {
   if (!token) {
     throw new Error("Token not found");
   }
-  const header = { headers: { Authorization: `Bearer ${token}` }};
+  const header = { headers: { Authorization: `Bearer ${token}` } };
   return header;
 };

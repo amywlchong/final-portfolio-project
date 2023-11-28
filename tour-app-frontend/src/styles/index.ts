@@ -56,25 +56,27 @@ export const StyledCard = styled(Card)({
     boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
     "& .image-zoom": {
       animation: `${zoomAnimation} 10s`,
-    }
-  }
+    },
+  },
 });
 
 interface IrregularRectangleProps {
   backgroundImageUrl: string;
 }
 
-export const IrregularRectangle = styled("div")<IrregularRectangleProps>(({ backgroundImageUrl }) => ({
-  width: "100%",
-  height: "65%",
-  clipPath: "polygon(0 0, 100% 0, 100% 100%, 0% 85%)",
-  backgroundImage: `url(${backgroundImageUrl})`,
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
+export const IrregularRectangle = styled("div")<IrregularRectangleProps>(
+  ({ backgroundImageUrl }) => ({
+    width: "100%",
+    height: "65%",
+    clipPath: "polygon(0 0, 100% 0, 100% 100%, 0% 85%)",
+    backgroundImage: `url(${backgroundImageUrl})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  })
+);
 
 export const OverlayText = styled("span")(({ theme }) => ({
   position: "absolute",

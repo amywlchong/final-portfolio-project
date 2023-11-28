@@ -6,13 +6,19 @@ type ProfileTableRowProps = {
 };
 
 const ProfileTableRow = ({ label, value }: ProfileTableRowProps) => {
-
-  const labelStyles = { textAlign: "right", borderBottom: "none", fontSize: "1rem", fontWeight: "bold" };
+  const labelStyles = {
+    textAlign: "right",
+    borderBottom: "none",
+    fontSize: "1rem",
+    fontWeight: "bold",
+  };
   const valueStyles = { borderBottom: "none", fontSize: "1rem" };
 
   return (
     <TableRow>
-      <TableCell variant="head" sx={labelStyles}>{label}</TableCell>
+      <TableCell variant="head" sx={labelStyles}>
+        {label}
+      </TableCell>
       <TableCell sx={valueStyles}>{value}</TableCell>
     </TableRow>
   );

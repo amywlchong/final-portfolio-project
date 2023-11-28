@@ -18,11 +18,12 @@ import { canAccess } from "../../../utils/accessControl";
 import { Role } from "../../../types";
 
 const ProfilePage = () => {
-  const currentUser = useAppSelector(state => state.user.loggedInUser);
+  const currentUser = useAppSelector((state) => state.user.loggedInUser);
 
   const updatePasswordModal = useUpdatePasswordModal();
 
-  const [showDeactivationConfirmation, setShowDeactivationConfirmation] = useState(false);
+  const [showDeactivationConfirmation, setShowDeactivationConfirmation] =
+    useState(false);
   const [isDeactivatingAccount, setIsDeactivatingAccount] = useState(false);
   const dispatch = useAppDispatch();
 
@@ -35,10 +36,21 @@ const ProfilePage = () => {
   };
 
   const handleDeactivationConfirm = async () => {
-    const deactivateAccountHandler = createServiceHandler(authService.deactivateAccount, {
-      startLoading: () => setIsDeactivatingAccount(true),
-      endLoading: () => setIsDeactivatingAccount(false),
-    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please try again.");}});
+    const deactivateAccountHandler = createServiceHandler(
+      authService.deactivateAccount,
+      {
+        startLoading: () => setIsDeactivatingAccount(true),
+        endLoading: () => setIsDeactivatingAccount(false),
+      },
+      {
+        handle: (error: ApiError) => {
+          toast.error(
+            error.response?.data ||
+              "An unexpected error occurred. Please try again."
+          );
+        },
+      }
+    );
 
     const response = await deactivateAccountHandler();
 
@@ -55,16 +67,20 @@ const ProfilePage = () => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center" mt={3}>
       <img src={personImg} alt="person" height="250px" />
-      <Typography variant="h1">
-        My Profile
-      </Typography>
+      <Typography variant="h1">My Profile</Typography>
 
       <Table size="small" sx={{ width: "270px" }}>
         <TableBody>
-          <ProfileTableRow label="ID:" value={currentUser.id}/>
-          <ProfileTableRow label="Name:" value={currentUser.name}/>
-          <ProfileTableRow label="Status:" value={currentUser.active ? "Active" : "Inactive"}/>
-          <ProfileTableRow label="Role:" value={roleToLabel(currentUser.role)}/>
+          <ProfileTableRow label="ID:" value={currentUser.id} />
+          <ProfileTableRow label="Name:" value={currentUser.name} />
+          <ProfileTableRow
+            label="Status:"
+            value={currentUser.active ? "Active" : "Inactive"}
+          />
+          <ProfileTableRow
+            label="Role:"
+            value={roleToLabel(currentUser.role)}
+          />
         </TableBody>
       </Table>
 
@@ -77,28 +93,38 @@ const ProfilePage = () => {
       </Box>
 
       <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
-        {!showDeactivationConfirmation && canAccess(currentUser.role, [Role.Customer]) &&
-          <Button
-            label="Deactivate Account"
-            onClick={handleDeactivateAccount}
-            disabled={isDeactivatingAccount}
-            outline
-          />
-        }
+        {!showDeactivationConfirmation &&
+          canAccess(currentUser.role, [Role.Customer]) && (
+            <Button
+              label="Deactivate Account"
+              onClick={handleDeactivateAccount}
+              disabled={isDeactivatingAccount}
+              outline
+            />
+          )}
         {showDeactivationConfirmation && (
           <Box mt={1} mb={1}>
             <Box p={1} sx={{ border: "1px solid #D32F2F" }}>
               <Typography variant="body1" color="#D32F2F">
-              Are you sure you want to permanently deactivate your account? You will not be able to log in or use this account again.
+                Are you sure you want to permanently deactivate your account?
+                You will not be able to log in or use this account again.
               </Typography>
             </Box>
-            <Box display="flex" flexDirection="row" justifyContent="center" mt={1} mb={1}>
-              <Button sx={{mr: 1}}
+            <Box
+              display="flex"
+              flexDirection="row"
+              justifyContent="center"
+              mt={1}
+              mb={1}
+            >
+              <Button
+                sx={{ mr: 1 }}
                 label="Cancel"
                 onClick={handleDeactivationCancel}
                 disabled={isDeactivatingAccount}
               />
-              <Button sx={{ml: 1}}
+              <Button
+                sx={{ ml: 1 }}
                 label="Confirm"
                 onClick={handleDeactivationConfirm}
                 disabled={isDeactivatingAccount}

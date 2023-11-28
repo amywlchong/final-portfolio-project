@@ -2,7 +2,6 @@ import { Box, Typography } from "@mui/material";
 import padLock from "../../assets/images/padlock.png";
 
 const Unauthorized = () => {
-
   return (
     <Box
       sx={{
@@ -14,7 +13,7 @@ const Unauthorized = () => {
       }}
     >
       <Typography variant="h1">Unauthorized!</Typography>
-      <img src={padLock} style={{  maxWidth: "20%" }} />
+      <img src={padLock} style={{ maxWidth: "20%" }} />
     </Box>
   );
 };

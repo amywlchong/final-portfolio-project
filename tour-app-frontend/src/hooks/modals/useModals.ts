@@ -35,7 +35,8 @@ const getInitialDateRange = (type: Type): Range => {
       endDate: addDays(today, 365),
       key: "selection",
     };
-  } else { // "past"
+  } else {
+    // "past"
     return {
       startDate: subDays(today, 365),
       endDate: today,

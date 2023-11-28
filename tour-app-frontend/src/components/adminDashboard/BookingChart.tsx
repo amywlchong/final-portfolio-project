@@ -2,7 +2,11 @@ import { Card, CardHeader } from "@mui/material";
 import { BarChart } from "@mui/x-charts";
 import useScreenSize from "../../hooks/ui/useScreenSize";
 import { BookingResponse } from "../../types";
-import { getLastSixMonthsBookings, getNumOfBookingsByProperty, numOfBookingsByProperty } from "../../utils/bookingsUtils";
+import {
+  getLastSixMonthsBookings,
+  getNumOfBookingsByProperty,
+  numOfBookingsByProperty,
+} from "../../utils/bookingsUtils";
 import { ApiError } from "../../utils/ApiError";
 
 interface BookingChartProps {
@@ -14,10 +18,11 @@ interface BookingChartProps {
 const BookingChart = ({ bookings, isLoading, error }: BookingChartProps) => {
   const { isSmallAndUp } = useScreenSize();
 
-  const numOfBookingsByMonth: numOfBookingsByProperty<string>[] = getNumOfBookingsByProperty(
-    getLastSixMonthsBookings(bookings),
-    booking => booking.monthOfStartDate as string
-  );
+  const numOfBookingsByMonth: numOfBookingsByProperty<string>[] =
+    getNumOfBookingsByProperty(
+      getLastSixMonthsBookings(bookings),
+      (booking) => booking.monthOfStartDate as string
+    );
 
   let bookingChartContent;
   if (isLoading) {
@@ -40,9 +45,7 @@ const BookingChart = ({ bookings, isLoading, error }: BookingChartProps) => {
 
   return (
     <Card style={{ width: isSmallAndUp ? "64%" : "100%" }}>
-      <CardHeader
-        title="Number of Bookings in the Last Six Months"
-      />
+      <CardHeader title="Number of Bookings in the Last Six Months" />
       {bookingChartContent}
     </Card>
   );

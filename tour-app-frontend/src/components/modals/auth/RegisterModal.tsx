@@ -17,7 +17,7 @@ import { useAppDispatch } from "../../../app/reduxHooks";
 import { createServiceHandler } from "../../../utils/serviceHandler";
 import { ApiError } from "../../../utils/ApiError";
 
-const RegisterModal= () => {
+const RegisterModal = () => {
   const registerModal = useRegisterModal();
   const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
@@ -26,16 +26,14 @@ const RegisterModal= () => {
   const defaultFormValues = {
     name: "",
     email: "",
-    password: ""
+    password: "",
   };
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: {
-      errors,
-    },
+    formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: defaultFormValues,
   });
@@ -46,10 +44,21 @@ const RegisterModal= () => {
   };
 
   const onSubmit = async (data: FieldValues<RegisterFormValues>) => {
-    const registerHandler = createServiceHandler(authService.register, {
-      startLoading: () => setIsLoading(true),
-      endLoading: () => setIsLoading(false),
-    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please sign up again.");}});
+    const registerHandler = createServiceHandler(
+      authService.register,
+      {
+        startLoading: () => setIsLoading(true),
+        endLoading: () => setIsLoading(false),
+      },
+      {
+        handle: (error: ApiError) => {
+          toast.error(
+            error.response?.data ||
+              "An unexpected error occurred. Please sign up again."
+          );
+        },
+      }
+    );
 
     const response = await registerHandler(data);
 
@@ -67,9 +76,7 @@ const RegisterModal= () => {
 
   const bodyContent = (
     <div>
-      <Heading
-        title="Welcome to Scenic Symphony Tours!"
-      />
+      <Heading title="Welcome to Scenic Symphony Tours!" />
       <Input
         id="email"
         label="Email"
@@ -111,7 +118,7 @@ const RegisterModal= () => {
             textDecoration: "underline",
             cursor: "pointer",
             marginLeft: "5px",
-            fontWeight: "bold"
+            fontWeight: "bold",
           }}
         >
           Log in

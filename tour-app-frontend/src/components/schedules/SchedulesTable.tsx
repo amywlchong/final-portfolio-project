@@ -1,12 +1,39 @@
 import { useMemo, useState, useEffect } from "react";
 import { useDateFilterModal } from "../../hooks/modals/useModals";
 import { Link } from "react-router-dom";
-import { Box, Checkbox, IconButton, ListItemText, MenuItem, Select, TextField, Tooltip } from "@mui/material";
-import { MRT_ColumnDef, MRT_Row, MRT_TableInstance, MRT_TableOptions, MaterialReactTable } from "material-react-table";
+import {
+  Box,
+  Checkbox,
+  IconButton,
+  ListItemText,
+  MenuItem,
+  Select,
+  TextField,
+  Tooltip,
+} from "@mui/material";
+import {
+  MRT_ColumnDef,
+  MRT_Row,
+  MRT_TableInstance,
+  MRT_TableOptions,
+  MaterialReactTable,
+} from "material-react-table";
 import EditIcon from "@mui/icons-material/Edit";
-import { ScheduleResponse, ScheduleRequest, GroupedSchedule, User, Role } from "../../types";
+import {
+  ScheduleResponse,
+  ScheduleRequest,
+  GroupedSchedule,
+  User,
+  Role,
+} from "../../types";
 import { addDays, format } from "date-fns";
-import { formatDateAndTime, isDateWithinRange, labelToRole, labelsToRoles, roleToLabel } from "../../utils/dataProcessing";
+import {
+  formatDateAndTime,
+  isDateWithinRange,
+  labelToRole,
+  labelsToRoles,
+  roleToLabel,
+} from "../../utils/dataProcessing";
 import { canAccess } from "../../utils/accessControl";
 import { groupSchedules } from "../../utils/schedulesUtils";
 import { ApiError } from "../../utils/ApiError";
@@ -22,8 +49,11 @@ interface SchedulesTableProps {
   setSchedules: React.Dispatch<React.SetStateAction<ScheduleResponse[]>>;
 }
 
-const SchedulesTable = ({ currentUser, schedules, setSchedules }: SchedulesTableProps) => {
-
+const SchedulesTable = ({
+  currentUser,
+  schedules,
+  setSchedules,
+}: SchedulesTableProps) => {
   const {
     filterDateRange,
     setFilterDateRange,
@@ -49,19 +79,35 @@ const SchedulesTable = ({ currentUser, schedules, setSchedules }: SchedulesTable
           return (
             <Select
               multiple
-              value={selectedGuides.map(guide => guide.id)}
+              value={selectedGuides.map((guide) => guide.id)}
               onChange={(event) => {
                 const selectedIds = event.target.value as number[];
-                setSelectedGuides(availableTourGuides.filter(guide => selectedIds.includes(guide.id)));
+                setSelectedGuides(
+                  availableTourGuides.filter((guide) =>
+                    selectedIds.includes(guide.id)
+                  )
+                );
               }}
-              renderValue={(selected: number[]) => (
-                selected.map(id => availableTourGuides.find(guide => guide.id === id)?.name || "").join(", ")
-              )}
+              renderValue={(selected: number[]) =>
+                selected
+                  .map(
+                    (id) =>
+                      availableTourGuides.find((guide) => guide.id === id)
+                        ?.name || ""
+                  )
+                  .join(", ")
+              }
             >
-              {availableTourGuides.map(guide => (
+              {availableTourGuides.map((guide) => (
                 <MenuItem key={guide.id} value={guide.id}>
-                  <Checkbox checked={selectedGuides.some(g => g.id === guide.id)} />
-                  <ListItemText primary={`${guide.name} (ID: ${guide.id}, ${roleToLabel(guide.role)})`} />
+                  <Checkbox
+                    checked={selectedGuides.some((g) => g.id === guide.id)}
+                  />
+                  <ListItemText
+                    primary={`${guide.name} (ID: ${guide.id}, ${roleToLabel(
+                      guide.role
+                    )})`}
+                  />
                 </MenuItem>
               ))}
             </Select>
@@ -75,8 +121,11 @@ const SchedulesTable = ({ currentUser, schedules, setSchedules }: SchedulesTable
         filterVariant: "select",
         filterSelectOptions: ["Guide", "Lead Guide"],
         filterFn: (row, id, filterValue) =>
-          typeof row.getValue(id) === "string" && labelsToRoles(row.getValue(id) as string).includes(labelToRole(filterValue)),
-        enableEditing: false
+          typeof row.getValue(id) === "string" &&
+          labelsToRoles(row.getValue(id) as string).includes(
+            labelToRole(filterValue)
+          ),
+        enableEditing: false,
       },
       {
         header: "Tour Name",
@@ -87,16 +136,17 @@ const SchedulesTable = ({ currentUser, schedules, setSchedules }: SchedulesTable
             {row.original.tourName}
           </Link>
         ),
-        enableEditing: false
+        enableEditing: false,
       },
       {
         header: "Location",
         accessorKey: "tourRegion",
         size: 150,
-        enableEditing: false
+        enableEditing: false,
       },
       {
-        accessorFn: (originalRow) => formatDateAndTime(originalRow.startDateTime),
+        accessorFn: (originalRow) =>
+          formatDateAndTime(originalRow.startDateTime),
         id: "startDateTime",
         header: "Start Date & Time",
         size: 180,
@@ -111,128 +161,178 @@ const SchedulesTable = ({ currentUser, schedules, setSchedules }: SchedulesTable
             />
           );
         },
-        enableEditing: false
+        enableEditing: false,
       },
       {
         header: "Duration (days)",
         accessorKey: "tourDuration",
         size: 100,
         filterVariant: "range",
-        enableEditing: false
-      }
+        enableEditing: false,
+      },
     ],
     [availableTourGuides, selectedGuides]
   );
 
   const filterSchedules = (schedules: ScheduleResponse[]): ScheduleResponse[] =>
-    schedules.filter(schedule => {
-      return (
-        isDateWithinRange(new Date(schedule.startDateTime), filterDateRange)
+    schedules.filter((schedule) => {
+      return isDateWithinRange(
+        new Date(schedule.startDateTime),
+        filterDateRange
       );
     });
 
-  const handleEditClick = async (row: MRT_Row<GroupedSchedule>, table: MRT_TableInstance<GroupedSchedule>): Promise<void> => {
+  const handleEditClick = async (
+    row: MRT_Row<GroupedSchedule>,
+    table: MRT_TableInstance<GroupedSchedule>
+  ): Promise<void> => {
     table.setEditingRow(row);
-    const {tourId, tourDuration, startDateTime} = row.original;
+    const { tourId, tourDuration, startDateTime } = row.original;
 
     try {
       const formattedStartDate = format(new Date(startDateTime), "yyyy-MM-dd");
-      const formattedEndDate = format(addDays(new Date(startDateTime), (tourDuration - 1)), "yyyy-MM-dd");
-      const availableGuidesWithinRange = await userService.getAvailableGuidesWithinRange(formattedStartDate, formattedEndDate);
+      const formattedEndDate = format(
+        addDays(new Date(startDateTime), tourDuration - 1),
+        "yyyy-MM-dd"
+      );
+      const availableGuidesWithinRange =
+        await userService.getAvailableGuidesWithinRange(
+          formattedStartDate,
+          formattedEndDate
+        );
 
-      const originalSchedules = schedules.filter(schedule => schedule.tourId === tourId && schedule.startDateTime === startDateTime);
+      const originalSchedules = schedules.filter(
+        (schedule) =>
+          schedule.tourId === tourId && schedule.startDateTime === startDateTime
+      );
 
       const originalGuides: User[] = originalSchedules
-        .filter(schedule => schedule.userId && schedule.userName && schedule.userActive && schedule.userRole)
-        .map(schedule => ({
+        .filter(
+          (schedule) =>
+            schedule.userId &&
+            schedule.userName &&
+            schedule.userActive &&
+            schedule.userRole
+        )
+        .map((schedule) => ({
           id: schedule.userId as number,
           name: schedule.userName as string,
           active: schedule.userActive as boolean,
-          role: schedule.userRole as Role
+          role: schedule.userRole as Role,
         }));
 
       setSelectedGuides(originalGuides);
 
-      const mergedGuides =[...availableGuidesWithinRange, ...originalGuides];
+      const mergedGuides = [...availableGuidesWithinRange, ...originalGuides];
 
       setAvailableTourGuides(mergedGuides);
     } catch (error: any) {
       console.error("Error handling edit click:", error.response?.data);
-      toast.error(error.response?.data || "An unexpected error occurred. Please try again.");
+      toast.error(
+        error.response?.data ||
+          "An unexpected error occurred. Please try again."
+      );
     }
   };
 
-  const createScheduleHandler = createServiceHandler(scheduleService.createSchedule, {
-    startLoading: () => setIsUpdating(true),
-    endLoading: () => setIsUpdating(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An error occurred while adding guide to schedule.");}});
-
-  const deleteScheduleHandler = createServiceHandler(scheduleService.deleteSchedule, {
-    startLoading: () => setIsUpdating(true),
-    endLoading: () => setIsUpdating(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An error occurred while deleting schedule for guide.");}});
-
-  const handleSaveSchedule: MRT_TableOptions<GroupedSchedule>["onEditingRowSave"] = async ({
-    row,
-    table,
-  }) => {
-
-    if (isUpdating) {
-      return;
+  const createScheduleHandler = createServiceHandler(
+    scheduleService.createSchedule,
+    {
+      startLoading: () => setIsUpdating(true),
+      endLoading: () => setIsUpdating(false),
+    },
+    {
+      handle: (error: ApiError) => {
+        toast.error(
+          error.response?.data ||
+            "An error occurred while adding guide to schedule."
+        );
+      },
     }
+  );
 
-    const originalScheduleIds = row.original.ids.split(", ");
-    const originalGuideIds = row.original.userIds.split(", ");
-    const selectedGuideIds = selectedGuides.map(guide => guide.id);
-
-    const guideIdsToAdd = selectedGuideIds.filter(id => !originalGuideIds.includes(id.toString()));
-    const guideIdsToDelete = originalGuideIds.filter(id => !isNaN(Number(id)) && !selectedGuideIds.includes(Number(id)));
-    const scheduleIdsToDelete = schedules
-      .filter(schedule =>
-        schedule.id &&
-        originalScheduleIds.includes(schedule.id.toString()) &&
-        schedule.userId &&
-        guideIdsToDelete.includes(schedule.userId.toString()))
-      .map(schedule => schedule.id);
-
-    const updatedSchedules = [...schedules];
-
-    for (const guideIdToAdd of guideIdsToAdd) {
-      const newSchedule: ScheduleRequest = {
-        userId: guideIdToAdd,
-        tourId: row.original.tourId,
-        startDateTime: row.original.startDateTime,
-      };
-      const response = await createScheduleHandler(newSchedule);
-      if (response.success && response.data) {
-        updatedSchedules.push(response.data);
-      }
+  const deleteScheduleHandler = createServiceHandler(
+    scheduleService.deleteSchedule,
+    {
+      startLoading: () => setIsUpdating(true),
+      endLoading: () => setIsUpdating(false),
+    },
+    {
+      handle: (error: ApiError) => {
+        toast.error(
+          error.response?.data ||
+            "An error occurred while deleting schedule for guide."
+        );
+      },
     }
+  );
 
-    for (const scheduleIdToDelete of scheduleIdsToDelete) {
-      if (scheduleIdToDelete === undefined) {
-        toast.error("An error occurred while deleting a schedule.");
-        console.error("Error deleting schedule: undefined schedule id");
+  const handleSaveSchedule: MRT_TableOptions<GroupedSchedule>["onEditingRowSave"] =
+    async ({ row, table }) => {
+      if (isUpdating) {
         return;
       }
-      const response = await deleteScheduleHandler(scheduleIdToDelete);
-      if (response.success && response.data) {
-        const index = updatedSchedules.findIndex(s => s.id === scheduleIdToDelete);
-        if (index !== -1) {
-          updatedSchedules[index].userId = undefined;
-          updatedSchedules[index].userName = undefined;
-          updatedSchedules[index].userActive = undefined;
-          updatedSchedules[index].userRole = undefined;
+
+      const originalScheduleIds = row.original.ids.split(", ");
+      const originalGuideIds = row.original.userIds.split(", ");
+      const selectedGuideIds = selectedGuides.map((guide) => guide.id);
+
+      const guideIdsToAdd = selectedGuideIds.filter(
+        (id) => !originalGuideIds.includes(id.toString())
+      );
+      const guideIdsToDelete = originalGuideIds.filter(
+        (id) => !isNaN(Number(id)) && !selectedGuideIds.includes(Number(id))
+      );
+      const scheduleIdsToDelete = schedules
+        .filter(
+          (schedule) =>
+            schedule.id &&
+            originalScheduleIds.includes(schedule.id.toString()) &&
+            schedule.userId &&
+            guideIdsToDelete.includes(schedule.userId.toString())
+        )
+        .map((schedule) => schedule.id);
+
+      const updatedSchedules = [...schedules];
+
+      for (const guideIdToAdd of guideIdsToAdd) {
+        const newSchedule: ScheduleRequest = {
+          userId: guideIdToAdd,
+          tourId: row.original.tourId,
+          startDateTime: row.original.startDateTime,
+        };
+        const response = await createScheduleHandler(newSchedule);
+        if (response.success && response.data) {
+          updatedSchedules.push(response.data);
         }
       }
-    }
 
-    setSchedules(_prevSchedules => updatedSchedules);
+      for (const scheduleIdToDelete of scheduleIdsToDelete) {
+        if (scheduleIdToDelete === undefined) {
+          toast.error("An error occurred while deleting a schedule.");
+          console.error("Error deleting schedule: undefined schedule id");
+          return;
+        }
+        const response = await deleteScheduleHandler(scheduleIdToDelete);
+        if (response.success && response.data) {
+          const index = updatedSchedules.findIndex(
+            (s) => s.id === scheduleIdToDelete
+          );
+          if (index !== -1) {
+            updatedSchedules[index].userId = undefined;
+            updatedSchedules[index].userName = undefined;
+            updatedSchedules[index].userActive = undefined;
+            updatedSchedules[index].userRole = undefined;
+          }
+        }
+      }
 
-    toast.success("Schedule updated successfully.");
-    table.setEditingRow(null);
-    setSelectedGuides([]);
-  };
+      setSchedules((_prevSchedules) => updatedSchedules);
+
+      toast.success("Schedule updated successfully.");
+      table.setEditingRow(null);
+      setSelectedGuides([]);
+    };
 
   return (
     <>
@@ -240,9 +340,12 @@ const SchedulesTable = ({ currentUser, schedules, setSchedules }: SchedulesTable
         columns={columns}
         data={groupSchedules(filterSchedules(schedules))}
         enableEditing={true}
-        editDisplayMode='row'
+        editDisplayMode="row"
         onEditingRowSave={handleSaveSchedule}
-        enableRowActions={canAccess(currentUser.role, [Role.LeadGuide, Role.Admin])}
+        enableRowActions={canAccess(currentUser.role, [
+          Role.LeadGuide,
+          Role.Admin,
+        ])}
         enablePinning
         initialState={{ columnPinning: { right: ["mrt-row-actions"] } }}
         positionActionsColumn="last"
@@ -250,14 +353,19 @@ const SchedulesTable = ({ currentUser, schedules, setSchedules }: SchedulesTable
           "mrt-row-actions": {
             muiTableHeadCellProps: {
               align: "left",
-            }
-          }
+            },
+          },
         }}
         renderRowActions={({ row, table }) => (
           <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
             <Tooltip title="Edit guide">
               <span>
-                <IconButton onClick={() => handleEditClick(row, table)} disabled={!canAccess(currentUser.role, [Role.LeadGuide, Role.Admin])}>
+                <IconButton
+                  onClick={() => handleEditClick(row, table)}
+                  disabled={
+                    !canAccess(currentUser.role, [Role.LeadGuide, Role.Admin])
+                  }
+                >
                   <EditIcon />
                 </IconButton>
               </span>

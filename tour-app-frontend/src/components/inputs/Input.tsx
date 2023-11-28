@@ -1,7 +1,10 @@
 import { Box, InputLabel, TextField, Typography } from "@mui/material";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { FieldValues, nestedFieldErrors } from "../../types";
-import { getNestedError, hasObjectAtArrayIndex } from "../../utils/dataProcessing";
+import {
+  getNestedError,
+  hasObjectAtArrayIndex,
+} from "../../utils/dataProcessing";
 
 interface InputProps {
   id: string;
@@ -36,15 +39,18 @@ const Input = ({
   errors,
   helperText,
 }: InputProps) => {
-
-  const errorForField = arrayName && index !== undefined
-    ? hasObjectAtArrayIndex(errors, index) && getNestedError(errors as nestedFieldErrors, arrayName, index, id)
-    : errors[id];
+  const errorForField =
+    arrayName && index !== undefined
+      ? hasObjectAtArrayIndex(errors, index) &&
+        getNestedError(errors as nestedFieldErrors, arrayName, index, id)
+      : errors[id];
 
   return (
     <Box mt={1} mb={1}>
       <InputLabel htmlFor={id}>
-        <Typography variant="body1" fontWeight={boldLabel ? "bold" : "normal"}>{label}</Typography>
+        <Typography variant="body1" fontWeight={boldLabel ? "bold" : "normal"}>
+          {label}
+        </Typography>
       </InputLabel>
       <Typography variant="body2">{helperText}</Typography>
       <TextField

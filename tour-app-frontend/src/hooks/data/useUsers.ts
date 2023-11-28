@@ -7,15 +7,21 @@ import userService from "../../services/userService";
 
 export const useUsers = () => {
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
-  const [errorFetchingUsers, setErrorFetchingUsers] = useState<ApiError | null>(null);
+  const [errorFetchingUsers, setErrorFetchingUsers] = useState<ApiError | null>(
+    null
+  );
   const [users, setUsers] = useState<User[]>([]);
-  const currentUser = useAppSelector(state => state.user.loggedInUser);
+  const currentUser = useAppSelector((state) => state.user.loggedInUser);
 
   const fetchUsers = async () => {
-    const getAllUsersHandler = createServiceHandler(userService.getAllUsers, {
-      startLoading: () => setIsLoadingUsers(true),
-      endLoading: () => setIsLoadingUsers(false),
-    }, { handle: (error: ApiError) => setErrorFetchingUsers(error) });
+    const getAllUsersHandler = createServiceHandler(
+      userService.getAllUsers,
+      {
+        startLoading: () => setIsLoadingUsers(true),
+        endLoading: () => setIsLoadingUsers(false),
+      },
+      { handle: (error: ApiError) => setErrorFetchingUsers(error) }
+    );
 
     const response = await getAllUsersHandler();
 
@@ -34,6 +40,6 @@ export const useUsers = () => {
     errorFetchingUsers,
     users,
     fetchUsers,
-    setUsers
+    setUsers,
   };
 };

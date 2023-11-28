@@ -25,16 +25,14 @@ const LoginModal = () => {
 
   const defaultFormValues = {
     email: "",
-    password: ""
+    password: "",
   };
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: {
-      errors,
-    },
+    formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: defaultFormValues,
   });
@@ -45,10 +43,21 @@ const LoginModal = () => {
   };
 
   const onSubmit = async (data: FieldValues<LoginFormValues>) => {
-    const loginHandler = createServiceHandler(authService.login, {
-      startLoading: () => setIsLoading(true),
-      endLoading: () => setIsLoading(false),
-    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please log in again.");}});
+    const loginHandler = createServiceHandler(
+      authService.login,
+      {
+        startLoading: () => setIsLoading(true),
+        endLoading: () => setIsLoading(false),
+      },
+      {
+        handle: (error: ApiError) => {
+          toast.error(
+            error.response?.data ||
+              "An unexpected error occurred. Please log in again."
+          );
+        },
+      }
+    );
 
     const response = await loginHandler(data);
 
@@ -66,9 +75,7 @@ const LoginModal = () => {
 
   const bodyContent = (
     <div>
-      <Heading
-        title="Welcome back!"
-      />
+      <Heading title="Welcome back!" />
       <Input
         id="email"
         label="Email"
@@ -101,7 +108,7 @@ const LoginModal = () => {
             textDecoration: "underline",
             cursor: "pointer",
             marginLeft: "5px",
-            fontWeight: "bold"
+            fontWeight: "bold",
           }}
         >
           Create an account

@@ -1,4 +1,9 @@
-import { UseFormRegister, UseFormWatch, FieldErrors, UseFieldArrayRemove } from "react-hook-form";
+import {
+  UseFormRegister,
+  UseFormWatch,
+  FieldErrors,
+  UseFieldArrayRemove,
+} from "react-hook-form";
 import { Box, IconButton, Typography } from "@mui/material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { FieldValues } from "../../../types";
@@ -7,27 +12,45 @@ import Textarea from "../../inputs/Textarea";
 
 interface PointOfInterestItemProps {
   index: number;
-  register: UseFormRegister<FieldValues<any>>
+  register: UseFormRegister<FieldValues<any>>;
   watch: UseFormWatch<FieldValues<any>>;
   errors: FieldErrors<FieldValues<any>>;
   isOperationInProgress: boolean;
   removePOI: UseFieldArrayRemove;
 }
 
-const PointOfInterestItem = ({ index, register, watch, errors, isOperationInProgress, removePOI }: PointOfInterestItemProps) => {
-
+const PointOfInterestItem = ({
+  index,
+  register,
+  watch,
+  errors,
+  isOperationInProgress,
+  removePOI,
+}: PointOfInterestItemProps) => {
   return (
     <Box mt={2} mb={2}>
-      <Box style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-        <Typography fontWeight="bold">Point of Interest {`${index + 1}`}</Typography>
-        <IconButton onClick={() => removePOI(index)} color="primary" disabled={isOperationInProgress}>
+      <Box
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          alignItems: "center",
+        }}
+      >
+        <Typography fontWeight="bold">
+          Point of Interest {`${index + 1}`}
+        </Typography>
+        <IconButton
+          onClick={() => removePOI(index)}
+          color="primary"
+          disabled={isOperationInProgress}
+        >
           <DeleteForeverIcon />
         </IconButton>
       </Box>
       <Input
         id={`tourPointsOfInterest[${index}].pointOfInterest.name`}
         label={"Name"}
-        arrayName='tourPointsOfInterest'
+        arrayName="tourPointsOfInterest"
         index={index}
         disabled={isOperationInProgress}
         register={register}
@@ -37,7 +60,7 @@ const PointOfInterestItem = ({ index, register, watch, errors, isOperationInProg
       <Textarea
         id={`tourPointsOfInterest[${index}].pointOfInterest.description`}
         label={"Description"}
-        arrayName='tourPointsOfInterest'
+        arrayName="tourPointsOfInterest"
         index={index}
         minRows={5}
         disabled={isOperationInProgress}
@@ -48,7 +71,7 @@ const PointOfInterestItem = ({ index, register, watch, errors, isOperationInProg
       <Input
         id={`tourPointsOfInterest[${index}].day`}
         label="Day"
-        arrayName='tourPointsOfInterest'
+        arrayName="tourPointsOfInterest"
         index={index}
         type="number"
         min={1}

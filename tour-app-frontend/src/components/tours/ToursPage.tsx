@@ -7,9 +7,13 @@ import TourCard from "./TourCard";
 import Search from "./Search";
 
 const ToursPage = () => {
-
-  const { loadingAllTours, allToursError, loadingAvailableTours, availableToursError } = useTours();
-  const tours = useAppSelector(state => state.tours.filteredTours);
+  const {
+    loadingAllTours,
+    allToursError,
+    loadingAvailableTours,
+    availableToursError,
+  } = useTours();
+  const tours = useAppSelector((state) => state.tours.filteredTours);
 
   const isLoading = loadingAllTours || loadingAvailableTours;
   const error = allToursError || availableToursError;
@@ -32,7 +36,9 @@ const ToursPage = () => {
   }
 
   // Sort tours by ratingsAverage
-  const sortedTours = [...tours].sort((a, b) => (b.ratingsAverage || 0) - (a.ratingsAverage || 0));
+  const sortedTours = [...tours].sort(
+    (a, b) => (b.ratingsAverage || 0) - (a.ratingsAverage || 0)
+  );
 
   return (
     <>

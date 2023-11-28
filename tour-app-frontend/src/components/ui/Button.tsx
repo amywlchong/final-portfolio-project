@@ -20,7 +20,7 @@ const ButtonComponent = ({
   outline,
   icon: Icon,
   fullWidth,
-  sx
+  sx,
 }: ButtonProps) => {
   return (
     <Button
@@ -31,7 +31,7 @@ const ButtonComponent = ({
       fullWidth={fullWidth}
       sx={sx}
     >
-      {label} {Icon && (<Icon style={{ marginLeft: "5px" }} />)}
+      {label} {Icon && <Icon style={{ marginLeft: "5px" }} />}
     </Button>
   );
 };

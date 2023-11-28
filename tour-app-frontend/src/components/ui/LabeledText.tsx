@@ -7,7 +7,10 @@ interface LabeledTextProps {
 
 const LabeledText = ({ label, value }: LabeledTextProps) => (
   <Typography variant="body1">
-    <Box component="span" sx={{ fontWeight: "bold" }}>{label}:</Box> {value}
+    <Box component="span" sx={{ fontWeight: "bold" }}>
+      {label}:
+    </Box>{" "}
+    {value}
   </Typography>
 );
 

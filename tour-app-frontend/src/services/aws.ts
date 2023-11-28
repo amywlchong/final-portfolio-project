@@ -21,7 +21,7 @@ if (!REGION) {
 AWS.config.update({
   accessKeyId: ACCESS_KEY_ID,
   secretAccessKey: SECRET_ACCESS_KEY,
-  region: REGION
+  region: REGION,
 });
 
 const s3 = new AWS.S3();
@@ -29,6 +29,6 @@ const s3 = new AWS.S3();
 export const getSignedImageUrl = (key: string): string => {
   return s3.getSignedUrl("getObject", {
     Bucket: BUCKET_NAME,
-    Key: key
+    Key: key,
   });
 };

@@ -9,28 +9,51 @@ const getAllUsers = async () => {
   return data;
 };
 
-const getAvailableGuidesWithinRange = async (formattedStartDate: string, formattedEndDate: string) => {
+const getAvailableGuidesWithinRange = async (
+  formattedStartDate: string,
+  formattedEndDate: string
+) => {
   const authHeader = getAuthHeader();
-  const { data } = await axios.get<User[]>(`${apiBaseUrl}/users/available-guides?startDate=${formattedStartDate}&endDate=${formattedEndDate}`, authHeader);
+  const { data } = await axios.get<User[]>(
+    `${apiBaseUrl}/users/available-guides?startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
+    authHeader
+  );
   return data;
 };
 
 const deleteUser = async (userId: number) => {
   const authHeader = getAuthHeader();
-  const { data } = await axios.delete<string>(`${apiBaseUrl}/users/${userId}`, authHeader);
+  const { data } = await axios.delete<string>(
+    `${apiBaseUrl}/users/${userId}`,
+    authHeader
+  );
   return data;
 };
 
 const updateActive = async (userId: number, newIsActive: boolean) => {
   const authHeader = getAuthHeader();
-  const { data } = await axios.put<User>(`${apiBaseUrl}/users/${userId}/active`, {active: newIsActive}, authHeader);
+  const { data } = await axios.put<User>(
+    `${apiBaseUrl}/users/${userId}/active`,
+    { active: newIsActive },
+    authHeader
+  );
   return data;
 };
 
 const updateRole = async (userId: number, newRole: Role) => {
   const authHeader = getAuthHeader();
-  const { data } = await axios.put<User>(`${apiBaseUrl}/users/${userId}/role`, {role: newRole}, authHeader);
+  const { data } = await axios.put<User>(
+    `${apiBaseUrl}/users/${userId}/role`,
+    { role: newRole },
+    authHeader
+  );
   return data;
 };
 
-export default { getAllUsers, getAvailableGuidesWithinRange, deleteUser, updateActive, updateRole };
+export default {
+  getAllUsers,
+  getAvailableGuidesWithinRange,
+  deleteUser,
+  updateActive,
+  updateRole,
+};

@@ -10,9 +10,11 @@ import TopTours from "./TopTours";
 
 const DashboardPage = () => {
   const { isSmallAndUp } = useScreenSize();
-  const currentUser = useAppSelector(state => state.user.loggedInUser);
+  const currentUser = useAppSelector((state) => state.user.loggedInUser);
 
-  const { isLoadingBookings, errorFetchingBookings, bookings } = useBookings(bookingService.getAllBookings);
+  const { isLoadingBookings, errorFetchingBookings, bookings } = useBookings(
+    bookingService.getAllBookings
+  );
   const { isLoadingUsers, errorFetchingUsers, users } = useUsers();
 
   if (!currentUser) {
@@ -21,14 +23,32 @@ const DashboardPage = () => {
 
   return (
     <div>
-      <Box style={{ display: "flex", flexDirection: isSmallAndUp ? "row" : "column", justifyContent: "space-between", alignItems: "center" }}>
-        <BookingChart bookings={bookings} isLoading={isLoadingBookings} error={errorFetchingBookings} />
-        <UserList users={users} isLoading={isLoadingUsers} error={errorFetchingUsers} />
+      <Box
+        style={{
+          display: "flex",
+          flexDirection: isSmallAndUp ? "row" : "column",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <BookingChart
+          bookings={bookings}
+          isLoading={isLoadingBookings}
+          error={errorFetchingBookings}
+        />
+        <UserList
+          users={users}
+          isLoading={isLoadingUsers}
+          error={errorFetchingUsers}
+        />
       </Box>
-      <TopTours bookings={bookings} isLoading={isLoadingBookings} error={errorFetchingBookings} />
+      <TopTours
+        bookings={bookings}
+        isLoading={isLoadingBookings}
+        error={errorFetchingBookings}
+      />
     </div>
   );
-
 };
 
 export default DashboardPage;

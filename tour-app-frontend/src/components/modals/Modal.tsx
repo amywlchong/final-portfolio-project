@@ -33,7 +33,7 @@ const Modal = ({
   footer,
   disabled,
   secondaryAction,
-  secondaryActionLabel
+  secondaryActionLabel,
 }: ModalProps) => {
   const { isSmallAndUp } = useScreenSize();
   const [, setShowModal] = useState(isOpen);
@@ -58,7 +58,6 @@ const Modal = ({
     if (onSubmit) {
       onSubmit();
     }
-
   }, [onSubmit, disabled]);
 
   const handleSecondaryAction = useCallback(() => {
@@ -70,45 +69,49 @@ const Modal = ({
   }, [secondaryAction, disabled]);
 
   return (
-    <Dialog open={isOpen} onClose={handleClose} maxWidth='xs' fullWidth>
-
-      <IconButton onClick={handleClose} style={{ display: "flex", justifyContent: "flex-end"}}>
+    <Dialog open={isOpen} onClose={handleClose} maxWidth="xs" fullWidth>
+      <IconButton
+        onClick={handleClose}
+        style={{ display: "flex", justifyContent: "flex-end" }}
+      >
         <IoMdClose />
       </IconButton>
 
       <Box mx={isSmallAndUp ? 2 : 0} mb={2}>
-        <DialogTitle textAlign='center'>
-          {title}
-        </DialogTitle>
-        <DialogContent>
-          {body}
-        </DialogContent>
+        <DialogTitle textAlign="center">{title}</DialogTitle>
+        <DialogContent>{body}</DialogContent>
         <DialogActions>
-          {secondaryAction && secondaryActionLabel && onSubmit && actionLabel && (
-            <>
-              <Button
-                disabled={disabled}
-                label={secondaryActionLabel}
-                onClick={handleSecondaryAction}
-                outline
-                sx={{ width: "50%"}}
-              />
+          {secondaryAction &&
+            secondaryActionLabel &&
+            onSubmit &&
+            actionLabel && (
+              <>
+                <Button
+                  disabled={disabled}
+                  label={secondaryActionLabel}
+                  onClick={handleSecondaryAction}
+                  outline
+                  sx={{ width: "50%" }}
+                />
+                <Button
+                  disabled={disabled}
+                  label={actionLabel}
+                  onClick={handleSubmit}
+                  sx={{ width: "50%" }}
+                />
+              </>
+            )}
+          {!secondaryAction &&
+            !secondaryActionLabel &&
+            onSubmit &&
+            actionLabel && (
               <Button
                 disabled={disabled}
                 label={actionLabel}
                 onClick={handleSubmit}
-                sx={{ width: "50%"}}
+                fullWidth
               />
-            </>
-          )}
-          {!secondaryAction && !secondaryActionLabel && onSubmit && actionLabel && (
-            <Button
-              disabled={disabled}
-              label={actionLabel}
-              onClick={handleSubmit}
-              fullWidth
-            />
-          )}
+            )}
         </DialogActions>
         {footer}
       </Box>

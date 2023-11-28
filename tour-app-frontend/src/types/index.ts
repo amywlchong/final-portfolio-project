@@ -9,8 +9,8 @@ export interface nestedFieldErrors {
   [x: string]: Array<{
     [y: string]: {
       [z: string]: FieldError | undefined;
-    }
-  }>
+    };
+  }>;
 }
 
 export interface RegisterFormValues {
@@ -62,7 +62,7 @@ export enum Role {
   Customer = "ROLE_CUSTOMER",
   Guide = "ROLE_GUIDE",
   LeadGuide = "ROLE_LEAD_GUIDE",
-  Admin = "ROLE_ADMIN"
+  Admin = "ROLE_ADMIN",
 }
 
 export interface Tour {
@@ -89,7 +89,7 @@ export type TourRequest = Omit<Tour, "id" | "createdDate" | "ratingsCount">;
 export enum Difficulty {
   Easy = "easy",
   Medium = "medium",
-  Difficult = "difficult"
+  Difficult = "difficult",
 }
 
 export interface TourImage {

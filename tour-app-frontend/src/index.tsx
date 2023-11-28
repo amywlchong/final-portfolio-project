@@ -10,7 +10,9 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 if (!process.env.REACT_APP_PAYPAL_CLIENT_ID) {
-  throw new Error("PAYPAL_CLIENT_ID is not defined in the environment variables.");
+  throw new Error(
+    "PAYPAL_CLIENT_ID is not defined in the environment variables."
+  );
 }
 
 const root = ReactDOM.createRoot(
@@ -22,7 +24,12 @@ root.render(
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <ThemeProvider theme={theme}>
         <Provider store={store}>
-          <PayPalScriptProvider options={{ "clientId": process.env.REACT_APP_PAYPAL_CLIENT_ID, currency: "HKD" }}>
+          <PayPalScriptProvider
+            options={{
+              clientId: process.env.REACT_APP_PAYPAL_CLIENT_ID,
+              currency: "HKD",
+            }}
+          >
             <App />
           </PayPalScriptProvider>
         </Provider>

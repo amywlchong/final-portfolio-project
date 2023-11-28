@@ -10,12 +10,20 @@ import BookingCard from "./BookingCard";
 
 const BookingsPage = () => {
   const { isSmallAndUp } = useScreenSize();
-  const currentUser = useAppSelector(state => state.user.loggedInUser);
+  const currentUser = useAppSelector((state) => state.user.loggedInUser);
 
-  const { isLoadingBookings, errorFetchingBookings, pastBookings, futureBookings, setFutureBookings } = useBookings(bookingService.getMyBookings);
+  const {
+    isLoadingBookings,
+    errorFetchingBookings,
+    pastBookings,
+    futureBookings,
+    setFutureBookings,
+  } = useBookings(bookingService.getMyBookings);
   const [displayPastBookings, setDisplayPastBookings] = useState(false);
 
-  const [bookingIdOfReview, setBookingIdOfReview] = useState<number | null>(null);
+  const [bookingIdOfReview, setBookingIdOfReview] = useState<number | null>(
+    null
+  );
 
   if (!currentUser) {
     return <div>Please log in or sign up to continue.</div>;
@@ -31,11 +39,18 @@ const BookingsPage = () => {
 
   return (
     <Box>
-      <Box style={{ display: "flex", flexDirection: `${isSmallAndUp ? "row" : "column"}`, justifyContent: "space-between", alignItems: `${isSmallAndUp ? "center" : "flex-start"}` }}>
+      <Box
+        style={{
+          display: "flex",
+          flexDirection: `${isSmallAndUp ? "row" : "column"}`,
+          justifyContent: "space-between",
+          alignItems: `${isSmallAndUp ? "center" : "flex-start"}`,
+        }}
+      >
         <Typography variant="h1">My Bookings</Typography>
         <Button
           label={displayPastBookings ? "Future Bookings" : "Past Bookings"}
-          onClick={() => setDisplayPastBookings(prev => !prev)}
+          onClick={() => setDisplayPastBookings((prev) => !prev)}
         />
       </Box>
 

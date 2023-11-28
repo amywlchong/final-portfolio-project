@@ -42,11 +42,21 @@ const App = () => {
         <NavBar />
         <Container>
           <Routes>
-            {routeConfig.map(({ path, component: Component, requiredRoles }) => (
-              requiredRoles.length > 0
-                ? <Route key={path} path={path} element={<ProtectedRoute requiredRoles={requiredRoles}>{<Component />}</ProtectedRoute>} />
-                : <Route key={path} path={path} element={<Component />} />
-            ))}
+            {routeConfig.map(({ path, component: Component, requiredRoles }) =>
+              requiredRoles.length > 0 ? (
+                <Route
+                  key={path}
+                  path={path}
+                  element={
+                    <ProtectedRoute requiredRoles={requiredRoles}>
+                      {<Component />}
+                    </ProtectedRoute>
+                  }
+                />
+              ) : (
+                <Route key={path} path={path} element={<Component />} />
+              )
+            )}
           </Routes>
         </Container>
         <Footer />

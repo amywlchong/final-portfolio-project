@@ -6,13 +6,14 @@ import userTokenMiddleware from "../redux/middlewares/userTokenMiddleware";
 const store = configureStore({
   reducer: {
     user: userReducer,
-    tours: tourReducer
+    tours: tourReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(userTokenMiddleware)
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(userTokenMiddleware),
 });
 
 export default store;
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

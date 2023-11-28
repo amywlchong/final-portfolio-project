@@ -10,12 +10,11 @@ import Modal from "../Modal";
 import Heading from "../../ui/Heading";
 
 const LocationSearchModal = () => {
-
   const locationSearch = useLocationSearchModal();
   const [isLoading, setIsLoading] = useState(false);
 
   const { filterTours } = useTours();
-  const allRegions = useAppSelector(state => state.tours.allRegions);
+  const allRegions = useAppSelector((state) => state.tours.allRegions);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
 
   const updateURL = (regions: string[]) => {
@@ -29,10 +28,18 @@ const LocationSearchModal = () => {
     window.history.pushState({}, "", url);
   };
 
-  const filterToursHandler = createServiceHandler(filterTours, {
-    startLoading: () => setIsLoading(true),
-    endLoading: () => setIsLoading(false),
-  }, { handle: (_error: ApiError) => { toast.error("An error occurred. Please try again.");}});
+  const filterToursHandler = createServiceHandler(
+    filterTours,
+    {
+      startLoading: () => setIsLoading(true),
+      endLoading: () => setIsLoading(false),
+    },
+    {
+      handle: (_error: ApiError) => {
+        toast.error("An error occurred. Please try again.");
+      },
+    }
+  );
 
   const onSubmit = async () => {
     if (selectedRegions.length == 0) {
@@ -43,7 +50,11 @@ const LocationSearchModal = () => {
     updateURL(selectedRegions);
 
     const currentQuery = new URLSearchParams(window.location.search);
-    await filterToursHandler(selectedRegions, currentQuery.get("startDate"), currentQuery.get("endDate"));
+    await filterToursHandler(
+      selectedRegions,
+      currentQuery.get("startDate"),
+      currentQuery.get("endDate")
+    );
     locationSearch.onClose();
   };
 
@@ -52,7 +63,11 @@ const LocationSearchModal = () => {
     updateURL([]);
 
     const currentQuery = new URLSearchParams(window.location.search);
-    await filterToursHandler([], currentQuery.get("startDate"), currentQuery.get("endDate"));
+    await filterToursHandler(
+      [],
+      currentQuery.get("startDate"),
+      currentQuery.get("endDate")
+    );
   };
 
   const bodyContent = (
@@ -78,7 +93,7 @@ const LocationSearchModal = () => {
         renderInput={(params) => (
           <TextField {...params} variant="outlined" label="Locations" />
         )}
-        sx={{ marginTop: "20px"}}
+        sx={{ marginTop: "20px" }}
       />
     </div>
   );

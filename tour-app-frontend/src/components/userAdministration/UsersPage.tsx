@@ -6,7 +6,11 @@ import { Typography, IconButton, Box, Tooltip } from "@mui/material";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { MRT_ColumnDef, MRT_TableOptions, MaterialReactTable } from "material-react-table";
+import {
+  MRT_ColumnDef,
+  MRT_TableOptions,
+  MaterialReactTable,
+} from "material-react-table";
 import { Role, User } from "../../types";
 import { labelToRole, roleToLabel } from "../../utils/dataProcessing";
 import { ApiError } from "../../utils/ApiError";
@@ -16,7 +20,7 @@ import DeleteUserModal from "../modals/users/DeleteUserModal";
 import toast from "react-hot-toast";
 
 const UsersPage = () => {
-  const currentUser = useAppSelector(state => state.user.loggedInUser);
+  const currentUser = useAppSelector((state) => state.user.loggedInUser);
 
   const { isLoadingUsers, errorFetchingUsers, users, setUsers } = useUsers();
 
@@ -30,19 +34,19 @@ const UsersPage = () => {
         header: "ID",
         accessorKey: "id",
         size: 100,
-        enableEditing: false
+        enableEditing: false,
       },
       {
         header: "Name",
         accessorKey: "name",
         size: 200,
-        enableEditing: false
+        enableEditing: false,
       },
       {
         header: "Email",
         accessorKey: "email",
         size: 250,
-        enableEditing: false
+        enableEditing: false,
       },
       {
         accessorFn: (originalRow) => roleToLabel(originalRow.role),
@@ -55,7 +59,8 @@ const UsersPage = () => {
         editSelectOptions: Object.values(Role).map(roleToLabel),
       },
       {
-        accessorFn: (originalRow) => originalRow.active ? "Active" : "Inactive",
+        accessorFn: (originalRow) =>
+          originalRow.active ? "Active" : "Inactive",
         id: "status",
         header: "Status",
         size: 100,
@@ -67,14 +72,10 @@ const UsersPage = () => {
           <Box
             component="span"
             sx={() => ({
-              backgroundColor:
-                row.original.active
-                  ? "rgba(165, 214, 167, 0.4)"
-                  : "rgba(239, 154, 154, 0.4)",
-              color:
-                row.original.active
-                  ? "#1b5e20"
-                  : "#b71c1c",
+              backgroundColor: row.original.active
+                ? "rgba(165, 214, 167, 0.4)"
+                : "rgba(239, 154, 154, 0.4)",
+              color: row.original.active ? "#1b5e20" : "#b71c1c",
               borderRadius: "0.8rem",
               mx: "auto",
               textTransform: "uppercase",
@@ -84,7 +85,7 @@ const UsersPage = () => {
             {row.original.active ? "Active" : "Inactive"}
           </Box>
         ),
-      }
+      },
     ],
     []
   );
@@ -101,17 +102,30 @@ const UsersPage = () => {
     return <div>Error: An error occurred while fetching users.</div>;
   }
 
-  const updateActiveHandler = createServiceHandler(userService.updateActive, {
-    startLoading: () => setIsUpdating(true),
-    endLoading: () => setIsUpdating(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "Error updating user's active status.");}});
+  const updateActiveHandler = createServiceHandler(
+    userService.updateActive,
+    {
+      startLoading: () => setIsUpdating(true),
+      endLoading: () => setIsUpdating(false),
+    },
+    {
+      handle: (error: ApiError) => {
+        toast.error(
+          error.response?.data || "Error updating user's active status."
+        );
+      },
+    }
+  );
 
-  const handleSaveActiveChange = async (userId: number, editingActiveValue: boolean): Promise<string> => {
+  const handleSaveActiveChange = async (
+    userId: number,
+    editingActiveValue: boolean
+  ): Promise<string> => {
     const response = await updateActiveHandler(userId, editingActiveValue);
 
     if (response.success && response.data) {
-      setUsers(prevUsers =>
-        prevUsers.map(user =>
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
           user.id === userId ? { ...user, active: editingActiveValue } : user
         )
       );
@@ -121,17 +135,28 @@ const UsersPage = () => {
     return "error";
   };
 
-  const updateRoleHandler = createServiceHandler(userService.updateRole, {
-    startLoading: () => setIsUpdating(true),
-    endLoading: () => setIsUpdating(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "Error updating user's role.");}});
+  const updateRoleHandler = createServiceHandler(
+    userService.updateRole,
+    {
+      startLoading: () => setIsUpdating(true),
+      endLoading: () => setIsUpdating(false),
+    },
+    {
+      handle: (error: ApiError) => {
+        toast.error(error.response?.data || "Error updating user's role.");
+      },
+    }
+  );
 
-  const handleSaveRoleChange = async (userId: number, editingRoleValue: Role): Promise<string> => {
+  const handleSaveRoleChange = async (
+    userId: number,
+    editingRoleValue: Role
+  ): Promise<string> => {
     const response = await updateRoleHandler(userId, editingRoleValue);
 
     if (response.success && response.data) {
-      setUsers(prevUsers =>
-        prevUsers.map(user =>
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
           user.id === userId ? { ...user, role: editingRoleValue } : user
         )
       );
@@ -145,13 +170,18 @@ const UsersPage = () => {
     values,
     table,
   }) => {
-
     if (isUpdating) {
       return;
     }
 
-    const saveActiveResponse = await handleSaveActiveChange(values.id, values.status === "Active");
-    const saveRoleResponse = await handleSaveRoleChange(values.id, labelToRole(values.role));
+    const saveActiveResponse = await handleSaveActiveChange(
+      values.id,
+      values.status === "Active"
+    );
+    const saveRoleResponse = await handleSaveRoleChange(
+      values.id,
+      labelToRole(values.role)
+    );
 
     if (saveActiveResponse === "success" && saveRoleResponse === "success") {
       toast.success("User updated successfully!");
@@ -165,7 +195,9 @@ const UsersPage = () => {
   };
 
   const handleSuccessfulDelete = (userDeleted: User): void => {
-    setUsers(prevUsers => prevUsers.filter(user => user.id !== userDeleted.id));
+    setUsers((prevUsers) =>
+      prevUsers.filter((user) => user.id !== userDeleted.id)
+    );
   };
 
   const handleCloseDeleteModal = (): void => {
@@ -174,7 +206,13 @@ const UsersPage = () => {
 
   return (
     <div>
-      <Box style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <Box
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Typography variant="h1">Users</Typography>
       </Box>
 
@@ -182,7 +220,7 @@ const UsersPage = () => {
         columns={columns}
         data={users}
         enableEditing={true}
-        editDisplayMode='row'
+        editDisplayMode="row"
         onEditingRowSave={handleSaveUser}
         enableRowActions
         enablePinning
@@ -192,12 +230,14 @@ const UsersPage = () => {
           "mrt-row-actions": {
             muiTableHeadCellProps: {
               align: "center",
-            }
-          }
+            },
+          },
         }}
         renderRowActions={({ row, table }) => (
           <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
-            <IconButton onClick={() => window.open(`mailto:${row.original.email}`)}>
+            <IconButton
+              onClick={() => window.open(`mailto:${row.original.email}`)}
+            >
               <MailOutlineIcon />
             </IconButton>
             <Tooltip title="Edit role or status">
@@ -205,20 +245,23 @@ const UsersPage = () => {
                 <EditIcon />
               </IconButton>
             </Tooltip>
-            <IconButton onClick={() => handleDeleteClick(row.original)} color="warning">
+            <IconButton
+              onClick={() => handleDeleteClick(row.original)}
+              color="warning"
+            >
               <DeleteForeverIcon />
             </IconButton>
           </Box>
         )}
       />
 
-      {userToDelete &&
+      {userToDelete && (
         <DeleteUserModal
           userToDelete={userToDelete}
           handleSuccessfulDelete={handleSuccessfulDelete}
           onClose={handleCloseDeleteModal}
         />
-      }
+      )}
     </div>
   );
 };

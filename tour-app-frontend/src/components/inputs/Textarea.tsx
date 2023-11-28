@@ -1,11 +1,11 @@
 import { InputLabel, Typography } from "@mui/material";
 import { TextareaAutosize } from "@mui/base";
-import {
-  FieldErrors,
-  UseFormRegister
-} from "react-hook-form";
+import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { FieldValues, nestedFieldErrors } from "../../types";
-import { getNestedError, hasObjectAtArrayIndex } from "../../utils/dataProcessing";
+import {
+  getNestedError,
+  hasObjectAtArrayIndex,
+} from "../../utils/dataProcessing";
 
 interface TextareaProps {
   id: string;
@@ -28,12 +28,13 @@ const Textarea = ({
   disabled,
   required,
   register,
-  errors
+  errors,
 }: TextareaProps) => {
-
-  const errorForField = arrayName && index !== undefined
-    ? hasObjectAtArrayIndex(errors, index) && getNestedError(errors as nestedFieldErrors, arrayName, index, id)
-    : errors[id];
+  const errorForField =
+    arrayName && index !== undefined
+      ? hasObjectAtArrayIndex(errors, index) &&
+        getNestedError(errors as nestedFieldErrors, arrayName, index, id)
+      : errors[id];
 
   return (
     <div>
@@ -45,9 +46,15 @@ const Textarea = ({
         {...register(id, { required })}
         disabled={disabled}
         minRows={minRows}
-        style={{ width: "100%", boxSizing: "border-box", borderColor: errorForField ? "#D32F2F" : "inherit" }}
+        style={{
+          width: "100%",
+          boxSizing: "border-box",
+          borderColor: errorForField ? "#D32F2F" : "inherit",
+        }}
       />
-      <Typography color="#D32F2F" variant="caption" marginLeft="12px">{errorForField ? `${label} is required` : ""}</Typography>
+      <Typography color="#D32F2F" variant="caption" marginLeft="12px">
+        {errorForField ? `${label} is required` : ""}
+      </Typography>
     </div>
   );
 };

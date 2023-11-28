@@ -18,7 +18,9 @@ export const formatDateAndTime = (dateString: string): string => {
   return format(dateObj, "yyyy-MMM-dd(eee) HH:mm");
 };
 
-export const formatDateTimeStringToISOString = (formattedString: string): string => {
+export const formatDateTimeStringToISOString = (
+  formattedString: string
+): string => {
   // Remove the day of the week from the formatted string
   const cleanedString = formattedString.replace(/\([a-zA-Z]{3}\)/, "");
 
@@ -27,11 +29,17 @@ export const formatDateTimeStringToISOString = (formattedString: string): string
   return format(parsedDate, "yyyy-MM-dd'T'HH:mm:ss");
 };
 
-export const calculateEndDateFromDuration = (startDate: Date, duration: number): Date => {
-  return addDays(startDate, (duration - 1));
+export const calculateEndDateFromDuration = (
+  startDate: Date,
+  duration: number
+): Date => {
+  return addDays(startDate, duration - 1);
 };
 
-export const isDateWithinRange = (date: Date, filterDateRange: Range): boolean => {
+export const isDateWithinRange = (
+  date: Date,
+  filterDateRange: Range
+): boolean => {
   let filterStartDate: Date | undefined, filterEndDate: Date | undefined;
   if (filterDateRange.startDate) {
     filterStartDate = new Date(filterDateRange.startDate);
@@ -52,31 +60,31 @@ export const isDateWithinRange = (date: Date, filterDateRange: Range): boolean =
 
 export const roleToLabel = (role: Role): string => {
   switch (role) {
-  case Role.Customer:
-    return "Customer";
-  case Role.Guide:
-    return "Guide";
-  case Role.LeadGuide:
-    return "Lead Guide";
-  case Role.Admin:
-    return "Admin";
-  default:
-    throw new Error(`Unexpected role value: ${role}`);
+    case Role.Customer:
+      return "Customer";
+    case Role.Guide:
+      return "Guide";
+    case Role.LeadGuide:
+      return "Lead Guide";
+    case Role.Admin:
+      return "Admin";
+    default:
+      throw new Error(`Unexpected role value: ${role}`);
   }
 };
 
 export const labelToRole = (label: string): Role => {
   switch (label) {
-  case "Customer":
-    return Role.Customer;
-  case "Guide":
-    return Role.Guide;
-  case "Lead Guide":
-    return Role.LeadGuide;
-  case "Admin":
-    return Role.Admin;
-  default:
-    throw new Error(`Unexpected role label: ${label}`);
+    case "Customer":
+      return Role.Customer;
+    case "Guide":
+      return Role.Guide;
+    case "Lead Guide":
+      return Role.LeadGuide;
+    case "Admin":
+      return Role.Admin;
+    default:
+      throw new Error(`Unexpected role label: ${label}`);
   }
 };
 
@@ -90,7 +98,10 @@ export const labelsToRoles = (labels: string): Role[] => {
   return labelArray.map(labelToRole);
 };
 
-export const hasObjectAtArrayIndex = (dataStructure: any, index: number): boolean => {
+export const hasObjectAtArrayIndex = (
+  dataStructure: any,
+  index: number
+): boolean => {
   if (typeof dataStructure !== "object" || dataStructure === null) return false;
   for (const key in dataStructure) {
     if (

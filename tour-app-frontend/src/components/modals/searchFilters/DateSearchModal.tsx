@@ -20,11 +20,15 @@ const DateSearchModal = () => {
   const initialDateRange = {
     startDate: addDays(new Date(), 1),
     endDate: addDays(new Date(), 1),
-    key: "selection"
+    key: "selection",
   };
-  const [selectedDateRange, setSelectedDateRange] = useState<Range>(initialDateRange);
+  const [selectedDateRange, setSelectedDateRange] =
+    useState<Range>(initialDateRange);
 
-  const updateURL = (startDate: Date | undefined | null, endDate: Date | undefined | null) => {
+  const updateURL = (
+    startDate: Date | undefined | null,
+    endDate: Date | undefined | null
+  ) => {
     const updatedQuery = new URLSearchParams(window.location.search);
 
     if (startDate) {
@@ -43,16 +47,28 @@ const DateSearchModal = () => {
     window.history.pushState({}, "", url);
   };
 
-  const filterToursHandler = createServiceHandler(filterTours, {
-    startLoading: () => setIsLoading(true),
-    endLoading: () => setIsLoading(false),
-  }, { handle: (_error: ApiError) => { toast.error("An error occurred. Please try again.");}});
+  const filterToursHandler = createServiceHandler(
+    filterTours,
+    {
+      startLoading: () => setIsLoading(true),
+      endLoading: () => setIsLoading(false),
+    },
+    {
+      handle: (_error: ApiError) => {
+        toast.error("An error occurred. Please try again.");
+      },
+    }
+  );
 
   const onSubmit = async () => {
     updateURL(selectedDateRange.startDate, selectedDateRange.endDate);
 
     const currentQuery = new URLSearchParams(window.location.search);
-    await filterToursHandler(currentQuery.get("regions")?.split(",") || [], currentQuery.get("startDate"), currentQuery.get("endDate"));
+    await filterToursHandler(
+      currentQuery.get("regions")?.split(",") || [],
+      currentQuery.get("startDate"),
+      currentQuery.get("endDate")
+    );
     dateSearch.onClose();
   };
 
@@ -61,12 +77,18 @@ const DateSearchModal = () => {
     updateURL(null, null);
 
     const currentQuery = new URLSearchParams(window.location.search);
-    await filterToursHandler(currentQuery.get("regions")?.split(",") || [], null, null);
+    await filterToursHandler(
+      currentQuery.get("regions")?.split(",") || [],
+      null,
+      null
+    );
   };
 
   const bodyContent = (
     <div>
-      <div style={{ marginLeft: is500AndUp ? "24px" : is400AndUp ? "20px" : 0 }}>
+      <div
+        style={{ marginLeft: is500AndUp ? "24px" : is400AndUp ? "20px" : 0 }}
+      >
         <Heading
           title="When do you plan to go?"
           subtitle="Make sure everyone is free!"

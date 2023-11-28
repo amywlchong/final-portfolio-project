@@ -9,9 +9,14 @@ import SchedulesCalendar from "./SchedulesCalendar";
 
 const SchedulesPage = () => {
   const { isSmallAndUp } = useScreenSize();
-  const currentUser = useAppSelector(state => state.user.loggedInUser);
+  const currentUser = useAppSelector((state) => state.user.loggedInUser);
 
-  const { isLoadingSchedules, errorFetchingSchedules, schedules, setSchedules } = useSchedules();
+  const {
+    isLoadingSchedules,
+    errorFetchingSchedules,
+    schedules,
+    setSchedules,
+  } = useSchedules();
 
   const [showCalendar, setShowCalendar] = useState(true);
 
@@ -29,16 +34,36 @@ const SchedulesPage = () => {
 
   return (
     <>
-      <Box style={{ display: "flex", flexDirection: `${isSmallAndUp ? "row" : "column"}`, justifyContent: "space-between", alignItems: `${isSmallAndUp ? "center" : "flex-start"}` }}>
+      <Box
+        style={{
+          display: "flex",
+          flexDirection: `${isSmallAndUp ? "row" : "column"}`,
+          justifyContent: "space-between",
+          alignItems: `${isSmallAndUp ? "center" : "flex-start"}`,
+        }}
+      >
         <Typography variant="h1">Tour Guide Schedules</Typography>
-        <Box style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-          <Button label={showCalendar ? "Table View" : "Calendar View"} onClick={() => setShowCalendar(prevState => !prevState)} />
+        <Box
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+        >
+          <Button
+            label={showCalendar ? "Table View" : "Calendar View"}
+            onClick={() => setShowCalendar((prevState) => !prevState)}
+          />
         </Box>
       </Box>
 
       {!showCalendar && (
         <Box mt={2}>
-          <SchedulesTable currentUser={currentUser} schedules={schedules} setSchedules={setSchedules} />
+          <SchedulesTable
+            currentUser={currentUser}
+            schedules={schedules}
+            setSchedules={setSchedules}
+          />
         </Box>
       )}
 

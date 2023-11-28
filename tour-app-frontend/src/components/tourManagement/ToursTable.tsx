@@ -17,9 +17,8 @@ interface ToursTableProps {
 }
 
 const ToursTable = ({ setEditingTour, setShowTourForm }: ToursTableProps) => {
-
   const dispatch = useAppDispatch();
-  const tours = useAppSelector(state => state.tours.allTours);
+  const tours = useAppSelector((state) => state.tours.allTours);
 
   const [tourToDelete, setTourToDelete] = useState<Tour | null>(null);
   const deleteTourModal = useDeleteTourModal();
@@ -29,29 +28,27 @@ const ToursTable = ({ setEditingTour, setShowTourForm }: ToursTableProps) => {
       {
         header: "ID",
         accessorKey: "id",
-        size: 100
+        size: 100,
       },
       {
         header: "Tour Name",
         accessorKey: "name",
         size: 200,
         Cell: ({ row }: { row: { original: Tour } }) => (
-          <Link to={`/tours/${row.original.id}`}>
-            {row.original.name}
-          </Link>
+          <Link to={`/tours/${row.original.id}`}>{row.original.name}</Link>
         ),
       },
       {
         header: "Duration (days)",
         accessorKey: "duration",
         size: 100,
-        filterVariant: "range"
+        filterVariant: "range",
       },
       {
         header: "Max Group Size",
         accessorKey: "maxGroupSize",
         size: 100,
-        filterVariant: "range"
+        filterVariant: "range",
       },
       {
         header: "Difficulty",
@@ -67,14 +64,14 @@ const ToursTable = ({ setEditingTour, setShowTourForm }: ToursTableProps) => {
                 row.original.difficulty === "difficult"
                   ? "rgba(239, 154, 154, 0.4)"
                   : row.original.difficulty === "medium"
-                    ? "rgba(255, 224, 130, 0.4)"
-                    : "rgba(165, 214, 167, 0.4)",
+                  ? "rgba(255, 224, 130, 0.4)"
+                  : "rgba(165, 214, 167, 0.4)",
               color:
                 row.original.difficulty === "difficult"
                   ? "#b71c1c"
                   : row.original.difficulty === "medium"
-                    ? "#ff6f00"
-                    : "#1b5e20",
+                  ? "#ff6f00"
+                  : "#1b5e20",
               borderRadius: "0.8rem",
               mx: "auto",
               textTransform: "uppercase",
@@ -89,36 +86,37 @@ const ToursTable = ({ setEditingTour, setShowTourForm }: ToursTableProps) => {
         header: "Price ($)",
         accessorKey: "price",
         size: 140,
-        filterVariant: "range"
+        filterVariant: "range",
       },
       {
         header: "Summary",
         accessorKey: "summary",
-        size: 200
+        size: 200,
       },
       {
         header: "Location",
         accessorKey: "region",
-        size: 150
+        size: 150,
       },
       {
         header: "Start Address",
         accessorKey: "startAddress",
-        size: 200
+        size: 200,
       },
       {
         header: "Ratings Count",
         accessorKey: "ratingsCount",
         size: 140,
-        filterVariant: "range"
+        filterVariant: "range",
       },
       {
-        accessorFn: (originalRow) => originalRow.ratingsAverage ? originalRow.ratingsAverage : "N/A",
+        accessorFn: (originalRow) =>
+          originalRow.ratingsAverage ? originalRow.ratingsAverage : "N/A",
         id: "ratingsAverage",
         header: "Ratings Average",
         size: 100,
         filterVariant: "range",
-      }
+      },
     ],
     []
   );
@@ -129,7 +127,7 @@ const ToursTable = ({ setEditingTour, setShowTourForm }: ToursTableProps) => {
   };
 
   const handleSuccessfulDelete = (tourDeleted: Tour): void => {
-    dispatch(setAllTours(tours.filter(tour => tour.id !== tourDeleted.id)));
+    dispatch(setAllTours(tours.filter((tour) => tour.id !== tourDeleted.id)));
   };
 
   const handleCloseDeleteModal = (): void => {
@@ -144,25 +142,37 @@ const ToursTable = ({ setEditingTour, setShowTourForm }: ToursTableProps) => {
         renderDetailPanel={({ row }: { row: { original: Tour } }) => (
           <Box>
             <Box>
-              <Typography variant="body1" fontWeight="bold">Points of Interest:</Typography>
+              <Typography variant="body1" fontWeight="bold">
+                Points of Interest:
+              </Typography>
               <Typography variant="body1">
-                {row.original.tourPointsOfInterest && row.original.tourPointsOfInterest.length > 0
-                  ? row.original.tourPointsOfInterest.map(poi => poi.pointOfInterest.name).join(", ")
+                {row.original.tourPointsOfInterest &&
+                row.original.tourPointsOfInterest.length > 0
+                  ? row.original.tourPointsOfInterest
+                      .map((poi) => poi.pointOfInterest.name)
+                      .join(", ")
                   : "No points of interest"}
               </Typography>
             </Box>
             <Box mt={1}>
-              <Typography variant="body1" fontWeight="bold">Start Dates:</Typography>
+              <Typography variant="body1" fontWeight="bold">
+                Start Dates:
+              </Typography>
               <Typography variant="body1">
-                {row.original.tourStartDates && row.original.tourStartDates.length > 0
-                  ? (
-                    [...row.original.tourStartDates]
-                      .sort((a, b) => new Date(a.startDate.startDateTime).getTime() - new Date(b.startDate.startDateTime).getTime())
+                {row.original.tourStartDates &&
+                row.original.tourStartDates.length > 0
+                  ? [...row.original.tourStartDates]
+                      .sort(
+                        (a, b) =>
+                          new Date(a.startDate.startDateTime).getTime() -
+                          new Date(b.startDate.startDateTime).getTime()
+                      )
                       .slice(0, 2)
-                      .map(date => formatDateAndTime(date.startDate.startDateTime))
+                      .map((date) =>
+                        formatDateAndTime(date.startDate.startDateTime)
+                      )
                       .join(", ") +
                     (row.original.tourStartDates.length > 2 ? ", and more" : "")
-                  )
                   : "No start dates"}
               </Typography>
             </Box>
@@ -176,8 +186,8 @@ const ToursTable = ({ setEditingTour, setShowTourForm }: ToursTableProps) => {
           "mrt-row-actions": {
             muiTableHeadCellProps: {
               align: "center",
-            }
-          }
+            },
+          },
         }}
         renderRowActions={({ row }) => (
           <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
@@ -189,20 +199,23 @@ const ToursTable = ({ setEditingTour, setShowTourForm }: ToursTableProps) => {
             >
               <EditIcon />
             </IconButton>
-            <IconButton onClick={() => handleDeleteClick(row.original)} color="warning">
+            <IconButton
+              onClick={() => handleDeleteClick(row.original)}
+              color="warning"
+            >
               <DeleteForeverIcon />
             </IconButton>
           </Box>
         )}
       />
 
-      {tourToDelete &&
+      {tourToDelete && (
         <DeleteTourModal
           tourToDelete={tourToDelete}
           handleSuccessfulDelete={handleSuccessfulDelete}
           onClose={handleCloseDeleteModal}
         />
-      }
+      )}
     </>
   );
 };

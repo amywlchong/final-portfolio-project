@@ -23,7 +23,7 @@ interface ReviewModalProps {
 
 const ReviewModal = ({ bookingId }: ReviewModalProps) => {
   const reviewModal = useReviewModal();
-  const currentUser = useAppSelector(state => state.user.loggedInUser);
+  const currentUser = useAppSelector((state) => state.user.loggedInUser);
   const [review, setReview] = useState<ReviewResponse | undefined>(undefined);
   const [isOperationInProgress, setIsOperationInProgress] = useState(false);
 
@@ -36,7 +36,7 @@ const ReviewModal = ({ bookingId }: ReviewModalProps) => {
     const fetchReview = async () => {
       try {
         const reviews = await reviewService.getMyReviews();
-        setReview(reviews.find(review => review.bookingId === bookingId));
+        setReview(reviews.find((review) => review.bookingId === bookingId));
       } catch (error: any) {
         console.error("Error fetching review:", error.response?.data);
         toast.error("Error: An error occurred while fetching the review.");
@@ -48,7 +48,7 @@ const ReviewModal = ({ bookingId }: ReviewModalProps) => {
 
   const defaultFormValues = {
     rating: null,
-    review: ""
+    review: "",
   };
 
   const {
@@ -57,9 +57,7 @@ const ReviewModal = ({ bookingId }: ReviewModalProps) => {
     setValue,
     handleSubmit,
     reset,
-    formState: {
-      errors,
-    },
+    formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: defaultFormValues,
   });
@@ -76,21 +74,43 @@ const ReviewModal = ({ bookingId }: ReviewModalProps) => {
   };
 
   const onSubmit = async () => {
-    const createReviewHandler = createServiceHandler(reviewService.createReview, {
-      startLoading: () => setIsOperationInProgress(true),
-      endLoading: () => setIsOperationInProgress(false),
-    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please try again.");}});
+    const createReviewHandler = createServiceHandler(
+      reviewService.createReview,
+      {
+        startLoading: () => setIsOperationInProgress(true),
+        endLoading: () => setIsOperationInProgress(false),
+      },
+      {
+        handle: (error: ApiError) => {
+          toast.error(
+            error.response?.data ||
+              "An unexpected error occurred. Please try again."
+          );
+        },
+      }
+    );
 
-    const deleteReviewHandler = createServiceHandler(reviewService.deleteReview, {
-      startLoading: () => setIsOperationInProgress(true),
-      endLoading: () => setIsOperationInProgress(false),
-    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please try again.");}});
+    const deleteReviewHandler = createServiceHandler(
+      reviewService.deleteReview,
+      {
+        startLoading: () => setIsOperationInProgress(true),
+        endLoading: () => setIsOperationInProgress(false),
+      },
+      {
+        handle: (error: ApiError) => {
+          toast.error(
+            error.response?.data ||
+              "An unexpected error occurred. Please try again."
+          );
+        },
+      }
+    );
 
     if (review === undefined) {
       const reviewRequest: ReviewRequest = {
         bookingId,
         rating: ratingValue,
-        review: reviewValue
+        review: reviewValue,
       };
       const response = await createReviewHandler(reviewRequest);
       if (response.success && response.data) {
@@ -113,9 +133,7 @@ const ReviewModal = ({ bookingId }: ReviewModalProps) => {
   if (review === undefined) {
     bodyContent = (
       <div>
-        <Heading
-          title="Rate your tour experience and share your thoughts."
-        />
+        <Heading title="Rate your tour experience and share your thoughts." />
         <RatingBar
           id="rating"
           label="Rating"
@@ -139,12 +157,18 @@ const ReviewModal = ({ bookingId }: ReviewModalProps) => {
   } else {
     bodyContent = (
       <div>
-        <RatingBar id={`review-${review.id}`} rating={review.rating} readOnly={true} />
+        <RatingBar
+          id={`review-${review.id}`}
+          rating={review.rating}
+          readOnly={true}
+        />
 
         <Typography variant="body1">{review.review}</Typography>
 
         <Typography variant="caption">
-          {`${review.userName} on ${formatDateToYMDString(new Date(review.createdDate))}`}
+          {`${review.userName} on ${formatDateToYMDString(
+            new Date(review.createdDate)
+          )}`}
         </Typography>
       </div>
     );

@@ -3,7 +3,7 @@ import { AuthResponse, User } from "../../types";
 
 type UserState = {
   loggedInUser: User | null;
-}
+};
 const initialState: UserState = {
   loggedInUser: null,
 };
@@ -18,9 +18,10 @@ const userSlice = createSlice({
     setUserFromLocalStorage: (state, action: PayloadAction<User>) => {
       state.loggedInUser = action.payload;
     },
-    logout: () => initialState
-  }
+    logout: () => initialState,
+  },
 });
 
 export default userSlice.reducer;
-export const { authenticate, logout, setUserFromLocalStorage } = userSlice.actions;
+export const { authenticate, logout, setUserFromLocalStorage } =
+  userSlice.actions;

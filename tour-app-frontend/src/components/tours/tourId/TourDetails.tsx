@@ -8,7 +8,7 @@ import RatingBar from "../../ui/RatingBar";
 
 const TourDetails = () => {
   const { isSmallAndUp } = useScreenSize();
-  const tour = useAppSelector(state => state.tours.currentTour);
+  const tour = useAppSelector((state) => state.tours.currentTour);
 
   if (!tour) {
     return <div>No tour found.</div>;
@@ -16,7 +16,8 @@ const TourDetails = () => {
 
   return (
     <>
-      <Grid container
+      <Grid
+        container
         direction={isSmallAndUp ? "row" : "column"}
         alignItems={isSmallAndUp ? "center" : "flex-start"}
         spacing={isSmallAndUp ? 2 : 0}
@@ -28,34 +29,37 @@ const TourDetails = () => {
         </Grid>
         {tour.ratingsAverage && (
           <Grid item>
-            <RatingBar id={`${tour.id}`} rating={tour.ratingsAverage} readOnly={true} />
+            <RatingBar
+              id={`${tour.id}`}
+              rating={tour.ratingsAverage}
+              readOnly={true}
+            />
           </Grid>
         )}
       </Grid>
 
       <Typography variant="subtitle1">
-        Duration: {tour.duration} {tour.duration > 1 ? "days" : "day"} | Difficulty: {tour.difficulty} | Max Group Size: {tour.maxGroupSize}
+        Duration: {tour.duration} {tour.duration > 1 ? "days" : "day"} |
+        Difficulty: {tour.difficulty} | Max Group Size: {tour.maxGroupSize}
       </Typography>
 
-      <div style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
+      <div
+        style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}
+      >
         <LocationOnIcon style={{ marginRight: "8px" }} />
-        <Typography variant="body1">
-          {tour.region}
-        </Typography>
+        <Typography variant="body1">{tour.region}</Typography>
       </div>
-      <div style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
+      <div
+        style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}
+      >
         <MonetizationOnIcon style={{ marginRight: "8px" }} />
-        <Typography variant="body1">
-          {`$${tour.price} per person`}
-        </Typography>
+        <Typography variant="body1">{`$${tour.price} per person`}</Typography>
       </div>
 
-      <Typography variant="h3" sx={{fontWeight: "bold" }} >
+      <Typography variant="h3" sx={{ fontWeight: "bold" }}>
         {tour.summary}
       </Typography>
-      <Typography variant="body1">
-        {tour.description}
-      </Typography>
+      <Typography variant="body1">{tour.description}</Typography>
       <Box mt={2} mb={2}>
         <Typography variant="body1">
           Start Address: {tour.startAddress}

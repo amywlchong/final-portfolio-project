@@ -18,7 +18,11 @@ interface DeleteUserModalProps {
   onClose: () => void;
 }
 
-const DeleteUserModal = ({ userToDelete, handleSuccessfulDelete, onClose }: DeleteUserModalProps) => {
+const DeleteUserModal = ({
+  userToDelete,
+  handleSuccessfulDelete,
+  onClose,
+}: DeleteUserModalProps) => {
   const deleteUserModal = useDeleteUserModal();
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -28,10 +32,21 @@ const DeleteUserModal = ({ userToDelete, handleSuccessfulDelete, onClose }: Dele
   };
 
   const onSubmit = async () => {
-    const deleteUserHandler = createServiceHandler(userService.deleteUser, {
-      startLoading: () => setIsDeleting(true),
-      endLoading: () => setIsDeleting(false),
-    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please try again.");}});
+    const deleteUserHandler = createServiceHandler(
+      userService.deleteUser,
+      {
+        startLoading: () => setIsDeleting(true),
+        endLoading: () => setIsDeleting(false),
+      },
+      {
+        handle: (error: ApiError) => {
+          toast.error(
+            error.response?.data ||
+              "An unexpected error occurred. Please try again."
+          );
+        },
+      }
+    );
 
     const response = await deleteUserHandler(userToDelete.id);
 
@@ -45,13 +60,19 @@ const DeleteUserModal = ({ userToDelete, handleSuccessfulDelete, onClose }: Dele
   const bodyContent = (
     <div>
       <Typography variant="body1" color="#D32F2F">
-        Are you sure you want to permanently delete this user? This action is NOT reversible.
+        Are you sure you want to permanently delete this user? This action is
+        NOT reversible.
       </Typography>
       <Box mt={2}>
-        <Typography variant="body1" fontWeight="bold">User Details</Typography>
+        <Typography variant="body1" fontWeight="bold">
+          User Details
+        </Typography>
         <LabeledText label="ID" value={userToDelete.id} />
         <LabeledText label="Name" value={userToDelete.name} />
-        <LabeledText label="Status" value={userToDelete.active ? "Active" : "Inactive"} />
+        <LabeledText
+          label="Status"
+          value={userToDelete.active ? "Active" : "Inactive"}
+        />
         <LabeledText label="Role" value={roleToLabel(userToDelete.role)} />
       </Box>
     </div>

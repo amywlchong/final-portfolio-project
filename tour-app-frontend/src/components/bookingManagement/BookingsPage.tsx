@@ -14,9 +14,16 @@ import BookingsTable from "./BookingsTable";
 
 const BookingsPage = () => {
   const { isSmallAndUp } = useScreenSize();
-  const currentUser = useAppSelector(state => state.user.loggedInUser);
+  const currentUser = useAppSelector((state) => state.user.loggedInUser);
 
-  const { isLoadingBookings, errorFetchingBookings, pastBookings, setPastBookings, futureBookings, setFutureBookings } = useBookings(bookingService.getAllBookings);
+  const {
+    isLoadingBookings,
+    errorFetchingBookings,
+    pastBookings,
+    setPastBookings,
+    futureBookings,
+    setFutureBookings,
+  } = useBookings(bookingService.getAllBookings);
   const [bookingsToShow, setBookingsToShow] = useState<BookingResponse[]>([]);
   const [displayPastBookings, setDisplayPastBookings] = useState(false);
 
@@ -41,21 +48,42 @@ const BookingsPage = () => {
   }
 
   const handleToggleClick = () => {
-    setDisplayPastBookings(prev => !prev);
+    setDisplayPastBookings((prev) => !prev);
   };
 
   return (
     <div>
-      <Box style={{ display: "flex", flexDirection: `${isSmallAndUp ? "row" : "column"}`, justifyContent: "space-between", alignItems: `${isSmallAndUp ? "center" : "flex-start"}` }}>
+      <Box
+        style={{
+          display: "flex",
+          flexDirection: `${isSmallAndUp ? "row" : "column"}`,
+          justifyContent: "space-between",
+          alignItems: `${isSmallAndUp ? "center" : "flex-start"}`,
+        }}
+      >
         <Typography variant="h1">Bookings</Typography>
-        <Box style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-          <Button label={displayPastBookings ? "Future Bookings" : "Past Bookings"} onClick={handleToggleClick} sx={{ marginRight: 2 }} />
-          {canAccess(currentUser.role, [Role.Admin]) && <Button label="New Booking" onClick={adminBookingModal.onOpen} />}
+        <Box
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+        >
+          <Button
+            label={displayPastBookings ? "Future Bookings" : "Past Bookings"}
+            onClick={handleToggleClick}
+            sx={{ marginRight: 2 }}
+          />
+          {canAccess(currentUser.role, [Role.Admin]) && (
+            <Button label="New Booking" onClick={adminBookingModal.onOpen} />
+          )}
         </Box>
       </Box>
 
       <Box mt={2}>
-        <Typography variant="h2">{displayPastBookings ? "Past Tours" : "Future Tours"}</Typography>
+        <Typography variant="h2">
+          {displayPastBookings ? "Past Tours" : "Future Tours"}
+        </Typography>
         <TableContainer component={Paper}>
           <BookingsTable
             currentUser={currentUser}
@@ -67,11 +95,9 @@ const BookingsPage = () => {
         </TableContainer>
       </Box>
 
-      {canAccess(currentUser.role, [Role.Admin]) &&
-        <AdminBookingModal
-          setFutureBookings={setFutureBookings}
-        />
-      }
+      {canAccess(currentUser.role, [Role.Admin]) && (
+        <AdminBookingModal setFutureBookings={setFutureBookings} />
+      )}
     </div>
   );
 };

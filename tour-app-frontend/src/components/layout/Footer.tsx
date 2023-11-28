@@ -11,30 +11,21 @@ const Footer = () => {
         bgcolor: "#f7f7f7",
         width: "100%",
         marginTop: "40px",
-        padding: "20px 0"
+        padding: "20px 0",
       }}
     >
       <Container>
-        <Typography variant="h6">
-          Scenic Symphony Tours
-        </Typography>
-        <Typography
-          variant="subtitle1"
-        >
+        <Typography variant="h6">Scenic Symphony Tours</Typography>
+        <Typography variant="subtitle1">
           Discover your next adventure
         </Typography>
 
         <Box display="flex" flexDirection={isSmallAndUp ? "row" : "column"}>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-          >
-            © {new Date().getFullYear()} Scenic Symphony Tours, Inc. All rights reserved.
+          <Typography variant="body2" color="text.secondary">
+            © {new Date().getFullYear()} Scenic Symphony Tours, Inc. All rights
+            reserved.
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{ pl: isSmallAndUp ? 1 : 0 }}
-          >
+          <Typography variant="body2" sx={{ pl: isSmallAndUp ? 1 : 0 }}>
             <Link href="#" color="inherit">
               Privacy Policy
             </Link>

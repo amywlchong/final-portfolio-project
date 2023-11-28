@@ -6,15 +6,15 @@ theme = createTheme(theme, {
   palette: {
     mode: "light",
     text: {
-      primary: "#4a4e69"
-    }
+      primary: "#4a4e69",
+    },
   },
   components: {
     MuiTypography: {
       styleOverrides: {
         root: {
-          color: "#4a4e69"
-        }
+          color: "#4a4e69",
+        },
       },
       variants: [
         {
@@ -60,48 +60,48 @@ theme = createTheme(theme, {
           style: {
             fontSize: "1rem",
             padding: "0.3rem 0",
-          }
-        }
+          },
+        },
       ],
     },
     MuiIconButton: {
       defaultProps: {
-        color: "primary"
-      }
+        color: "primary",
+      },
     },
     MuiDialogTitle: {
       styleOverrides: {
         root: {
-          padding: "0.5rem"
-        }
+          padding: "0.5rem",
+        },
       },
     },
     MuiDialogContent: {
       styleOverrides: {
         root: {
           padding: 0,
-          margin: "1rem"
-        }
+          margin: "1rem",
+        },
       },
     },
     MuiDialogActions: {
       styleOverrides: {
         root: {
           padding: 0,
-          margin: "1rem"
-        }
+          margin: "1rem",
+        },
       },
     },
     MuiContainer: {
       styleOverrides: {
         maxWidthLg: {
           [theme.breakpoints.up("lg")]: {
-            maxWidth: "90%"
-          }
-        }
-      }
-    }
-  }
+            maxWidth: "90%",
+          },
+        },
+      },
+    },
+  },
 });
 
 export default theme;

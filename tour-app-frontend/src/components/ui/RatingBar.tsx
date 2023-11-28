@@ -1,4 +1,9 @@
-import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
+import {
+  FieldErrors,
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormWatch,
+} from "react-hook-form";
 import { FieldValues } from "../../types";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import { Typography, Rating, InputLabel } from "@mui/material";
@@ -28,9 +33,8 @@ const RatingBar = ({
   precision = 0.5,
   rating,
   formMethods,
-  errors
+  errors,
 }: RatingBarProps) => {
-
   const hasError = errors && errors[id];
 
   const ratingValue = formMethods ? formMethods.watch(id) : rating;
@@ -48,23 +52,27 @@ const RatingBar = ({
         readOnly={readOnly}
         disabled={disabled}
         value={ratingValue}
-        onChange={formMethods ? (_, newValue) => formMethods.setValue(id, newValue) : undefined}
+        onChange={
+          formMethods
+            ? (_, newValue) => formMethods.setValue(id, newValue)
+            : undefined
+        }
         max={5}
         precision={precision}
         icon={<Favorite fontSize="inherit" />}
-        emptyIcon={hasError
-          ? <FavoriteBorder htmlColor="#D32F2F" fontSize="inherit" />
-          : readOnly
-            ? <Favorite opacity={0.3} fontSize="inherit" />
-            : <FavoriteBorder fontSize="inherit" />
+        emptyIcon={
+          hasError ? (
+            <FavoriteBorder htmlColor="#D32F2F" fontSize="inherit" />
+          ) : readOnly ? (
+            <Favorite opacity={0.3} fontSize="inherit" />
+          ) : (
+            <FavoriteBorder fontSize="inherit" />
+          )
         }
       />
 
       {formMethods && (
-        <input
-          type="hidden"
-          {...formMethods.register(id, { required })}
-        />
+        <input type="hidden" {...formMethods.register(id, { required })} />
       )}
 
       {hasError && (

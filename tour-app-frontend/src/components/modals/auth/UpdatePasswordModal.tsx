@@ -19,7 +19,7 @@ const UpdatePasswordModal = () => {
   const defaultFormValues = {
     currentPassword: "",
     newPassword: "",
-    confirmNewPassword: ""
+    confirmNewPassword: "",
   };
 
   const {
@@ -27,9 +27,7 @@ const UpdatePasswordModal = () => {
     watch,
     handleSubmit,
     reset,
-    formState: {
-      errors,
-    },
+    formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: defaultFormValues,
   });
@@ -43,10 +41,21 @@ const UpdatePasswordModal = () => {
   };
 
   const onUpdatePassword = async (data: FieldValues<UpdatePasswordValues>) => {
-    const updatePasswordHandler = createServiceHandler(authService.updatePassword, {
-      startLoading: () => setIsUpdating(true),
-      endLoading: () => setIsUpdating(false),
-    }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred. Please try again.");}});
+    const updatePasswordHandler = createServiceHandler(
+      authService.updatePassword,
+      {
+        startLoading: () => setIsUpdating(true),
+        endLoading: () => setIsUpdating(false),
+      },
+      {
+        handle: (error: ApiError) => {
+          toast.error(
+            error.response?.data ||
+              "An unexpected error occurred. Please try again."
+          );
+        },
+      }
+    );
 
     const response = await updatePasswordHandler(data);
 
@@ -60,7 +69,7 @@ const UpdatePasswordModal = () => {
     if (newPasswordValue === confirmNewPasswordValue) {
       await onUpdatePassword({
         oldPassword: currentPasswordValue,
-        newPassword: newPasswordValue
+        newPassword: newPasswordValue,
       });
     } else {
       toast.error("Passwords do not match!");

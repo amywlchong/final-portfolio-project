@@ -5,18 +5,11 @@ interface HeadingProps {
   subtitle?: string;
 }
 
-const Heading = ({
-  title,
-  subtitle
-}: HeadingProps) => {
+const Heading = ({ title, subtitle }: HeadingProps) => {
   return (
     <Box mt={1} mb={1}>
-      <Typography>
-        {title}
-      </Typography>
-      <Typography>
-        {subtitle}
-      </Typography>
+      <Typography>{title}</Typography>
+      <Typography>{subtitle}</Typography>
     </Box>
   );
 };

@@ -2,14 +2,29 @@ import { useState } from "react";
 import useScreenSize from "../../../hooks/ui/useScreenSize";
 import { useReviewModal } from "../../../hooks/modals/useModals";
 import { Link } from "react-router-dom";
-import { Typography, Box, Select, Card, CardContent, CardActions, IconButton, Collapse, MenuItem, Grid } from "@mui/material";
+import {
+  Typography,
+  Box,
+  Select,
+  Card,
+  CardContent,
+  CardActions,
+  IconButton,
+  Collapse,
+  MenuItem,
+  Grid,
+} from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import EditIcon from "@mui/icons-material/Edit";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { BiSolidSave } from "react-icons/bi";
 import { BookingRequest, BookingResponse } from "../../../types";
-import { formatDateToYMDString, formatDateAndTime, calculateEndDateFromDuration } from "../../../utils/dataProcessing";
+import {
+  formatDateToYMDString,
+  formatDateAndTime,
+  calculateEndDateFromDuration,
+} from "../../../utils/dataProcessing";
 import { ApiError } from "../../../utils/ApiError";
 import { createServiceHandler } from "../../../utils/serviceHandler";
 import bookingService from "../../../services/bookingService";
@@ -26,7 +41,13 @@ interface BookingCardProps {
   setBookingIdOfReview: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-const BookingCard = ({ booking, enableEdit, enableReviewButton, setFutureBookings, setBookingIdOfReview }: BookingCardProps) => {
+const BookingCard = ({
+  booking,
+  enableEdit,
+  enableReviewButton,
+  setFutureBookings,
+  setBookingIdOfReview,
+}: BookingCardProps) => {
   const { isSmallAndUp } = useScreenSize();
 
   const [expandedBookings, setExpandedBookings] = useState<number[]>([]);
@@ -43,11 +64,11 @@ const BookingCard = ({ booking, enableEdit, enableReviewButton, setFutureBooking
   };
 
   const handleExpandClick = (bookingId: number): void => {
-    setExpandedBookings(prevState => {
+    setExpandedBookings((prevState) => {
       const isCurrentlyExpanded = prevState.includes(bookingId);
 
       if (isCurrentlyExpanded) {
-        return prevState.filter(id => id !== bookingId);
+        return prevState.filter((id) => id !== bookingId);
       } else {
         return [...prevState, bookingId];
       }
@@ -64,40 +85,61 @@ const BookingCard = ({ booking, enableEdit, enableReviewButton, setFutureBooking
       const tourStartDates = tourDetails.tourStartDates;
       const filteredStartDates = tourStartDates
         ? tourStartDates
-          .filter(tourStartDate =>
-            tourStartDate.availableSpaces &&
-            tourStartDate.availableSpaces > 0 &&
-            new Date(tourStartDate.startDate.startDateTime).getTime() > new Date().setHours(23, 59, 59, 999)
-          )
-          .map(tourStartDate => tourStartDate.startDate.startDateTime)
+            .filter(
+              (tourStartDate) =>
+                tourStartDate.availableSpaces &&
+                tourStartDate.availableSpaces > 0 &&
+                new Date(tourStartDate.startDate.startDateTime).getTime() >
+                  new Date().setHours(23, 59, 59, 999)
+            )
+            .map((tourStartDate) => tourStartDate.startDate.startDateTime)
         : [];
 
       setAvailableStartDates(filteredStartDates);
       setEditingBookingId(booking.id);
       setNewStartDate(booking.startDateTime);
     } catch (error: any) {
-      console.error("Error fetching available start dates:", error.response?.data);
+      console.error(
+        "Error fetching available start dates:",
+        error.response?.data
+      );
     }
   };
 
-  const updateBookingHandler = createServiceHandler(bookingService.updateBooking, {
-    startLoading: () => setIsUpdating(true),
-    endLoading: () => setIsUpdating(false),
-  }, { handle: (error: ApiError) => { toast.error(error.response?.data || "An unexpected error occurred while updating the booking. Please try again.");}});
+  const updateBookingHandler = createServiceHandler(
+    bookingService.updateBooking,
+    {
+      startLoading: () => setIsUpdating(true),
+      endLoading: () => setIsUpdating(false),
+    },
+    {
+      handle: (error: ApiError) => {
+        toast.error(
+          error.response?.data ||
+            "An unexpected error occurred while updating the booking. Please try again."
+        );
+      },
+    }
+  );
 
-  const handleSaveDateChange = async (bookingId: number, existingBooking: BookingResponse): Promise<void> => {
+  const handleSaveDateChange = async (
+    bookingId: number,
+    existingBooking: BookingResponse
+  ): Promise<void> => {
     const updatedBooking: BookingRequest = {
       userId: existingBooking.userId,
       tourId: existingBooking.tourId,
       startDateTime: newStartDate,
-      numberOfParticipants: existingBooking.numberOfParticipants
+      numberOfParticipants: existingBooking.numberOfParticipants,
     };
 
     const response = await updateBookingHandler(bookingId, updatedBooking);
 
     if (response.success && response.data) {
-      setFutureBookings(prev =>
-        prev.map(b => b.id === bookingId ? { ...b, startDateTime: newStartDate } : b)
+      setFutureBookings((prev) =>
+        prev.map((b) =>
+          b.id === bookingId ? { ...b, startDateTime: newStartDate } : b
+        )
       );
       toast.success("Booking updated.");
       setEditingBookingId(null);
@@ -108,27 +150,54 @@ const BookingCard = ({ booking, enableEdit, enableReviewButton, setFutureBooking
   return (
     <Card style={{ margin: "20px 0", padding: "0 30px" }}>
       <CardContent>
-        <Box style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Box
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <Typography variant="h3">
             <Link to={`/tours/${booking.tourId}`}>{booking.tourName}</Link>
           </Typography>
-          {isSmallAndUp && <Typography variant="body1">Booking ID: {booking.id}</Typography>}
+          {isSmallAndUp && (
+            <Typography variant="body1">Booking ID: {booking.id}</Typography>
+          )}
         </Box>
-        <Typography component='div' style={{ display: "flex", alignItems: "center" }}>
+        <Typography
+          component="div"
+          style={{ display: "flex", alignItems: "center" }}
+        >
           <LocationOnIcon style={{ marginRight: "8px" }} />
-          <Typography variant="body1">
-            {booking.tourRegion}
-          </Typography>
+          <Typography variant="body1">{booking.tourRegion}</Typography>
         </Typography>
-        <Typography component='div' style={{ display: "flex", alignItems: "center" }}>
+        <Typography
+          component="div"
+          style={{ display: "flex", alignItems: "center" }}
+        >
           <HourglassEmptyIcon style={{ marginRight: "8px" }} />
           <Typography variant="body1">
-            {`${formatDateToYMDString(new Date(booking.startDateTime))} - ${formatDateToYMDString(calculateEndDateFromDuration(new Date(booking.startDateTime), booking.tourDuration))}`}
+            {`${formatDateToYMDString(
+              new Date(booking.startDateTime)
+            )} - ${formatDateToYMDString(
+              calculateEndDateFromDuration(
+                new Date(booking.startDateTime),
+                booking.tourDuration
+              )
+            )}`}
           </Typography>
         </Typography>
-        {!isSmallAndUp && <Typography variant="body1">Booking ID: {booking.id}</Typography>}
+        {!isSmallAndUp && (
+          <Typography variant="body1">Booking ID: {booking.id}</Typography>
+        )}
       </CardContent>
-      <CardActions style={{ padding: "8px 16px 16px 16px", display: "flex", alignItems: "center"}}>
+      <CardActions
+        style={{
+          padding: "8px 16px 16px 16px",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
         <Grid container spacing={2}>
           <Grid item xs={10} sm={11} md={6}>
             <Button
@@ -156,7 +225,11 @@ const BookingCard = ({ booking, enableEdit, enableReviewButton, setFutureBooking
       <Collapse in={isExpanded(booking.id)} timeout="auto" unmountOnExit>
         <CardContent>
           <Box style={{ display: "flex", alignItems: "center" }}>
-            <Typography variant="body1" component="span" style={{ whiteSpace: "pre-wrap", marginRight: "5px" }}>
+            <Typography
+              variant="body1"
+              component="span"
+              style={{ whiteSpace: "pre-wrap", marginRight: "5px" }}
+            >
               <Box component="span" sx={{ fontWeight: "bold" }}>
                 Start Date & Time:
               </Box>
@@ -167,7 +240,7 @@ const BookingCard = ({ booking, enableEdit, enableReviewButton, setFutureBooking
                   value={newStartDate}
                   onChange={(e) => setNewStartDate(e.target.value as string)}
                 >
-                  {availableStartDates.map(date => (
+                  {availableStartDates.map((date) => (
                     <MenuItem key={date} value={date}>
                       {formatDateAndTime(date)}
                     </MenuItem>
@@ -182,19 +255,26 @@ const BookingCard = ({ booking, enableEdit, enableReviewButton, setFutureBooking
               </>
             ) : (
               <Box style={{ display: "flex", alignItems: "center" }}>
-                <Typography>{formatDateAndTime(booking.startDateTime)}</Typography>
-                {enableEdit &&
+                <Typography>
+                  {formatDateAndTime(booking.startDateTime)}
+                </Typography>
+                {enableEdit && (
                   <IconButton
                     onClick={() => handleEditClick(booking)}
                     style={{ margin: "0 10px", padding: 0 }}
                   >
                     <EditIcon />
                   </IconButton>
-                }
+                )}
               </Box>
             )}
           </Box>
-          <LabeledText label="Participants" value={`${booking.numberOfParticipants} ${booking.numberOfParticipants > 1 ? "people" : "person"}`} />
+          <LabeledText
+            label="Participants"
+            value={`${booking.numberOfParticipants} ${
+              booking.numberOfParticipants > 1 ? "people" : "person"
+            }`}
+          />
           <LabeledText label="Unit Price" value={`$${booking.unitPrice}`} />
           <LabeledText label="Total Price" value={`$${booking.totalPrice}`} />
           <LabeledText label="Paid" value={booking.paid ? "Yes" : "No"} />

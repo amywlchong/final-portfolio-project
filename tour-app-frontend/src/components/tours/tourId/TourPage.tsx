@@ -18,17 +18,21 @@ const TourPage = () => {
   const tourId = Number(id);
 
   const dispatch = useAppDispatch();
-  const tour = useAppSelector(state => state.tours.currentTour);
+  const tour = useAppSelector((state) => state.tours.currentTour);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
 
   useEffect(() => {
     const fetchTour = async () => {
-      const getTourHandler = createServiceHandler(tourService.getOneTour, {
-        startLoading: () => setIsLoading(true),
-        endLoading: () => setIsLoading(false),
-      }, { handle: (error: ApiError) => setError(error) });
+      const getTourHandler = createServiceHandler(
+        tourService.getOneTour,
+        {
+          startLoading: () => setIsLoading(true),
+          endLoading: () => setIsLoading(false),
+        },
+        { handle: (error: ApiError) => setError(error) }
+      );
 
       const response = await getTourHandler(tourId);
 
@@ -58,10 +62,11 @@ const TourPage = () => {
       <TourImages />
       <TourDetails />
       <PointsOfInterest />
-      {tour.tourStartDates && tour.tourStartDates.length > 0
-        ? <TourDatesSelector />
-        : <Typography variant="h3">Upcoming dates to be posted</Typography>
-      }
+      {tour.tourStartDates && tour.tourStartDates.length > 0 ? (
+        <TourDatesSelector />
+      ) : (
+        <Typography variant="h3">Upcoming dates to be posted</Typography>
+      )}
       <Reviews />
     </Box>
   );
