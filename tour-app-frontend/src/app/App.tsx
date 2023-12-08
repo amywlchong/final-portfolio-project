@@ -36,10 +36,10 @@ const App = () => {
     <div>
       <GlobalStyle />
       <ToasterProvider />
-      <ModalsProvider />
 
       <Router>
         <NavBar />
+        <ModalsProvider />
         <Container>
           <Routes>
             {routeConfig.map(({ path, component: Component, requiredRoles }) =>

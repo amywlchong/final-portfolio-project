@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useLocationSearchModal } from "../../hooks/modals/useModals";
 import { useDateSearchModal } from "../../hooks/modals/useModals";
 import { Box } from "@mui/material";
@@ -8,11 +9,11 @@ import Button from "../ui/Button";
 const Search = () => {
   const locationSearch = useLocationSearchModal();
   const dateSearch = useDateSearchModal();
-  const params = new URLSearchParams(window.location.search);
+  const [searchParams] = useSearchParams();
 
-  const regions = params.get("regions");
-  const startDate = params.get("startDate");
-  const endDate = params.get("endDate");
+  const regions = searchParams.get("regions")?.split(",") || [];
+  const startDate = searchParams.get("startDate") || null;
+  const endDate = searchParams.get("endDate") || null;
 
   const MAX_LABEL_LENGTH = 20;
 
@@ -24,10 +25,10 @@ const Search = () => {
   };
 
   const locationLabel = useMemo(() => {
-    if (Array.isArray(regions) && regions.length > 0) {
+    if (regions.length > 1) {
       return trimString(regions.join(", "));
-    } else if (typeof regions === "string") {
-      return trimString(regions);
+    } else if (regions.length === 1) {
+      return trimString(regions[0]);
     }
     return "Anywhere";
   }, [regions]);

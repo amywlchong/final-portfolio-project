@@ -1,4 +1,5 @@
-import { useAppSelector } from "../../app/reduxHooks";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import useTours from "../../hooks/data/useTours";
 import { StyledGrid } from "../../styles";
 
@@ -12,8 +13,19 @@ const ToursPage = () => {
     allToursError,
     loadingAvailableTours,
     availableToursError,
+    filterTours,
+    filteredTours,
   } = useTours();
-  const tours = useAppSelector((state) => state.tours.filteredTours);
+  const location = useLocation();
+
+  const params = new URLSearchParams(location.search);
+  const regions = params.get("regions")?.split(",") || [];
+  const startDate = params.get("startDate") || null;
+  const endDate = params.get("endDate") || null;
+
+  useEffect(() => {
+    filterTours(regions, startDate, endDate);
+  }, [loadingAllTours, location.search]);
 
   const isLoading = loadingAllTours || loadingAvailableTours;
   const error = allToursError || availableToursError;
@@ -26,7 +38,7 @@ const ToursPage = () => {
     return <div>Error: An error occurred while fetching tours.</div>;
   }
 
-  if (tours.length === 0) {
+  if (filteredTours.length === 0) {
     return (
       <>
         <Search />
@@ -36,7 +48,7 @@ const ToursPage = () => {
   }
 
   // Sort tours by ratingsAverage
-  const sortedTours = [...tours].sort(
+  const sortedTours = [...filteredTours].sort(
     (a, b) => (b.ratingsAverage || 0) - (a.ratingsAverage || 0)
   );
 

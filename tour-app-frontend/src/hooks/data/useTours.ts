@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
 import tourService from "../../services/tourService";
-import { setAllTours, setFilteredTours } from "../../redux/slices/tourSlice";
+import { setAllTours } from "../../redux/slices/tourSlice";
 import { useAppDispatch, useAppSelector } from "../../app/reduxHooks";
 import { createServiceHandler } from "../../utils/serviceHandler";
 import { ApiError } from "../../utils/ApiError";
+import { Tour } from "../../types";
 
 const useTours = () => {
   const [loadingAllTours, setLoadingAllTours] = useState(false);
-  const [loadingAvailableTours, setLoadingAvailableTours] = useState(false);
-
   const [allToursError, setAllToursError] = useState<ApiError | null>(null);
+  const [loadingAvailableTours, setLoadingAvailableTours] = useState(false);
   const [availableToursError, setAvailableToursError] =
     useState<ApiError | null>(null);
+  const [filteredTours, setFilteredTours] = useState<Tour[]>([]);
 
   const dispatch = useAppDispatch();
   const allTours = useAppSelector((state) => state.tours.allTours);
@@ -51,13 +52,14 @@ const useTours = () => {
   );
 
   const filterTours = async (
-    regions: string | (string | null)[] | null,
-    startDate: string | (string | null)[] | null,
-    endDate: string | (string | null)[] | null
+    regions: string[],
+    startDate: string | null,
+    endDate: string | null
   ) => {
     // First, fetch the tours available within the provided date range
     let toursInRange = allTours;
-    if (typeof startDate == "string" && typeof endDate == "string") {
+
+    if (startDate && endDate) {
       const response = await getAvailableToursWithinRangeHandler(
         startDate,
         endDate
@@ -70,11 +72,11 @@ const useTours = () => {
 
     // Next, filter the fetched tours based on the selected regions
     const filteredTours =
-      Array.isArray(regions) && regions.length > 0
+      regions.length > 0
         ? toursInRange.filter((tour) => regions.includes(tour.region))
         : toursInRange;
 
-    dispatch(setFilteredTours(filteredTours));
+    setFilteredTours(filteredTours);
   };
 
   return {
@@ -83,6 +85,7 @@ const useTours = () => {
     loadingAvailableTours,
     availableToursError,
     filterTours,
+    filteredTours,
   };
 };
 

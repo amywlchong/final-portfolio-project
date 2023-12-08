@@ -1,73 +1,40 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useAppSelector } from "../../../app/reduxHooks";
 import { useLocationSearchModal } from "../../../hooks/modals/useModals";
-import useTours from "../../../hooks/data/useTours";
-import { createServiceHandler } from "../../../utils/serviceHandler";
-import { ApiError } from "../../../utils/ApiError";
 import { Autocomplete, Checkbox, ListItemText, TextField } from "@mui/material";
-import toast from "react-hot-toast";
 import Modal from "../Modal";
 import Heading from "../../ui/Heading";
 
 const LocationSearchModal = () => {
   const locationSearch = useLocationSearchModal();
-  const [isLoading, setIsLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const { filterTours } = useTours();
   const allRegions = useAppSelector((state) => state.tours.allRegions);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
 
   const updateURL = (regions: string[]) => {
-    const updatedQuery = new URLSearchParams(window.location.search);
+    const updatedQuery = new URLSearchParams(searchParams);
     if (regions.length > 0) {
       updatedQuery.set("regions", regions.join(","));
     } else {
       updatedQuery.delete("regions");
     }
-    const url = `/?${updatedQuery.toString()}`;
-    window.history.pushState({}, "", url);
+    setSearchParams(updatedQuery);
   };
 
-  const filterToursHandler = createServiceHandler(
-    filterTours,
-    {
-      startLoading: () => setIsLoading(true),
-      endLoading: () => setIsLoading(false),
-    },
-    {
-      handle: (_error: ApiError) => {
-        toast.error("An error occurred. Please try again.");
-      },
-    }
-  );
-
-  const onSubmit = async () => {
-    if (selectedRegions.length == 0) {
+  const onSubmit = () => {
+    if (selectedRegions.length === 0) {
       onClear();
       return;
     }
-
     updateURL(selectedRegions);
-
-    const currentQuery = new URLSearchParams(window.location.search);
-    await filterToursHandler(
-      selectedRegions,
-      currentQuery.get("startDate"),
-      currentQuery.get("endDate")
-    );
     locationSearch.onClose();
   };
 
-  const onClear = async () => {
+  const onClear = () => {
     setSelectedRegions([]);
     updateURL([]);
-
-    const currentQuery = new URLSearchParams(window.location.search);
-    await filterToursHandler(
-      [],
-      currentQuery.get("startDate"),
-      currentQuery.get("endDate")
-    );
   };
 
   const bodyContent = (
@@ -100,7 +67,6 @@ const LocationSearchModal = () => {
 
   return (
     <Modal
-      disabled={isLoading}
       isOpen={locationSearch.isOpen}
       title="Filter"
       actionLabel={"Search"}

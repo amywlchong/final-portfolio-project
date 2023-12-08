@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { Range } from "react-date-range";
 import { addDays, format } from "date-fns";
+import { useSearchParams } from "react-router-dom";
 import useScreenSize from "../../../hooks/ui/useScreenSize";
 import { useDateSearchModal } from "../../../hooks/modals/useModals";
-import useTours from "../../../hooks/data/useTours";
-import { createServiceHandler } from "../../../utils/serviceHandler";
-import { ApiError } from "../../../utils/ApiError";
-import toast from "react-hot-toast";
 import Modal from "../Modal";
 import DatePicker from "../../inputs/DatePicker";
 import Heading from "../../ui/Heading";
@@ -14,9 +11,8 @@ import Heading from "../../ui/Heading";
 const DateSearchModal = () => {
   const { is400AndUp, is500AndUp } = useScreenSize();
   const dateSearch = useDateSearchModal();
-  const [isLoading, setIsLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const { filterTours } = useTours();
   const initialDateRange = {
     startDate: addDays(new Date(), 1),
     endDate: addDays(new Date(), 1),
@@ -29,59 +25,28 @@ const DateSearchModal = () => {
     startDate: Date | undefined | null,
     endDate: Date | undefined | null
   ) => {
-    const updatedQuery = new URLSearchParams(window.location.search);
-
+    const updatedQuery = new URLSearchParams(searchParams);
     if (startDate) {
       updatedQuery.set("startDate", format(startDate, "yyyy-MM-dd"));
     } else {
       updatedQuery.delete("startDate");
     }
-
     if (endDate) {
       updatedQuery.set("endDate", format(endDate, "yyyy-MM-dd"));
     } else {
       updatedQuery.delete("endDate");
     }
-
-    const url = `/?${updatedQuery.toString()}`;
-    window.history.pushState({}, "", url);
+    setSearchParams(updatedQuery);
   };
 
-  const filterToursHandler = createServiceHandler(
-    filterTours,
-    {
-      startLoading: () => setIsLoading(true),
-      endLoading: () => setIsLoading(false),
-    },
-    {
-      handle: (_error: ApiError) => {
-        toast.error("An error occurred. Please try again.");
-      },
-    }
-  );
-
-  const onSubmit = async () => {
+  const onSubmit = () => {
     updateURL(selectedDateRange.startDate, selectedDateRange.endDate);
-
-    const currentQuery = new URLSearchParams(window.location.search);
-    await filterToursHandler(
-      currentQuery.get("regions")?.split(",") || [],
-      currentQuery.get("startDate"),
-      currentQuery.get("endDate")
-    );
     dateSearch.onClose();
   };
 
-  const onClear = async () => {
+  const onClear = () => {
     setSelectedDateRange(initialDateRange);
     updateURL(null, null);
-
-    const currentQuery = new URLSearchParams(window.location.search);
-    await filterToursHandler(
-      currentQuery.get("regions")?.split(",") || [],
-      null,
-      null
-    );
   };
 
   const bodyContent = (
@@ -106,7 +71,6 @@ const DateSearchModal = () => {
 
   return (
     <Modal
-      disabled={isLoading}
       isOpen={dateSearch.isOpen}
       title="Filter"
       actionLabel={"Search"}
